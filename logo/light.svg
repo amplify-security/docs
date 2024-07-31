@@ -6,10 +6,10 @@
    id="Layer_1"
    x="0px"
    y="0px"
-   viewBox="0 0 465.30618 102.05"
+   viewBox="0 0 496.11001 102.05"
    xml:space="preserve"
-   sodipodi:docname="Amplify - Inline Logo (RGB).svg"
-   width="465.30618"
+   sodipodi:docname="light.svg"
+   width="496.11002"
    height="102.05"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -25,15 +25,15 @@
    inkscape:pageopacity="0"
    inkscape:pagecheckerboard="1"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="2.2759199"
-   inkscape:cx="327.12048"
-   inkscape:cy="-54.922847"
-   inkscape:window-width="2593"
-   inkscape:window-height="1360"
-   inkscape:window-x="2278"
-   inkscape:window-y="321"
+   inkscape:zoom="1.6093184"
+   inkscape:cx="228.04686"
+   inkscape:cy="41.011151"
+   inkscape:window-width="1438"
+   inkscape:window-height="1224"
+   inkscape:window-x="-7"
+   inkscape:window-y="0"
    inkscape:window-maximized="0"
-   inkscape:current-layer="g15" />
+   inkscape:current-layer="Layer_1" />
 <style
    type="text/css"
    id="style1">
@@ -87,7 +87,8 @@
 		</g>
 	</g>
 	<g
-   id="g14">
+   id="g14"
+   transform="translate(30.80383,-0.637642)">
 		<g
    id="g13">
 			<g
