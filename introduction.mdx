@@ -1,71 +1,77 @@
 ---
 title: Introduction
-description: 'Welcome to the home of your new documentation'
+description: 'New to Amplify Security? Start here.'
 ---
 
 <img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Hero Dark"
+  src="/images/secure-software.png"
+  alt="Secure Software"
 />
 
-## Setting up
+## What is Amplify Security?
 
-The first step to world-class documentation is setting up your editing environments.
+Amplify Security is a cloud-native security platform that integrates industry leading security tools
+into your development workflow and provides automtically generated code fixes for security vulnerabilities.
+
+<Note>Amplify Security is currently in beta. Documentation and application functionality may change frequently.</Note>
+
+## How Amplify secures your code
+
+Amplify Security runs configured security tools on codebases that have been added to Amplify using
+our [GitHub Action](https://github.com/amplify-security/runner-action). Amplify notifies developers 
+of new vulnerabilities directly in their Pull Requests and provides available code fixes.
+
+<Tip>Official documentation for running Amplify Security on GitLab and Bitbucket is coming soon!</Tip>
+
+Our dedication to securing your code doesn't stop at new vulnerabilities. The Amplify
+platform continously runs configured security tools on your codebase and generates new code fixes
+as they become available for existing vulnerabilities. Once you've reviewed the available code fixes, 
+you can open a Pull Request to apply the fix within the Amplify platform.
+
+## Developer first security
+
+Amplify is designed and built by developers for developers. We're tired of security products that both
+get in the way and don't actually improve security just as much as you are. Our engineering team will
+never stop thinking about what developers actually need to develop secure code with zero reduction to
+velocity and without security theater.
+
+## Core components
+
+All of the core components that you need to secure your code with Amplify are open source and 
+available for review.
 
 <CardGroup cols={2}>
   <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
+    title="GitHub App"
+    icon="code-simple"
+    href="https://github.com/apps/amplify-security"
   >
-    Get your docs set up locally for easy development
+    View the Amplify Security GitHub App on the GitHub Marketplace.
   </Card>
   <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
+    title="GitHub Action"
+    icon="circle-play"
+    href="https://github.com/amplify-security/runner-action"
   >
-    Preview your changes before you push to make sure they're perfect
+    View the Amplify Security GitHub Action on GitHub.
+  </Card>
+  <Card
+    title="Amplify Runner"
+    icon="terminal"
+    href="https://github.com/amplify-security/runner"
+  >
+    The Amplify Runner is open source and available to view on GitHub.
+  </Card>
+  <Card
+    title="Docker Image"
+    icon="ship"
+    href="https://hub.docker.com/r/amplifysecurity/runner"
+  >
+    The Amplify Runner Docker image is available on Docker Hub.
   </Card>
 </CardGroup>
 
-## Make it yours
-
-Update your docs to your brand and add valuable content for the best user conversion.
-
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/components/accordion"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+<Info>
+  Have a suggestion to improve our documentation? Contribute changes with a Pull Request to our 
+  [Docs](https://github.com/amplify-security/docs) repository on GitHub.
+</Info>

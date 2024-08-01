@@ -3,16 +3,17 @@
   "name": "Amplify Security",
   "logo": {
     "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "light": "/logo/light.svg",
+    "href": "https://amplify.security"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#9933ff",
+    "light": "#a64dff",
+    "dark": "#b366ff",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#8000ff",
+      "to": "#6666ff"
     }
   },
   "topbarLinks": [
@@ -22,30 +23,26 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Sign In",
+    "url": "https://app.amplify.security"
   },
   "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "GitHub App",
+      "icon": "code-simple",
+      "url": "https://github.com/apps/amplify-security"
     },
     {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "name": "GitHub Action",
+      "icon": "circle-play",
+      "url": "https://github.com/amplify-security/runner-action"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://amplify.security/blog"
     }
   ],
   "navigation": [
