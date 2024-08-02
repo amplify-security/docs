@@ -18,78 +18,113 @@ During onbording you will:
 3. Approve the Pull Requests that Amplify will open for you in selected projects. These Pull Requests
    add the Amplify Security GitHub Actions Workflow.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `mint.json` is): ``` mintlify dev ```
-  </Accordion>
-</AccordionGroup>
+<Warning>
+  You will need permission to install a GitHub App for the organization you want to secure with Amplify
+  to complete this Quickstart guide.
+</Warning>
 
-### Deploy your changes
+## Quickstart
 
-<AccordionGroup>
+### Sign Up
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
-</Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
-</Accordion>
+To get started, navigate to the Amplify App at [https://app.amplifysecurity.com](https://app.amplifysecurity.com)
+or by using the Sign In button in the top right corner of this page.
 
-</AccordionGroup>
+<img
+  className="block dark:hidden"
+  width="400"
+  src="/images/signup-light.png"
+  alt="Sign Up"
+/>
+<img
+  className="hidden dark:block"
+  width="400"
+  src="/images/signup-dark.png"
+  alt="Sign Up"
+/>
 
-## Update your docs
+Select _Sign Up_ to continue.
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+<img
+  width="400"
+  src="/images/signup-providers-light.png"
+  alt="Sign Up Providers"
+/>
 
-<CardGroup>
+Select _Sign up with GitHub_ to continue.
 
-<Card title="Style Your Docs" icon="paintbrush" href="/settings/global">
-  Add flair to your docs with personalized branding.
-</Card>
+<Tip>Support for GitLab and Bitbucket is coming soon!</Tip>
 
-<Card
-  title="Add API Endpoints"
-  icon="square-code"
-  href="/api-playground/configuration"
->
-  Implement your OpenAPI spec and enable API user interaction.
-</Card>
+### Authenticate with the Amplify GitHub App
 
-<Card
-  title="Integrate Analytics"
-  icon="chart-mixed"
-  href="/analytics/supported-integrations"
->
-  Draw insights from user interactions with your documentation.
-</Card>
+You will be redirected to GitHub to authenticate using the Amplify GitHub App.
 
-<Card
-  title="Host on a Custom Domain"
-  icon="browser"
-  href="/settings/custom-domain/subdomain"
->
-  Keep your docs on your own website's subdomain.
-</Card>
+<img 
+  width="400"
+  src="/images/signup-github-oauth-light.png"
+  alt="GitHub OAuth"
+/>
 
-</CardGroup>
+Select _Authorize Amplify_ to continue.
+
+### Install the Amplify GitHub App
+
+Once authenticated, you must install the Amplify GitHub App in the GitHub organization you want
+to secure with Amplify.
+
+<img 
+  width="400"
+  src="/images/signup-org-light.png"
+  alt="Install App"
+/>
+
+Select _Redirect to GitHub to allow access to your organization_ to continue. You will be redirected
+to GitHub. Install the GitHub Amplify App in the organization you want to secure. After installation,
+you will be redirected back to Amplify to continue the onboarding process.
+
+### Select projects to secure
+
+After authenticating with the Amplify GitHub App, you will be redirected back to the Amplify App
+to choose which projects you want to secure with Amplify.
+
+<img
+  width="400"
+  src="/images/signup-projects-light.png"
+  alt="Select Projects"
+/>
+
+Select all projects you would like to secure with Amplify and select _Next_.
+
+### Select security tools to run
+
+You will now be prompted to choose which security tools Amplify will run when scanning your projects.
+
+<img
+  width="400"
+  src="/images/signup-tools-light.png"
+  alt="Select Tools"
+/>
+
+Select _Open Installation PRs_ to continue.
+
+### Approve installation PRs
+
+Amplify will now open Pull Requests in the selected projects to add the Amplify Security
+GitHub Actions workflow. You will need to approve these PRs to enable Amplify scanning In
+your projects.
+
+<img
+  width="400"
+  src="/images/signup-prs-light.png"
+  alt="Approve PRs"
+/>
+
+The Amplify App will automatically reflect the status of the PRs as they are merged.
+
+<img
+  width="400"
+  src="/images/signup-prs-merged-light.png"
+  alt="Merged PRs"
+/>
+
+Select _Finish_ to complete the onboarding process.
