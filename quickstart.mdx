@@ -3,15 +3,17 @@ title: 'Quickstart'
 description: 'Onboard your projects to Amplify in under 5 minutes.'
 ---
 
+import {amplify} from '/snippets/constants.mdx';
+
 ## Overview
 
 We're going to walk you through the steps to onboard your projects to Amplify.
-The onboarding process was designed to be self-guided, so if you'd rather just follow
-along in the Amplify App and skip this guide, you can do that too.
+The onboarding process is designed to be fully guided, so if you'd rather just follow along in the
+<a href={amplify.app_url}>Amplify App</a> and skip this guide, you can do that too.
 
 ### What to expect
 
-During onbording you will:
+During onboarding you will:
 
 1. Install the Amplify GitHub App.
 2. Select which projects you want to onboard.
@@ -19,16 +21,16 @@ During onbording you will:
    add the Amplify Security GitHub Actions Workflow.
 
 <Warning>
-  You will need permission to install a GitHub App for the organization you want to secure with Amplify
-  to complete this Quickstart guide.
+  You will need permission to install a GitHub App for the organization you wish to secure with Amplify
+  in order to complete this Quickstart guide.
 </Warning>
 
 ## Quickstart
 
 ### Sign Up
 
-To get started, navigate to the Amplify App at [https://app.amplifysecurity.com](https://app.amplifysecurity.com)
-or by using the Sign In button in the top right corner of this page.
+To get started, navigate to the Amplify App at <a href={amplify.app_url}>{amplify.app_url}</a> or by
+using the Sign In button in the top right corner of this page.
 
 <img
   className="block dark:hidden"
@@ -66,13 +68,13 @@ Select _Sign up with GitHub_ to continue.
 
 You will be redirected to GitHub to authenticate using the Amplify GitHub App.
 
-<img 
+<img
   className="block dark:hidden"
   width="400"
   src="/images/signup-github-oauth-light.png"
   alt="GitHub OAuth"
 />
-<img 
+<img
   className="hidden dark:block"
   width="400"
   src="/images/signup-github-oauth-dark.png"
@@ -145,7 +147,7 @@ Select _Open Installation PRs_ to continue.
 ### Approve installation PRs
 
 Amplify will now open Pull Requests in the selected projects to add the Amplify Security
-GitHub Actions workflow. You will need to approve these PRs to enable Amplify scanning In
+GitHub Actions workflow. You will need to approve these PRs to enable Amplify scanning in
 your projects.
 
 <img
