@@ -1,0 +1,64 @@
+---
+title: Ignoring Vulnerabilities
+description: A how-to for suppressing vulnerability notifications inline and by using an .amplifyignore file.
+---
+
+# Ignoring Vulnerabilities
+
+There are times when you simply don’t need to worry about a vulnerability.
+Testing code that only runs locally and never gets deployed and code which have potential vulnerabilities mitigated elsewhere, like in infrastructure, are two examples of these scenarios.
+Let’s look at how to ignore these vulnerabilities on the Amplify platform.
+
+# What is an "Ignored" vulnerability?
+
+On the Amplify platform, and Ignored vulnerability is considered to be ***Acknowledged*** with ***Ignored*** given as the reason.
+Acknowledgement does not mean that the vulnerability is legitimate!
+Acknowledgement simply means that someone is aware that one or more security scanners flagged a particular piece of code as vulnerable but the vulnerability is not considered active or as truly positive.
+Acknowledged vulnerabilities do not trigger notifications and they do not display as prevented or merged vulnerabilities in Amplify’s metrics.
+Acknowledged vulnerabilities, including those which have been ignored, may be viewed on the Vulnerabilities page under the **Acknowledged Vulns** tab.
+
+![Untitled](Ignoring%20Vulnerabilities%2072c980e8a5f44c9fa775836882a45705/Untitled.png)
+
+# How to Ignore a vulnerability
+
+There are two ways to ignore a vulnerability currently in the Amplify platform.
+The first is with a code comment on the vulnerable code line.
+The second is by using a `.amplifyignore` file.
+
+## Ignoring with a code comment
+
+To ignore a vulnerability with a code comment, simply append a comment to the vulnerable line which contains the string `@amplify-ignore`. For example:
+
+```tsx
+models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE '%${criteria}%' OR description LIKE '%${criteria}%') AND deletedAt IS NULL) ORDER BY name`) // @amplify-ignore
+```
+
+<Tip>
+    The `@amplify-ignore` code comment must be made on the vulnerable line as reported by Amplify.
+    Commenting on the lines above or below the vulnerable line will not currently ignore the vulnerability.
+</Tip>
+
+## Ignoring with a `.amplifyignore` file
+
+To use a `.amplifyignore` file to ignore vulnerabilities, first create a file in the root of your project directly named `.amplifyignore`.
+This file mostly follows the familiar syntax of the well-known `.gitignore` file.
+The `.gitignore` file specification can be found in the [Git documentation](https://git-scm.com/docs/gitignore).
+The below section, **Pattern Format**, is for the most part verbatim to the Git documentation, but has been updated to reflect the `.amplifyignore` filename and omit patterns which reference relative paths, as Amplify only supports a `.amplifyignore` file in the root of the project.
+
+### Pattern Format
+
+- A blank line matches no files, so it can serve as a separator for readability.
+- A line starting with # serves as a comment. Put a backslash ("`\`") in front of the first hash for patterns that begin with a hash.
+- Trailing spaces are ignored unless they are quoted with backslash ("`\`").
+- An optional prefix "`!`" which negates the pattern; any matching file excluded by a previous pattern will become included again. It is not possible to re-include a file if a parent directory of that file is excluded. Git doesn’t list excluded directories for performance reasons, so any patterns on contained files have no effect, no matter where they are defined. Put a backslash ("`\`") in front of the first "`!`" for patterns that begin with a literal "`!`", for example, "`\!important!.txt`".
+- The slash "`/`" is used as the directory separator. Separators may occur at the beginning, middle or end of the `.amplifyignore` search pattern.
+- If there is a separator at the end of the pattern then the pattern will only match directories, otherwise the pattern can match both files and directories.
+- For example, a pattern `doc/frotz/` matches `doc/frotz` directory, but not `a/doc/frotz` directory; however `frotz/` matches `frotz` and `a/frotz` that is a directory (all paths are relative from the `.amplifyignore` file).
+- An asterisk "`*`" matches anything except a slash. The character "`?`" matches any one character except "`/`". The range notation, e.g. `[a-zA-Z]`, can be used to match one of the characters in a range.
+
+Two consecutive asterisks ("`**`") in patterns matched against full pathname may have special meaning:
+
+- A leading "`*`" followed by a slash means match in all directories. For example, "`*/foo`" matches file or directory "`foo`" anywhere, the same as pattern "`foo`". "`*/foo/bar`" matches file or directory "`bar`" anywhere that is directly under directory "`foo`".
+- A trailing "`/**`" matches everything inside. For example, "`abc/**`" matches all files inside directory "`abc`", relative to the location of the `.gitignore` file, with infinite depth.
+- A slash followed by two consecutive asterisks then a slash matches zero or more directories. For example, "`a/**/b`" matches "`a/b`", "`a/x/b`", "`a/x/y/b`" and so on.
+- Other consecutive asterisks are considered regular asterisks and will match according to the previous rules.

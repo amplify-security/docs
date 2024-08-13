@@ -26,8 +26,7 @@
     "name": "Sign In",
     "url": "https://app.amplify.security"
   },
-  "tabs": [
-  ],
+  "tabs": [],
   "anchors": [
     {
       "name": "GitHub App",
@@ -51,6 +50,12 @@
       "pages": [
         "introduction",
         "quickstart"
+      ]
+    },
+    {
+      "group": "How-to Guides",
+      "pages": [
+        "guides/amplifyignore"
       ]
     },
     {
