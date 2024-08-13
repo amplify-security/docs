@@ -19,7 +19,7 @@ Acknowledged vulnerabilities, including those which have been ignored, may be vi
 
 <img
   src="/images/amplifyignore-1.png"
-  alt="Acknowledged Vulnerabilities page"
+  alt="Acknowledged Vulns tab with two ignored vulnerabilities shown"
 />
 
 # How to Ignore a vulnerability
@@ -44,8 +44,7 @@ models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE '%${criteria}%'
 ## Ignoring with a `.amplifyignore` file
 
 To use a `.amplifyignore` file to ignore vulnerabilities, first create a file in the root of your project directly named `.amplifyignore`.
-This file mostly follows the familiar syntax of the well-known `.gitignore` file.
-The `.gitignore` file specification can be found in the [Git documentation](https://git-scm.com/docs/gitignore).
+This file mostly follows the familiar syntax of the well-known `.gitignore` file, for which the specification can be found in the [Git documentation](https://git-scm.com/docs/gitignore).
 The below section, **Pattern Format**, is for the most part verbatim to the Git documentation, but has been updated to reflect the `.amplifyignore` filename and omit patterns which reference relative paths, as Amplify only supports a `.amplifyignore` file in the root of the project.
 
 ### Pattern Format
