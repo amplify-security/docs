@@ -55,7 +55,7 @@
     {
       "group": "How-to Guides",
       "pages": [
-        "guides/amplifyignore"
+        "guides/ignoring-vulns"
       ]
     },
     {
