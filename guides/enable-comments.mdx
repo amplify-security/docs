@@ -1,0 +1,100 @@
+---
+title: Enable Pull Request Comments
+description: A how-to for enabling Amplify comments on pull requests for projects currently running silent.
+---
+
+import { amplify } from '/snippets/constants.mdx';
+
+## Why am I not seeing comments on my Pull Requests?
+
+The Amplify platform allows for projects to run silently, meaning that while we are actively detecting
+vulnerabilities and generating code fixes for your project, we are not commenting on your Pull Requests.
+This is caused by not enabling commenting on the projects when they are added to the Amplify platform.
+Follow along with this guide to enable commenting for your projects.
+
+## What comments can I expect Amplify to make on my Pull Requests?
+
+Amplify can be configured to make two different types of comments on your Pull Requests. The first type
+of comment is a notification that one or more vulnerabilities have been detected in the new code. The
+second type of comment is a notification that a code fix is available for a detected vulnerability. Amplify
+can also be configured to comment with "Approvals" on Pull Requests that have no detected vulnerabilities.
+
+### Vulnerability notification
+
+Vulnerability notifications are made on Pull Requests when Amplify detects vulnerabilities in the new code. These
+notifications are enabled in the Amplify App by enabling `Merge Comments` for the project.
+
+<img
+  className="block dark:hidden"
+  src="/images/pr-comment-vulns-light.png"
+  alt="Vulnerability Notification"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/pr-comment-vulns-dark.png"
+  alt="Vulnerability Notification"
+/>
+
+### Code fix notification
+
+Code fix notifications are made on Pull Requests when a Code Fix is available for a detected vulnerability. These
+notifications are enabled in the Amplify App by enabling `Merge Comments` for the project.
+
+<img
+  className="block dark:hidden"
+  src="/images/pr-comment-fix-light.png"
+  alt="Code Fix Notification"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/pr-comment-fix-dark.png"
+  alt="Code Fix Notification"
+/>
+
+### Approval notification
+
+Approval notifications are made on Pull Requests when no vulnerabilities are detected in the new code. These
+notifications are enabled in the Amplify App by enabling `Merge Approvals` for the project.
+
+<img
+  className="block dark:hidden"
+  src="/images/pr-comment-approval-light.png"
+  alt="Approval Notification"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/pr-comment-approval-dark.png"
+  alt="Approval Notification"
+/>
+
+## How to enable commenting
+
+To enable commenting, Sign in to the [Amplify App](https://app.amplify.security) and select `Projects` on
+the Navigation Bar. From the Projects page, you can enable commenting on your projects by selecting the
+appropriate options in the `Merge Comments` and `Merge Approvals` columns.
+
+<img
+  className="block dark:hidden"
+  src="/images/project-config-light.png"
+  alt="Project Configuration"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/project-config-dark.png"
+  alt="Project Configuration"
+/>
+
+Alternatively, Sign in to the [Amplify App](https://app.amplify.security), select `Projects` on 
+the Navigation Bar, then select the `Settings` tab from the Project's page. From the Project's Settings
+you can enable commenting on your projects by selecting the appropriate options under **Integrations**.
+
+<img
+  className="block dark:hidden"
+  src="/images/project-config-details-light.png"
+  alt="Project Settings"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/project-config-details-dark.png"
+  alt="Project Settings"
+/>

@@ -55,7 +55,8 @@
     {
       "group": "How-to Guides",
       "pages": [
-        "guides/ignoring-vulns"
+        "guides/ignoring-vulns",
+        "guides/enable-comments"
       ]
     },
     {
