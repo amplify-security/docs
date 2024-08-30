@@ -39,6 +39,11 @@
       "url": "https://github.com/marketplace/actions/amplify-runner-action"
     },
     {
+      "name": "GitLab Component",
+      "icon": "circle-play",
+      "url": "https://gitlab.com/amplify-security/components"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://amplify.security/blog"
@@ -62,12 +67,14 @@
     {
       "group": "Integrations",
       "pages": [
-        "integrations/github"
+        "integrations/github",
+        "integrations/gitlab"
       ]
     }
   ],
   "footerSocials": {
     "github": "https://github.com/amplify-security",
+    "gitlab": "https://gitlab.com/amplify-security",
     "linkedin": "https://www.linkedin.com/company/amplify-security/"
   }
 }
