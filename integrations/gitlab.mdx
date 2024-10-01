@@ -30,8 +30,8 @@ requests.
 
 Amplify provides a GitLab component that must be installed in a GitLab Pipeline for any GitLab
 projects added to the Amplify Platform. The following example pipeline configuration runs Amplify's
-Runner component on every merge request. Using the tag `main` will always use the latest stable
-version of the component. Pre-release or experimental versions will never be in `main`.
+Runner component on every merge request. Using the `main` branch will ensure you're always using the
+latest stable version of the component. Pre-release or experimental versions will never be in `main`.
 
 ```yaml .gitlab-ci.yml
 ---
@@ -53,3 +53,5 @@ stages: [test]
 include:
   - component: gitlab.com/amplify-security/components/runner@0.1.0
 ```
+
+To find the latest tagged version, please refer to the [list of tags on GitLab](https://gitlab.com/amplify-security/components/-/tags).
