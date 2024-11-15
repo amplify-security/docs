@@ -1,15 +1,14 @@
 ---
-title: 'Quickstart'
-description: 'Onboard your projects to Amplify in under 5 minutes.'
+title: "Quickstart"
+description: "Onboard your projects to Amplify in under 5 minutes."
 ---
 
-import {amplify} from '/snippets/constants.mdx';
+import { amplify } from "/snippets/constants.mdx"
 
 ## Overview
 
 We're going to walk you through the steps to onboard your projects to Amplify.
-The onboarding process is designed to be fully guided, so if you'd rather just follow along in the
-<a href={amplify.app_url}>Amplify App</a> and skip this guide, you can do that too.
+The onboarding process is designed to be fully guided, so if you'd rather just follow along in the <a href={amplify.app_url}>Amplify App</a> and skip this guide, you can do that too.
 
 ### What to expect
 
@@ -21,8 +20,7 @@ During onboarding you will:
    add the Amplify Security GitHub Actions Workflow.
 
 <Warning>
-  You will need permission to install a GitHub App for the organization you wish to secure with Amplify
-  in order to complete this Quickstart guide.
+You will need permission to install a GitHub App for the organization you wish to secure with Amplify in order to complete this Quickstart guide.
 </Warning>
 
 ## Quickstart
@@ -32,33 +30,13 @@ During onboarding you will:
 To get started, navigate to the Amplify App at <a href={amplify.app_url}>{amplify.app_url}</a> or by
 using the Sign In button in the top right corner of this page.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-light.png"
-  alt="Sign Up"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-dark.png"
-  alt="Sign Up"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-light.png" alt="Sign Up" />
+<img className="hidden dark:block" width="400" src="/images/signup-dark.png" alt="Sign Up" />
 
 Select _Sign Up_ to continue.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-providers-light.png"
-  alt="Sign Up Providers"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-providers-dark.png"
-  alt="Sign Up Providers"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-providers-light.png" alt="Sign Up Providers" />
+<img className="hidden dark:block" width="400" src="/images/signup-providers-dark.png" alt="Sign Up Providers" />
 
 Select _Sign up with GitHub_ to continue.
 
@@ -68,18 +46,8 @@ Select _Sign up with GitHub_ to continue.
 
 You will be redirected to GitHub to authenticate using the Amplify GitHub App.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-github-oauth-light.png"
-  alt="GitHub OAuth"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-github-oauth-dark.png"
-  alt="GitHub OAuth"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-github-oauth-light.png" alt="GitHub OAuth" />
+<img className="hidden dark:block" width="400" src="/images/signup-github-oauth-dark.png" alt="GitHub OAuth" />
 
 Select _Authorize Amplify_ to continue.
 
@@ -88,40 +56,27 @@ Select _Authorize Amplify_ to continue.
 Once authenticated, you must install the Amplify GitHub App in the GitHub organization you want
 to secure with Amplify.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-org-light.png"
-  alt="Install App"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-org-dark.png"
-  alt="Install App"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-org-light.png" alt="Install App" />
+<img className="hidden dark:block" width="400" src="/images/signup-org-dark.png" alt="Install App" />
 
 Select _Redirect to GitHub to allow access to your organization_ to continue. You will be redirected
 to GitHub. Install the GitHub Amplify App in the organization you want to secure. After installation,
 you will be redirected back to Amplify to continue the onboarding process.
+
+### Accept terms & conditions
+
+You must accept the terms and conditions of the beta agreement to continue.
+
+<img className="block dark:hidden" width="400" src="/images/signup-eula-light.png" alt="Terms and Conditions" />
+<img className="hidden dark:block" width="400" src="/images/signup-eula-dark.png" alt="Terms and Conditions" />
 
 ### Select projects to secure
 
 After authenticating with the Amplify GitHub App, you will be redirected back to the Amplify App
 to choose which projects you want to secure with Amplify.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-projects-light.png"
-  alt="Select Projects"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-projects-dark.png"
-  alt="Select Projects"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-projects-light.png" alt="Select Projects" />
+<img className="hidden dark:block" width="400" src="/images/signup-projects-dark.png" alt="Select Projects" />
 
 Select all projects you would like to secure with Amplify and select _Next_.
 
@@ -129,18 +84,8 @@ Select all projects you would like to secure with Amplify and select _Next_.
 
 You will now be prompted to choose which security tools Amplify will run when scanning your projects.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-tools-light.png"
-  alt="Select Tools"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-tools-dark.png"
-  alt="Select Tools"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-tools-light.png" alt="Select Tools" />
+<img className="hidden dark:block" width="400" src="/images/signup-tools-dark.png" alt="Select Tools" />
 
 Select _Open Installation PRs_ to continue.
 
@@ -150,32 +95,12 @@ Amplify will now open Pull Requests in the selected projects to add the Amplify 
 GitHub Actions workflow. You will need to approve these PRs to enable Amplify scanning in
 your projects.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-prs-light.png"
-  alt="Approve PRs"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-prs-dark.png"
-  alt="Approve PRs"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-prs-light.png" alt="Approve PRs" />
+<img className="hidden dark:block" width="400" src="/images/signup-prs-dark.png" alt="Approve PRs" />
 
 The Amplify App will automatically reflect the status of the PRs as they are merged.
 
-<img
-  className="block dark:hidden"
-  width="400"
-  src="/images/signup-prs-merged-light.png"
-  alt="Merged PRs"
-/>
-<img
-  className="hidden dark:block"
-  width="400"
-  src="/images/signup-prs-merged-dark.png"
-  alt="Merged PRs"
-/>
+<img className="block dark:hidden" width="400" src="/images/signup-prs-merged-light.png" alt="Merged PRs" />
+<img className="hidden dark:block" width="400" src="/images/signup-prs-merged-dark.png" alt="Merged PRs" />
 
 Select _Finish_ to complete the onboarding process.
