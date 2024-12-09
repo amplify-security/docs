@@ -52,7 +52,7 @@ by the Amplify Platform.
 
 The Amplify GitHub Actions Workflow is the workflow installed in any GitHub repositories added
 to the Amplify Platform. This Workflow runs the Amplify GitHub Action on every Pull Request and
-on every push to the repository's default branch.
+on every push to the repository's `main` or `master` branch.
 
 ```yaml .github/workflows/amplify.yml
 ---
@@ -71,12 +71,12 @@ jobs:
   amplify-security-scan:
     name: Amplify Security Scan
     runs-on: ubuntu-latest
-    if: (github.actor != 'dependabot[bot]')
+    if: (!github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Amplify Runner
-        uses: amplify-security/runner-action@v0.1.0
+        uses: amplify-security/runner-action@main
 ```
 
 <Warning>
