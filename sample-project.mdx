@@ -11,43 +11,44 @@ During setup, you may not have a vulnerable project to test Amplify with. To hel
 and quickly test out Amplify, we provide a template repository with preexisting vulnerabilities that
 you can add to your GitHub account.
 
-<Card
-  title="Amplify's Example Project"
-  icon="paste"
-  href="https://github.com/amplify-security/amplify-example-project"
-  horizontal
->
-An example project based on Juice Shop, a Javascript web application for security testing.
+<Card title="Amplify's Example Project" icon="paste" href="https://github.com/amplify-security/amplify-example-project" horizontal>
+  An example project based on Juice Shop, a Javascript web application for security testing.
 </Card>
 
 ## Usage
 
-<Steps titleSize="h2">
+<Steps titleSize="h3">
   <Step title="Launch the template">
-    On the [Amplify Example Project](https://github.com/amplify-security/amplify-example-project), click the "Use this template" button at the top right and select "Create a new repository" (or [click here](https://github.com/new?template_name=amplify-example-project&template_owner=amplify-security)).
+    On the [Amplify Example Project](https://github.com/amplify-security/amplify-example-project), click the "Use this template" button at the top right and select "Create a new repository" (or [click here](https://github.com/new?template_name=amplify-example-project\&template_owner=amplify-security)).
     ![](/images/sample-project-use-template.png)
   </Step>
+
   <Step title="Include all branches">
     Check "Include all branches" to copy the example vulnerable branches from the template repository.
     ![](/images/sample-project-include-all-branches.png)
   </Step>
+
   <Step title="Create your repository">
     Select the organization or user you added to Amplify, give a name to your example project, and create the repository.
+
     <Tip>
       **For GitHub CLI users**
 
       To quickly do these 3 steps, you can run the following command, replacing `ORGNAME`/`REPONAME` as needed: `gh repo create -p amplify-security/amplify-example-project --include-all-branches --private ORGNAME/REPONAME`
     </Tip>
   </Step>
+
   <Step title="Ensure Amplify can access your repository">
     If you picked "Only select repositories" when installing the Amplify GitHub App, be sure to update the list of allowed repositories to include the new repository. [Click here for settings under your user account](https://github.com/settings/installations), otherwise go to `https://github.com/organizations/ORGNAME/settings/installations` for settings under an organization, replacing `ORGNAME` with your organization name.
 
     You can skip this if you selected "All repositories" during installation.
   </Step>
+
   <Step title="Add your repository to Amplify">
     If you're in the middle of setup, the repo should automatically show up in the list of projects to add.
     Otherwise, go to the "Projects" page and click "Add Project" to start the process.
   </Step>
+
   <Step title="Open a pull request">
     Visit your repository on GitHub and create a pull request or two from the example branches, such as `vulns/sql-injection`.
 
