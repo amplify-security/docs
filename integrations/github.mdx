@@ -83,3 +83,25 @@ jobs:
   The Amplify Platform currently relies on the name of the Workflow to track and display GitHub Workflows
   correctly. Do not change the name of the Workflow. This restriction will be lifted soon.
 </Warning>
+
+### Scanning branches other than `main` or `master`
+
+By default, the Amplify workflow runs on all Pull Requests and on every push to the repository's 
+`main` or `master` branch. To run on any additional branches, add them to the list of branches
+in `.github/workflows/amplify.yml`. For example, we will modify the section below to also execute
+on the `develop` branch. Note that the change in syntax from the above YAML is simply for readability.
+
+```yaml .github/workflows/amplify.yml
+---
+name: Amplify Security
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+  push:
+    # this is equivalent to '["master", "main", "develop"]'
+    branches:
+      - master
+      - main
+      - develop
+```
+
