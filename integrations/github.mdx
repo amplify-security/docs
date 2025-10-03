@@ -52,7 +52,7 @@ by the Amplify Platform.
 
 The Amplify GitHub Actions Workflow is the workflow installed in any GitHub repositories added
 to the Amplify Platform. This Workflow runs the Amplify GitHub Action on every Pull Request and
-on every push to the repository's `main` or `master` branch.
+on every push to the repository's `main` or `develop` branch.
 
 ```yaml .github/workflows/amplify.yml
 ---
@@ -61,7 +61,7 @@ on:
   pull_request: {}
   workflow_dispatch: {}
   push:
-    branches: ["master", "main"]
+    branches: ["main", "develop"]
 
 permissions:
   contents: read
@@ -71,10 +71,12 @@ jobs:
   amplify-security-scan:
     name: Amplify Security Scan
     runs-on: ubuntu-latest
-    if: (!github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]')
+    if: (github.event_name != 'pull_request' ||
+      github.repository_id == github.event.pull_request.head.repo.id) &&
+      github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Amplify Runner
         uses: amplify-security/runner-action@main
 ```
@@ -86,12 +88,12 @@ jobs:
 
 ## Configuration
 
-### Scanning branches other than `main` or `master`
+### Scanning branches other than `main` or `develop`
 
-By default, the Amplify workflow runs on all Pull Requests and on every push to the repository's 
-`main` or `master` branch. To run on any additional branches, add them to the list of branches
-in `.github/workflows/amplify.yml`. For example, we will modify the section below to also execute
-on the `develop` branch. Note that the change in syntax from the above YAML is simply for readability.
+By default, this Amplify workflow runs on all Pull Requests and on every push to the repository's
+`main` or `develop` branch. To run on any additional branches, add them to the list of branches in
+`.github/workflows/amplify.yml`. For example, we will modify the section below to also execute on
+the `staging` branch. Note that the change in syntax from the above YAML is simply for readability.
 
 ```yaml .github/workflows/amplify.yml
 ---
@@ -100,10 +102,9 @@ on:
   pull_request: {}
   workflow_dispatch: {}
   push:
-    # this is equivalent to '["master", "main", "develop"]'
+    # this is equivalent to '["main", "develop", "staging"]'
     branches:
-      - master
       - main
       - develop
+      - staging
 ```
-
