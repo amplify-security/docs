@@ -29,21 +29,6 @@
   "tabs": [],
   "anchors": [
     {
-      "name": "GitHub App",
-      "icon": "code-simple",
-      "url": "https://github.com/apps/amplify-security"
-    },
-    {
-      "name": "GitHub Action",
-      "icon": "circle-play",
-      "url": "https://github.com/marketplace/actions/amplify-runner-action"
-    },
-    {
-      "name": "GitLab Component",
-      "icon": "circle-play",
-      "url": "https://gitlab.com/amplify-security/components"
-    },
-    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://amplify.security/blog"
