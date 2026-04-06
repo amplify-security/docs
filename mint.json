@@ -29,21 +29,6 @@
   "tabs": [],
   "anchors": [
     {
-      "name": "GitHub App",
-      "icon": "code-simple",
-      "url": "https://github.com/apps/amplify-security"
-    },
-    {
-      "name": "GitHub Action",
-      "icon": "circle-play",
-      "url": "https://github.com/marketplace/actions/amplify-runner-action"
-    },
-    {
-      "name": "GitLab Component",
-      "icon": "circle-play",
-      "url": "https://gitlab.com/amplify-security/components"
-    },
-    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://amplify.security/blog"
@@ -54,24 +39,39 @@
       "group": "Get Started",
       "pages": [
         "introduction",
-        "quickstart",
-        "sample-project"
+        "install-console"
       ]
     },
     {
-      "group": "How-to Guides",
+      "group": "Amplify (Legacy Platform)",
       "pages": [
-        "guides/ignoring-vulns",
-        "guides/enable-comments"
-      ]
-    },
-    {
-      "group": "Integrations",
-      "pages": [
-        "integrations/github",
-        "integrations/gitlab"
+        "legacy/introduction",
+        "legacy/quickstart",
+        "legacy/sample-project",
+        {
+          "group": "How-to Guides",
+          "pages": [
+            "legacy/guides/ignoring-vulns",
+            "legacy/guides/enable-comments"
+          ]
+        },
+        {
+          "group": "Integrations",
+          "pages": [
+            "legacy/integrations/github",
+            "legacy/integrations/gitlab"
+          ]
+        }
       ]
     }
+  ],
+  "redirects": [
+    { "source": "/quickstart", "destination": "/legacy/quickstart" },
+    { "source": "/sample-project", "destination": "/legacy/sample-project" },
+    { "source": "/guides/ignoring-vulns", "destination": "/legacy/guides/ignoring-vulns" },
+    { "source": "/guides/enable-comments", "destination": "/legacy/guides/enable-comments" },
+    { "source": "/integrations/github", "destination": "/legacy/integrations/github" },
+    { "source": "/integrations/gitlab", "destination": "/legacy/integrations/gitlab" }
   ],
   "footerSocials": {
     "github": "https://github.com/amplify-security",

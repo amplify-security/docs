@@ -1,0 +1,59 @@
+---
+title: Installation
+description: 'Install Console on Linux or macOS.'
+---
+
+## Prerequisites
+
+- Linux or macOS (x86\_64 or arm64)
+- `curl` available in your `PATH`
+
+## Install
+
+Open a terminal and run the following command to launch the installer:
+
+```bash
+curl -sSf https://get-console.amplify.security | bash
+```
+
+The installer will download the latest release of Console from GitHub, verify its integrity,
+install it under your current user at `~/.local/bin/console` (or under a separately configured XDG
+path), and update your `PATH` if necessary in your shell's rc file.
+
+<Tip>
+  To install a specific version, pass the version tag as an argument:
+
+  ```bash
+  curl -sSf https://get-console.amplify.security | bash -s -- v1.2.3
+  ```
+</Tip>
+
+After installation, open a new terminal session (or `source` your shell's rc file) so that the updated
+`PATH` takes effect.
+
+## Configure API keys
+
+Console requires an Amplify API key, which you can obtain by going to [Profile > API
+keys](https://app.console.lab.amplify.security/console/profile/api-keys) from the web interface.
+
+Add the following to your `~/.bashrc` or `~/.zshrc`, then `source` the file or open a new terminal:
+
+```bash
+export AMPLIFY_API_KEY="<your-amplify-api-key>"
+```
+
+## Start a session
+
+Once your environment is configured, change to a directory containing one of your projects and start Console:
+
+```bash
+cd ~/src/hello-world
+console
+```
+
+This opens an interactive chat session with the AI agent. Try asking it one of the following:
+
+- Find and resolve any vectors for XSRF/XSS attacks within this project.
+- Are there any exposed service endpoints in this project that shouldn't be?
+
+or anything else may be relevant for your project.
