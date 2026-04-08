@@ -7,6 +7,9 @@
     "light": "#a64dff",
     "dark": "#b366ff"
   },
+  "fonts": {
+    "family": "Roboto, sans-serif"
+  },
   "favicon": "/favicon.svg",
   "navigation": {
     "anchors": [
