@@ -12,10 +12,19 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "anchors": [
+    "tabs": [
       {
-        "anchor": "Documentation",
-        "icon": "book-open",
+        "tab": "Amplify Console",
+        "icon": "terminal",
+        "global": {
+          "anchors": [
+            {
+              "anchor": "GitHub App (Preview)",
+              "href": "https://github.com/apps/console-lab",
+              "icon": "code-simple"
+            }
+          ]
+        },
         "groups": [
           {
             "group": "Get Started",
@@ -23,27 +32,52 @@
               "introduction",
               "install-console"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Amplify Dashboard (Legacy)",
+        "icon": "clock-rotate-left",
+        "global": {
+          "anchors": [
+            {
+              "anchor": "GitHub App",
+              "href": "https://github.com/apps/amplify-security",
+              "icon": "code-simple"
+            },
+            {
+              "anchor": "GitHub Action",
+              "href": "https://github.com/marketplace/actions/amplify-runner-action",
+              "icon": "circle-play"
+            },
+            {
+              "anchor": "GitLab Component",
+              "href": "https://gitlab.com/amplify-security/components",
+              "icon": "circle-play"
+            }
+          ]
+        },
+        "groups": [
           {
-            "group": "Amplify (Legacy Platform)",
+            "group": "Get Started",
             "pages": [
               "legacy/introduction",
               "legacy/quickstart",
-              "legacy/sample-project",
-              {
-                "group": "How-to Guides",
-                "pages": [
-                  "legacy/guides/ignoring-vulns",
-                  "legacy/guides/enable-comments"
-                ]
-              },
-              {
-                "group": "Integrations",
-                "pages": [
-                  "legacy/integrations/github",
-                  "legacy/integrations/gitlab"
-                ]
-              }
+              "legacy/sample-project"
+            ]
+          },
+          {
+            "group": "How-to Guides",
+            "pages": [
+              "legacy/guides/ignoring-vulns",
+              "legacy/guides/enable-comments"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "legacy/integrations/github",
+              "legacy/integrations/gitlab"
             ]
           }
         ]
@@ -51,11 +85,6 @@
     ],
     "global": {
       "anchors": [
-        {
-          "anchor": "GitHub App (Preview)",
-          "href": "https://github.com/apps/console-lab",
-          "icon": "code-simple"
-        },
         {
           "anchor": "Blog",
           "href": "https://amplify.security/blog",
