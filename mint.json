@@ -29,6 +29,11 @@
   "tabs": [],
   "anchors": [
     {
+      "name": "GitHub App (Preview)",
+      "icon": "code-simple",
+      "url": "https://github.com/apps/console-lab"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://amplify.security/blog"
