@@ -24,7 +24,7 @@
   ],
   "topbarCtaButton": {
     "name": "Sign In",
-    "url": "https://app.amplify.security"
+    "url": "https://app.console.lab.amplify.security/"
   },
   "tabs": [],
   "anchors": [
