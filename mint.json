@@ -24,10 +24,15 @@
   ],
   "topbarCtaButton": {
     "name": "Sign In",
-    "url": "https://app.amplify.security"
+    "url": "https://app.console.lab.amplify.security/"
   },
   "tabs": [],
   "anchors": [
+    {
+      "name": "GitHub App (Preview)",
+      "icon": "code-simple",
+      "url": "https://github.com/apps/console-lab"
+    },
     {
       "name": "Blog",
       "icon": "newspaper",
