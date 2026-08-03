@@ -1,0 +1,124 @@
+---
+title: Skills
+description: 'Package a procedure an agent loads on demand — and when to write one instead of an agent.'
+---
+
+## What a skill is
+
+A skill is a documented procedure an agent loads when it becomes relevant. It's a Markdown file with YAML
+frontmatter, same as an agent, but it isn't a participant: it has no model, no budget, and it never runs on
+its own. An agent calls `activate_skill` and the skill's instructions enter its context.
+
+The reason skills exist is context economy. A comprehensive scanner might know how to analyze twenty
+vulnerability classes, but loading all twenty procedures up front would crowd out the code it's supposed to
+be reading. Instead it loads the SQL-injection procedure when it's looking at a query, and the SSRF
+procedure when it's looking at an outbound request.
+
+## Skill or agent?
+
+| Write a **skill** when | Write an **agent** when |
+| --- | --- |
+| You're capturing *how to do one thing well* | You're defining *a job with its own output* |
+| An existing agent could follow your instructions | You need different tool permissions or a different model |
+| The procedure is only relevant sometimes | The work deserves its own budget and can be delegated to |
+| You want it available to many agents | You want to name it as a workflow step |
+
+When in doubt, start with a skill. It's cheaper — nothing to budget, nothing to orchestrate — and you can
+promote it to an agent later if it grows its own output.
+
+## Frontmatter reference
+
+| Key | Required | Type | What it does |
+| --- | --- | --- | --- |
+| `name` | Yes | string | How the skill is activated and listed. |
+| `description` | Yes | string, ≤500 chars | When to use this skill. Agents read it to decide whether to activate. |
+| `allowed-tools` | No | string[] | Tools the procedure expects. See the [tool reference](/harness/tool-reference). |
+| `license` | No | string | Optional license string. |
+| `compatibility` | No | object | `min-version` / `max-version` constraints. |
+| `metadata` | No | object | Free-form key/value data. |
+
+```markdown
+---
+name: ssrf-analysis
+description: Confirms or rules out server-side request forgery where user input reaches an outbound HTTP call. Use when a request URL, host, or path is influenced by request data.
+allowed-tools:
+  - shell
+  - code_lineage
+  - ripgrep_search
+---
+
+# SSRF analysis
+
+## Confirming
+
+1. Identify the outbound call and the client library in use.
+2. Trace the URL argument back to its source with `call_graph`.
+3. Establish whether an attacker controls the scheme, host, or path — not merely the query string.
+4. Check for an allow-list, a resolved-IP check, or a proxy that constrains the destination.
+
+## Ruling out
+
+Discard the candidate when the host is a compile-time constant, or when the only
+attacker-controlled portion is a path segment appended to a fixed host with no
+traversal possible.
+```
+
+Like an agent's, the `description` is load-bearing: it's what an agent reads when deciding whether this skill
+applies.
+
+## Built-in skills
+
+| Skill | What it does |
+| --- | --- |
+| `vulnerability-scan` | Uses natural-language policy descriptions to find vulnerabilities in application logic. |
+| `opengrep-rule-creator` | Authors OpenGrep rules for detecting a vulnerability or code pattern. |
+| `codeql-rule-creator` | Authors CodeQL queries for vulnerabilities, bug patterns, and code-quality issues. |
+| `policy-detection-creator` | Turns a security requirement into a stored natural-language [policy detection](/harness/detections). |
+
+The scanner agents also draw on an internal library of class-specific analysis skills, which is what
+distinguishes the `standard` and `comprehensive` [profiles](/harness/agent-library#scanning) from `basic`.
+
+## Where to author a skill
+
+<Warning>
+  Skills are authored in the **CLI** (as files) or through the API. Unlike agents and detections, there is no
+  skill editor in the web console today.
+</Warning>
+
+In the CLI, a skill is a file on disk:
+
+```
+~/.amplify/skills/<name>/SKILL.md    # available in every session
+./skills/<name>/SKILL.md             # project-local
+```
+
+Override those locations with `AMPLIFY_SKILLS_DIR`. Skills load at startup, so restart the CLI after adding
+one.
+
+A skill directory can hold supporting files — reference documents, example rules, helper scripts — next to
+`SKILL.md`, and the instructions can point the agent at them.
+
+## Using skills in the CLI
+
+| Command | What it does |
+| --- | --- |
+| `/skills` | Lists available skills and marks which are active. |
+| `/skill <name>` | Toggles a skill on or off for the session. |
+
+Toggling a skill on makes it available immediately, which is the fastest way to test one you're writing:
+edit the file, restart, activate, and give the agent a task that should trigger it.
+
+Agents also activate skills on their own via `activate_skill` — manual toggling is for pinning a procedure
+you specifically want followed.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Detections" icon="shield-check" href="/harness/detections">
+    Turn a procedure's results into a permanent rule.
+  </Card>
+
+  <Card title="The CLI" icon="terminal" href="/interactive/cli">
+    Where skills are authored and toggled.
+  </Card>
+</CardGroup>

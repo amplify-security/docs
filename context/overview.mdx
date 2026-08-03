@@ -1,0 +1,71 @@
+---
+title: Context
+description: 'The harness is only as good as what it can see — repositories, and the security tools you already run.'
+---
+
+## Why context is its own layer
+
+An agent that can't see your environment is guessing. Console's agents don't answer from a static index
+or a model's memory of open-source code — they read your actual files, run commands against your actual
+repository, and query the findings your existing tools have already produced.
+
+That means the quality of everything downstream depends on what you've connected.
+
+## Two kinds of context
+
+| Kind | What it gives the agent | Set up in |
+| --- | --- | --- |
+| **[Projects](/context/projects)** | Your code. The repositories Console clones and reads. | Projects |
+| **[Connections](/context/connections)** | Your source control provider, and signal from the security and IT vendors you already run. | Connections |
+
+Projects are what an agent reads *from disk*. Connections are what it queries *over the network* —
+including the pull request events that let a workflow fire on its own.
+
+<Note>
+  These are prerequisites, not optional extras. Chat can't analyze a repository that isn't connected, and
+  a workflow has nothing to run against without at least one project.
+</Note>
+
+## Two ways to direct it
+
+Having context isn't the same as using it. Console gives you an interactive path and a declarative one:
+
+- **[Chat](/interactive/chat)** — point an agent at something and ask. Best when you don't yet know what
+  you're looking for, or when the question is a one-off.
+- **[Workflows](/workflows/overview)** — declare the repositories, the agent chain, and where results go,
+  then let it run unattended. Best when the task is worth repeating.
+
+The usual progression is to explore a question in chat, and once the approach works, promote it to a
+workflow.
+
+## What accumulates
+
+As agents work, results collect in your organization rather than evaporating with the conversation:
+
+- **[Findings](/context/findings)** — confirmed issues, each with the agent's reasoning, the affected
+  code, and often a suggested fix.
+- **[Detections](/harness/detections)** — the rules you've built up, which later runs apply
+  automatically.
+
+Both become context in their own right. A finding can seed a new chat; detections turn a one-time
+discovery into a permanent check.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Connect a repository" icon="folder-tree" href="/context/projects">
+    Give agents code to read.
+  </Card>
+
+  <Card title="Connect your vendors" icon="plug" href="/context/connections">
+    Source control, plus the security stack you already run.
+  </Card>
+
+  <Card title="What agents can read" icon="database" href="/context/vendor-data">
+    Exactly what a connection exposes today.
+  </Card>
+
+  <Card title="Findings" icon="magnifying-glass" href="/context/findings">
+    Where confirmed results land.
+  </Card>
+</CardGroup>

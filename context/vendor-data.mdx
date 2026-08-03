@@ -1,0 +1,126 @@
+---
+title: What agents can read
+description: 'Exactly what a vendor connection exposes to an agent today — and what it does not.'
+---
+
+## The short version
+
+Once a vendor is connected, an agent can do two things: **discover your connections**, and **query
+normalized vulnerability findings** from them.
+
+That's the whole surface today. It's genuinely useful — it's what lets an agent triage an existing scanner
+backlog against your real code — but it's narrower than the connector catalog, so it's worth being precise
+before you design a workflow around it.
+
+## What an agent can do
+
+| Capability | Tool |
+| --- | --- |
+| List the connections configured for your organization | `list_leen_connections` |
+| Query vulnerability findings from a connection, with filters and pagination | `get_leen_vulnerability_findings` |
+| Fetch one vendor finding in full | `get_leen_vulnerability_finding` |
+
+An agent discovers connections first, then queries the one it wants — the same order you'd use by hand.
+
+### What a vendor finding carries
+
+Findings are **normalized**, so the shape is the same whether they came from Snyk, Semgrep, or an EDR:
+
+| Field | Notes |
+| --- | --- |
+| `title`, `description` | What the vendor reported |
+| `severity` | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, `INFO` |
+| `state` | `OPEN`, `CLOSED`, `REOPENED`, `IGNORED` |
+| `type` | The finding's classification |
+| `has_fix` | Whether a fix is available |
+| `remediation` | The vendor's suggested remediation |
+| `first_seen`, `last_seen` | Timestamps |
+| `product` | The product the finding belongs to |
+| `vulnerabilities` | Associated CVE knowledge-base entries |
+
+Filter by severity and state, restrict to findings that do or don't have a fix, and page through large
+result sets with a cursor. Heavier vendor-specific payloads are deliberately dropped — they'd crowd an
+agent's context without improving its reasoning.
+
+## What an agent cannot do
+
+<Warning>
+  The vendor surface is scoped to **vulnerability findings**. Connecting a vendor from another category
+  makes the connection available, but does not give agents a way to read that vendor's other data.
+</Warning>
+
+Concretely, today an agent **cannot**:
+
+- Read Jira or other ITSM issues, or create tickets in them
+- Read cloud or CSPM configuration state
+- Read identity provider users, groups, or policies
+- Read GRC controls or evidence
+- Write anything back to a vendor — update a finding's state, comment, or close it
+
+There is also no general-purpose outbound write tool. `web_fetch` performs reads only, with no request method
+or body, so an agent cannot use it to POST to a vendor API. Console's outbound writes go through
+[workflow outputs](/workflows/outputs), which today deliver to pull requests and GitHub checks.
+
+## What this is good for
+
+The one thing this surface does well is worth building on, because nothing else in your stack does it:
+**deciding which of your existing findings actually matter.**
+
+A scanner tells you a vulnerable function exists in a dependency. It usually can't tell you whether your code
+ever calls it. An agent with both your vendor findings *and* your source can:
+
+```
+Pull the open CRITICAL and HIGH findings from our Snyk connection. For each one,
+trace whether the vulnerable code path is actually reachable from an entrypoint in
+this repository. Report the reachable ones as findings and tell me which are noise.
+```
+
+That turns a backlog of hundreds into a list of the few that are real — using the vendor for breadth and the
+harness for judgment.
+
+Other things this supports well:
+
+- **Cross-referencing tools.** Ask whether two scanners agree, and where they disagree and why.
+- **Explaining a finding in context.** Take a terse vendor finding and have an agent explain what it means in
+  your codebase specifically.
+- **Prioritizing by real exposure** rather than by CVSS alone, by checking what's actually deployed and
+  reachable.
+
+## Using it in a workflow
+
+Because these are ordinary tools, an agent you write can use them in any workflow step. Grant the tools in
+[`allowed-tools`](/harness/writing-an-agent#allowed-tools-restricts-it-doesnt-grant) and describe the job:
+
+```markdown
+---
+name: backlog-triage
+description: Triages open vendor vulnerability findings against this repository's code and reports which are genuinely reachable.
+allowed-tools:
+  - shell
+  - ripgrep_search
+  - code_lineage
+  - list_leen_connections
+  - get_leen_vulnerability_findings
+  - report_finding
+---
+
+You triage an existing scanner backlog against real code.
+
+1. Call `list_leen_connections` to find the available connections.
+2. Query open findings at CRITICAL and HIGH severity.
+3. For each, locate the affected package or symbol in this repository and use
+   `call_graph` to determine whether it is reachable from an entrypoint.
+4. Report only the reachable ones with `report_finding`, citing the call path.
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Connect a vendor" icon="plug" href="/context/connections">
+    Browse the connector catalog.
+  </Card>
+
+  <Card title="Write an agent" icon="file-code" href="/harness/writing-an-agent">
+    Grant these tools and put them to work.
+  </Card>
+</CardGroup>

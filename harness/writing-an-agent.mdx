@@ -1,0 +1,144 @@
+---
+title: Writing an agent
+description: 'The AGENT.md format — YAML frontmatter plus a Markdown body — and every field it accepts.'
+---
+
+## The format
+
+An agent is a Markdown document with two parts:
+
+1. **YAML frontmatter** — the machine-readable declaration: name, model, tool permissions, budgets.
+2. **A Markdown body** — the agent's instructions. This becomes its system prompt.
+
+```markdown
+---
+name: dependency-auditor
+description: Audits third-party dependencies for known-vulnerable versions and unmaintained packages, and reports each one as a finding.
+model: anthropic/claude-sonnet-4-6
+allowed-tools:
+  - shell
+  - ripgrep_search
+  - web_fetch
+  - report_finding
+---
+
+You audit third-party dependencies.
+
+## Workflow
+
+1. Locate every manifest and lockfile in the repository.
+2. For each direct dependency, determine the resolved version.
+3. Flag versions with known advisories, and packages with no release in over two years.
+4. Report each one with `report_finding`, citing the manifest path and the resolved version.
+
+## Rules
+
+- Report the resolved version from the lockfile, never the range from the manifest.
+- Do not report transitive dependencies unless the advisory is critical.
+```
+
+That's the entire contract. No build step, no registration.
+
+## Frontmatter reference
+
+| Key | Required | Type | What it does |
+| --- | --- | --- | --- |
+| `name` | Yes | string | How the agent is referenced — by workflow steps and by `spawn_agent`. Must be unique. |
+| `description` | Yes | string, ≤500 chars | What this agent does. **Load-bearing** — see below. |
+| `model` | No | string | Which model to run. Omit to inherit the default. |
+| `allowed-tools` | No | string[] | Restricts the agent to these tools. Omit to inherit. |
+| `maxIterations` | No | positive int | Budget of reasoning↔tool cycles before the agent is stopped. |
+| `timeout` | No | positive int (ms) | Wall-clock limit for one execution. |
+| `sequential-spawns` | No | boolean | Rejects concurrent `spawn_agent` calls, forcing one child at a time. |
+
+### `description` is not a comment
+
+The description does real work at runtime. When a workflow runs your agent, the orchestrator reads the
+description to compose that step's briefing, and reflects the agent's stated role back at it. Other agents
+deciding whether to delegate also see only the name and description.
+
+A vague description produces a vague briefing. Write it as a precise statement of what the agent does and
+what it produces:
+
+```yaml
+# Good — states the job and the output
+description: Audits third-party dependencies for known-vulnerable versions and unmaintained packages, and reports each one as a finding.
+
+# Too vague to brief against
+description: Dependency helper.
+```
+
+### `allowed-tools` restricts, it doesn't grant
+
+Listing a tool doesn't create capability that doesn't exist — it narrows the agent to a subset of what the
+harness already offers. See the [tool reference](/harness/tool-reference) for valid names.
+
+Restricting tools is a real design technique, not just hygiene. An agent that shouldn't modify code should
+not be given `shell`, and a verifier that must stay honest should not be given the ability to report
+findings. Console's own `policy-fix-verifier` works this way: it is deliberately read-only so its verdict
+can't be self-serving.
+
+### Budgets: `maxIterations` and `timeout`
+
+Both are ceilings, not targets. Leave them unset unless the agent is an outlier.
+
+- Raise `maxIterations` for agents that legitimately need many tool calls — a broad scan across a large
+  repository.
+- Raise `timeout` for **orchestrators**, whose wall clock includes every child they spawn. Set it above the
+  worst-case sum of the children's durations.
+
+### `sequential-spawns`
+
+By default an agent may spawn several sub-agents at once. Setting `sequential-spawns: true` makes a second
+concurrent spawn return an error instead of queuing, which forces the agent to observe each child's result
+before starting the next.
+
+Use it for orchestrators whose steps depend on each other. It applies only to the agent that declares it —
+children are free to fan out.
+
+## Writing one in the web console
+
+Open **Agents** and create an agent. The editor is a Markdown editor with:
+
+- **Frontmatter linting** — malformed YAML is flagged as you type.
+- **A model picker** — selecting a model rewrites the `model:` line in place, so what you see in the
+  frontmatter is always what will run.
+- **Folders** — organize agents as the list grows.
+
+Your organization's agents appear in the [workflow agent picker](/workflows/create-a-workflow#agents)
+next to the built-in ones.
+
+## Writing one in the CLI
+
+The CLI loads agent definitions from the filesystem, so an agent is just a file:
+
+```
+~/.amplify/agents/<name>/AGENT.md    # available in every session
+./agents/<name>/AGENT.md             # project-local
+```
+
+Override those locations with `AMPLIFY_AGENTS_DIR`. Definitions load at startup, so restart the CLI after
+adding one.
+
+## Shadowing a built-in agent
+
+Give your agent the same `name` as one Console ships and yours takes precedence. This is the supported way
+to change built-in behavior — a workflow step referencing that name keeps working and picks up your
+version.
+
+<Tip>
+  Start by copying the built-in agent you want to change, editing the body, and keeping the name. You
+  inherit a working structure and only change what you meant to.
+</Tip>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Tool reference" icon="wrench" href="/harness/tool-reference">
+    Valid `allowed-tools` values and what each does.
+  </Card>
+
+  <Card title="The agent library" icon="books" href="/harness/agent-library">
+    Built-in agents worth reading as examples.
+  </Card>
+</CardGroup>

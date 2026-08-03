@@ -1,0 +1,102 @@
+---
+title: The agent chain
+description: 'How workflow steps run in sequence, pass results forward, and how to order them.'
+---
+
+## How the chain runs
+
+The agents you add to a workflow form an ordered chain. When a run starts, an orchestrating agent takes your
+workflow definition and drives it:
+
+1. It reads your **description** as the goal of the whole workflow.
+2. It walks the chain **in declared order**, spawning one agent at a time.
+3. For each step it composes a briefing from the workflow's intent, that agent's role, what triggered the run
+   (for a pull-request run: the PR number, head and base commits, the diff), and the relevant parts of earlier
+   steps' results.
+4. It **waits** for each step to finish before starting the next.
+5. When every step succeeds, it writes a short summary of what each step did and how the results chained
+   together.
+
+Steps never run in parallel. That's the point of a chain — each step gets to see what the previous one
+produced.
+
+<Note>
+  If a step fails, the run **stops immediately** and later steps do not run. Workflow steps do not retry by
+  default. Design chains so the expensive, broad step comes first and the steps that depend on it come after.
+</Note>
+
+## Passing results between steps
+
+You don't wire inputs and outputs together by hand. Each agent returns a summary of what it did, and the
+orchestrator quotes the relevant parts of that summary into later steps' briefings verbatim.
+
+In practice this means a two-step chain works because the second agent is *told* what the first one found —
+for example, a scanner reports findings to a manifest, and the next agent is briefed on where that manifest is
+and what's in it.
+
+What this does **not** do is let you transform or filter results between steps. If you need different
+handling, that belongs inside an agent, not between them.
+
+## The briefing is why descriptions matter
+
+Two descriptions shape every step's briefing:
+
+- **The workflow's description** — quoted as the overall intent.
+- **Each agent's `description`** — reflected back at the agent to confirm its role.
+
+A vague description on either produces a vague briefing. This is the most common reason a chain
+underperforms, and it's usually fixed by editing prose rather than by changing agents. See
+[writing an agent](/harness/writing-an-agent#description-is-not-a-comment).
+
+## Choosing agents
+
+Any agent can be a step — Console's or your own. Your organization's agents appear in the picker alongside the
+built-in ones, and the orchestrator treats them identically.
+
+- For what ships with Console and what each is for, see [the agent library](/harness/agent-library).
+- To write your own, see [writing an agent](/harness/writing-an-agent).
+
+A few agents in the library are designed to be spawned *by* other agents rather than used as steps directly —
+[noted here](/harness/agent-library#agents-spawned-by-other-agents).
+
+## Ordering
+
+The rules of thumb:
+
+- **Broad before narrow.** Discover first, then act on what was discovered.
+- **Expensive before dependent.** If a step fails, everything after it is skipped — so put the step most
+  likely to fail where it costs least.
+- **One step is a valid chain.** A single scanner plus an [output](/workflows/outputs) is a complete, useful
+  workflow. Don't add steps for symmetry.
+
+## Common chains
+
+| Goal | Chain |
+| --- | --- |
+| Fast pull request check | `vulnerability-scanner-basic` |
+| Standard pull request review | `vulnerability-scanner-standard` |
+| Turn findings into permanent rules | `vulnerability-scanner-standard` → `detection-author` |
+| Apply everything you've already vetted | `detections-runner` |
+| Deep audit | `vulnerability-scanner-comprehensive` → `security-analyzer` |
+
+## Editing a chain
+
+In the workflow editor the chain is drawn left to right as pills with arrows:
+
+- **Add** with the **+** button, which searches the agent library.
+- **Reorder** by dragging a pill.
+- **Remove** via the grip icon on a pill.
+
+Between 1 and 20 steps.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="The agent library" icon="books" href="/harness/agent-library">
+    What's available to chain.
+  </Card>
+
+  <Card title="Configure outputs" icon="arrow-right" href="/workflows/outputs">
+    Deliver what the chain produces.
+  </Card>
+</CardGroup>

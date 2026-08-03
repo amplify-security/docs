@@ -1,0 +1,99 @@
+---
+title: Findings
+description: 'Confirmed issues with the agent’s reasoning, the affected code, and often a ready-to-merge fix.'
+---
+
+## What a finding is
+
+A finding is a vulnerability an agent has confirmed and recorded. It's the durable output of agent work —
+what survives after the conversation or run is over.
+
+Every finding carries:
+
+- **Where** — the affected file, and the symbol it's anchored to
+- **What** — the vulnerability, its classification, and severity
+- **Why** — the agent's reasoning for believing it's genuinely exploitable
+- **The fix** — a suggested patch, when one was generated
+- **Provenance** — the run that produced it, and the [detection](/harness/detections) behind it if there was one
+
+The reasoning is the part worth reading. A pattern match tells you a shape appeared; a finding tells you why
+the agent believes an attacker can actually reach it. That's what makes it triageable.
+
+## Where findings come from
+
+| Source | How |
+| --- | --- |
+| **Workflow runs** | A scanner or detections step confirms an issue and calls `report_finding` |
+| **Chat** | An agent investigating on your behalf records what it confirms |
+| **Detections** | A stored rule matches, and the finding links back to the rule |
+| **The CLI** | Local scans record findings, and sync to your organization when authenticated |
+
+## Deduplication
+
+Findings are deduplicated per project by identity. The same issue rediscovered on a later run updates the
+existing finding rather than creating a second one, so a long-lived issue doesn't inflate your counts and run
+history stays readable.
+
+Findings are anchored to a **symbol** rather than only a line number, so a finding survives edits that shift
+line numbers around it.
+
+## Closing the loop
+
+Two actions on a finding detail page turn a report into progress.
+
+### Accepting a fix
+
+When a finding has a generated patch, the suggested fix section can open a pull request with that patch
+applied. You review it like any other pull request.
+
+<Note>
+  Accepting a fix opens pull requests through the GitHub API, so it requires a GitHub-connected project.
+  Other providers can't do this yet, and the action is unavailable when a project has no code host connected.
+</Note>
+
+Patches aren't guesses. The agent that generated one edited the file, re-ran the detection to confirm the
+match was gone, and captured the resulting diff — for policy detections, an independent read-only verifier
+judged the result. You're reviewing a change that has already been checked, not a proposal.
+
+### Starting a chat
+
+**Start a chat** opens a session with the finding's context already loaded — the affected code, the agent's
+reasoning, and the generated patch if there is one. You type your question in the same step.
+
+Use it to ask the things a report can't anticipate: *is this actually reachable in production?*, *what else
+in this codebase has the same problem?*, *why is this the right fix?*
+
+The session is titled after the finding's file and line, so it's easy to find later.
+
+<Note>
+  This also requires a project connected to a code host — the agent needs to load the code to answer.
+</Note>
+
+## From finding to detection
+
+The highest-leverage move on a finding is turning it into a rule. A finding is one instance; a
+[detection](/harness/detections) catches the whole class from then on, in every repository, without an agent
+re-deriving it.
+
+Ask in chat, or add [`detection-author`](/harness/agent-library#detections) as a workflow step to do it
+automatically for every finding a scan produces.
+
+## Delivering findings automatically
+
+Findings don't have to be pulled — a workflow can push them where your team already works:
+
+- [Comment on the triggering pull request](/workflows/outputs#comment-on-triggering-pull-request), with links
+  back to the full finding.
+- [Gate merging](/workflows/outputs#gate-merging-on-security-review) until review passes or a human approves.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Turn findings into rules" icon="shield-check" href="/harness/detections">
+    Catch the class, not the instance.
+  </Card>
+
+  <Card title="Deliver them automatically" icon="arrow-right" href="/workflows/outputs">
+    Comments and merge gates.
+  </Card>
+</CardGroup>

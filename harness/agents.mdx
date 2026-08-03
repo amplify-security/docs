@@ -1,0 +1,91 @@
+---
+title: Agents
+description: 'What an agent is, how it runs, and how agents delegate to each other.'
+---
+
+## What an agent is
+
+An agent is a participant in the harness: a model, a set of tools it may call, a budget, and a body of
+instructions. Give it a task and it works until the task is done or the budget runs out.
+
+Unlike a scanner, an agent decides what to do next based on what it just learned. It reads a file, notices a
+suspicious call, traces the caller, runs a command to check a hypothesis, and either confirms or discards it.
+That loop — reason, act, observe, reason again — is what makes agents suited to security work, where the
+interesting questions are about *whether* something is reachable rather than *whether* a pattern appears.
+
+## How a run proceeds
+
+1. **The agent receives a task.** In chat that's your message; in a workflow it's a briefing composed by the
+   orchestrator.
+2. **It reasons and calls tools.** Each call returns a result it reads before deciding the next step.
+3. **It may load a skill** with `activate_skill` when it hits a task a documented procedure covers.
+4. **It may delegate** with `spawn_agent`, handing focused work to a child and waiting for the summary.
+5. **It records durable results** — findings, patches, detections — rather than only replying in prose.
+6. **It stops** when the task is done, the budget is exhausted, or it's cancelled.
+
+Everything an agent does in step 2 is bounded by the [tool surface](/harness/tool-reference).
+
+## Budgets
+
+Two ceilings keep a run from going forever, both settable per agent:
+
+- **`maxIterations`** — how many reasoning↔tool cycles it may take.
+- **`timeout`** — wall-clock milliseconds for the whole execution.
+
+For an orchestrator, `timeout` covers every child it spawns, so it must exceed the worst-case sum of their
+durations. Leave both unset unless the agent is genuinely an outlier.
+
+## Delegation and agent trees
+
+An agent can spawn sub-agents, and those can spawn their own, forming a tree. This exists for two reasons:
+
+- **Focus.** A child starts with a clean context scoped to one job, so a broad scan doesn't drown in detail
+  from the first file it opened.
+- **Parallelism.** Independent work runs concurrently — one evaluator per detection, one patch generator per
+  file.
+
+A child returns a **summary**, not its full transcript. The parent sees the conclusion and quotes it forward.
+This is why an agent's `description` and its final summary both matter so much: they're the interface
+between agents.
+
+You can watch the tree live — as a nested view in the CLI, and in the web console's chat while a turn runs.
+
+### Forcing sequential delegation
+
+Set [`sequential-spawns: true`](/harness/writing-an-agent#sequential-spawns) when steps depend on each other
+and the agent must see one result before starting the next. Console's `workflow-runner` uses exactly this to
+guarantee workflow steps run in order.
+
+## Where agents come from
+
+| Source | Description |
+| --- | --- |
+| **Platform agents** | The library Console ships. See [the agent library](/harness/agent-library). |
+| **Organization agents** | Agents your team writes, in the web console or the CLI. |
+
+Both appear together wherever agents are listed, and the workflow orchestrator treats them identically. An
+organization agent whose `name` matches a platform agent **shadows** it — the supported way to customize
+built-in behavior.
+
+## When to write your own
+
+Reach for a new agent when:
+
+- The task is a distinct job with its own output — "audit dependencies", "review IaC for public exposure".
+- You want different tool permissions, like a read-only reviewer that can't modify code.
+- You want a different model for cost or depth reasons.
+
+Prefer a [skill](/harness/skills) instead when you're capturing *how to do one thing well* and an existing
+agent could follow it. Skills are cheaper: no separate budget, no separate model, loaded only when relevant.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Write an agent" icon="file-code" href="/harness/writing-an-agent">
+    The frontmatter reference.
+  </Card>
+
+  <Card title="Chain them" icon="workflow" href="/workflows/agent-chain">
+    Sequence agents into a workflow.
+  </Card>
+</CardGroup>

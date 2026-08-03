@@ -1,0 +1,126 @@
+---
+title: Outputs
+description: 'Post workflow results back to a pull request, and block merging until security review passes.'
+---
+
+## What an output does
+
+An output is a destination for a run's results. When a run completes, Console dispatches every output
+you've configured. Outputs are optional — without one, a run still records its findings in Console;
+it just doesn't push them anywhere.
+
+Add them from the **Output** section of the workflow editor. You can add one of each destination type,
+but not two of the same kind.
+
+Both destinations act on *the pull request that triggered the run*, so they only do something for runs a
+pull request started. On a manual run they're recorded as skipped.
+
+## Comment on triggering pull request
+
+Posts the run's findings as review comments on the pull or merge request that fired the workflow, with
+links back to the full finding in Console.
+
+This works for both GitHub pull requests and GitLab merge requests.
+
+Use it when you want the agent's results to show up where reviewers already are, without changing
+whether the pull request can merge.
+
+## Gate merging on security review
+
+Adds a **required check** to the pull request that blocks merging until the security review passes or a
+human signs off. This is the output to use when you want the workflow to have teeth.
+
+### The check
+
+The check is named:
+
+```
+Console / <your workflow name>
+```
+
+Its details link points at the run in Console, so anyone looking at a blocked pull request can click
+through to what the agent actually found.
+
+<Warning>
+  Because the check name is derived from the workflow name, Console **locks the workflow name** while a
+  merge gate output exists. If you rename it, the check reports under a new name, and any branch
+  protection rule pinned to the old name waits forever for a check that will never arrive. To rename:
+  remove the merge gate output, save, rename, then add the gate back.
+</Warning>
+
+### How the gate decides
+
+| Outcome | Check result | What it means |
+| --- | --- | --- |
+| Agent's verdict is **pass** | Passing | Security review passed. Merging is unblocked. |
+| Agent's verdict is **fail** | Failing | Review failed. Push a commit addressing the findings. |
+| Agent asks for **human review** | Action required | The agent isn't confident enough to decide. A human approval releases it. |
+| **No verdict recorded** | Action required | The gate fails safe. A human approval releases it. |
+| The run **errored** | Failing | Merging stays blocked — a broken run is never treated as a pass. |
+
+The gate fails closed by design. A workflow whose agents don't report a gate verdict will block every
+pull request pending human review, rather than waving them through.
+
+<Note>
+  For the gate to pass on its own, your chain needs an agent that records a gate verdict. If none does,
+  the gate still works — it just always routes to human approval instead of ever passing automatically.
+</Note>
+
+### Human approval
+
+Approving the pull request releases a gate that's waiting on human review, and the check flips to
+passing. This also works retroactively: if someone approved the pull request before the gate finished
+posting, Console resolves the gate as approved rather than leaving an already-approved pull request
+stuck.
+
+By default, later requesting changes on a pull request whose gate was already approved does not
+re-block it.
+
+### Requiring the check in GitHub
+
+Adding the output makes the check *report*. It doesn't make it *required* — that's a GitHub branch
+protection setting you control:
+
+1. In GitHub, go to **Settings → Branches** (or **Rules → Rulesets**) for the repository.
+2. Edit the rule protecting your target branch, e.g. `main`.
+3. Enable **Require status checks to pass before merging**.
+4. Search for `Console / <your workflow name>` and add it.
+
+<Tip>
+  Let the workflow run on one pull request first. GitHub only offers a check in that search box once it
+  has seen it report at least once.
+</Tip>
+
+Until you complete this step the check appears on pull requests as information only, and merging isn't
+actually blocked.
+
+### GitLab
+
+Merge blocking isn't supported for GitLab merge requests yet. A merge gate on a GitLab run is recorded
+as skipped. Use **Comment on triggering pull request** for GitLab in the meantime.
+
+## Checking delivery
+
+Every run's detail page lists the outputs it dispatched and whether each was delivered:
+
+| Status | Meaning |
+| --- | --- |
+| **Sent** | Delivered successfully. |
+| **Failed** | Delivery failed — for example, Console lacks permission on the repository. |
+| **Skipped** | Not applicable to this run, such as a pull request comment on a manually-fired run. |
+| **Pending** | Delivery hasn't completed yet. |
+
+If an output shows **Failed**, check that the Console GitHub App is still installed for the repository
+and has permission to write checks and pull request comments.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Run and monitor" icon="circle-play" href="/workflows/running">
+    Fire a run and confirm your outputs delivered.
+  </Card>
+
+  <Card title="Configure triggers" icon="bolt" href="/workflows/triggers">
+    Outputs need a pull-request run to act on.
+  </Card>
+</CardGroup>

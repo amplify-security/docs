@@ -1,0 +1,126 @@
+---
+title: Detections
+description: 'Reusable rules that outlive any one conversation — OpenGrep patterns and natural-language policies.'
+---
+
+## Why detections exist
+
+A finding describes one moment: this file, this commit, this vulnerability. A **detection** is the rule
+behind it, and it keeps checking forever.
+
+This is the difference between an agent that's useful once and a platform that compounds. When an agent
+confirms a vulnerability, the valuable output isn't only the fix — it's the rule that catches the same
+mistake in every repository from then on, cheaply, without an agent having to re-derive it.
+
+## Detection types
+
+| Type | Format | What it's good at |
+| --- | --- | --- |
+| **OpenGrep rule** | YAML | Structural patterns with a known shape — a dangerous API, a missing flag, a taint path from source to sink. Fast and deterministic. |
+| **Policy** | Natural language | Intent that resists pattern matching — "every endpoint that mutates data must check authorization", "no service may log request bodies". Evaluated by an agent. |
+| **CodeQL query** | QL | Deep dataflow queries. See the limitation below. |
+
+<Warning>
+  **CodeQL detections can be authored but are not yet executed.** Only OpenGrep and policy detections have
+  runtimes today; `detections-runner` stores other types and skips them with a note. The
+  `codeql-rule-creator` skill and the editor's CodeQL support exist so the rules are ready when execution
+  lands.
+</Warning>
+
+### OpenGrep rules
+
+OpenGrep rules support two modes:
+
+- **`search`** — match a pattern. Use `pattern`, `patterns`, `pattern-either`, or `pattern-regex`.
+- **`taint`** — track data flow. Declare `pattern-sources`, `pattern-sinks`, and optionally
+  `pattern-sanitizers`; a match is a source reaching a sink with nothing neutralizing it in between.
+
+Taint mode is the one that earns its keep for security work, because it encodes *reachability* rather than
+mere presence.
+
+Rules carry a severity of `INFO`, `WARNING`, or `ERROR`, and OpenGrep filters by the rule's own `languages`
+field at run time — so an irrelevant rule exits cheaply rather than wasting a pass.
+
+### Policy detections
+
+A policy is a security requirement written in plain language. At run time, `detections-runner` spawns a
+`policy-evaluator` per policy, bound to that detection so every finding links back to it.
+
+Policies are the right tool when the rule is about intent — business logic, authorization, data handling —
+where no pattern captures the requirement and a human reviewer would need to reason about the code.
+
+## Fields that matter
+
+| Field | Values | What it does |
+| --- | --- | --- |
+| **Status** | `TEST`, `PRODUCTION` | Whether the detection is still being evaluated or is trusted. Promote once its results hold up. |
+| **Severity** | `critical`, `high`, `medium`, `low` | How serious a match is. |
+| **Disposition** | `flag`, `escalate` | What should happen on a match — record it, or escalate it. |
+| **Tags** | free-form | Grouping and filtering. |
+| **Project** | optional | Scopes the detection to one repository. Unset means it applies organization-wide. |
+
+### The test-to-production lifecycle
+
+New detections start at `TEST`. Run them, review what they catch, tune the rule, and promote to
+`PRODUCTION` when the signal is trustworthy.
+
+This exists because a noisy detection is worse than no detection — it trains your team to ignore results.
+Keeping unproven rules visibly in `TEST` lets you build the library without eroding trust in it.
+
+## Where detections come from
+
+| Source | Meaning |
+| --- | --- |
+| `manual` | Authored by a person, or by an agent on request. |
+| `risk-register` | Compiled from your organization's risk register. |
+| `threat-model` | Compiled from a threat model. |
+
+Compiled detections keep provenance back to the upstream document, so a rule can be traced to the
+requirement that motivated it.
+
+## Authoring a detection
+
+**In the web console.** Open **Detections** and create one. The editor syntax-highlights by type — YAML for
+policies, Markdown with YAML frontmatter for rule types — and labels the language in the header. Customer
+types the UI doesn't recognize still render with a generic label rather than breaking.
+
+**With an agent.** Often the better path, because agents can validate as they go:
+
+- `opengrep-rule-creator` writes and checks an OpenGrep rule.
+- `policy-detection-creator` turns a requirement into a stored policy.
+- `detection-author` reads a scan's findings and authors a detection for each — the automated version of
+  the same loop.
+
+Ask in [chat](/interactive/chat): *"Write an OpenGrep rule that catches this pattern and store it as a test
+detection."*
+
+## Running detections
+
+Add [`detections-runner`](/harness/agent-library#detections) as a workflow step. It lists every stored
+detection, triages which apply, and dispatches by type — OpenGrep rules directly, policies via one child
+evaluator each. Findings link back to the detection that produced them, so you can see which rules are
+earning their place.
+
+Its bias is deliberate: it dispatches when in doubt, because a detection that never ran is worse than a
+wasted pass.
+
+## The compounding loop
+
+1. An agent confirms a vulnerability in [chat](/interactive/chat) or a workflow run.
+2. `detection-author` — or you — turns it into a detection, at `TEST`.
+3. You review what it catches and promote it to `PRODUCTION`.
+4. A `detections-runner` workflow applies it on every pull request from then on.
+
+Step 4 is cheap and repeatable. That's the payoff for the reasoning spent in step 1.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Run them in a workflow" icon="workflow" href="/workflows/create-a-workflow">
+    Add `detections-runner` to a chain.
+  </Card>
+
+  <Card title="Findings" icon="magnifying-glass" href="/context/findings">
+    What a detection produces when it matches.
+  </Card>
+</CardGroup>

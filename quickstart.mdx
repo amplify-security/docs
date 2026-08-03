@@ -1,0 +1,127 @@
+---
+title: Quickstart
+description: 'Connect a repository, ask an agent a question, and turn the answer into automation.'
+---
+
+This walks through all three layers of Console in one pass: connect **context**, use the **harness**
+interactively, then automate it as a **workflow**. Budget about twenty minutes.
+
+## 1. Connect a repository
+
+Sign in to the web console and open **Connections**. Install the Console GitHub App for your organization,
+granting access to at least one repository you're comfortable experimenting on.
+
+The repositories you grant appear under **Projects**. That's your context — the code agents can read.
+
+<Tip>
+  Pick a real repository rather than an empty one. Agents reason about actual code, so a repository with real
+  application logic gives you a far better sense of what Console does.
+</Tip>
+
+## 2. Ask an agent something
+
+Open **Console** in the sidebar and start a new chat. Ask a question about the repository you just connected:
+
+> Look at this repository and tell me where user input reaches a database query without parameterization.
+
+Watch what happens. The agent clones the repository, reads files, searches, and traces call paths — and you
+see each tool call as it runs. This is the difference between an agent and a scanner: it's deciding what to
+look at next based on what it just found.
+
+Try following up. *Is that actually reachable from an HTTP handler?* The agent investigates rather than
+re-answering from memory.
+
+If it confirms something, it records a [finding](/context/findings) — durable, with its reasoning attached.
+
+## 3. Write an agent
+
+The built-in library covers a lot, but the harness is most useful when the agents are yours. Open **Agents**
+and create one:
+
+```markdown
+---
+name: secrets-auditor
+description: Finds credentials, API keys, and tokens committed to the repository, and reports each one as a finding with the file and line.
+model: anthropic/claude-sonnet-4-6
+allowed-tools:
+  - shell
+  - ripgrep_search
+  - report_finding
+---
+
+You audit a repository for committed secrets.
+
+1. Search for common credential patterns — API keys, private keys, connection
+   strings, bearer tokens.
+2. For each candidate, read the surrounding code to judge whether it's a real
+   credential or a placeholder, test fixture, or example.
+3. Report only real credentials with `report_finding`, citing file and line.
+
+Do not report obvious placeholders (`xxx`, `changeme`, `example.com`), values
+clearly loaded from the environment, or anything under a fixtures directory.
+```
+
+Save it. That's a working agent — YAML frontmatter declaring its name, model, and tools, plus instructions as
+the body. See [writing an agent](/harness/writing-an-agent) for every field.
+
+## 4. Automate it
+
+Open **Workflows** and click **New workflow**.
+
+| Field | What to enter |
+| --- | --- |
+| **Name** | `Secrets check` |
+| **Description** | `Audit pull requests for committed credentials and comment on anything found.` |
+| **Triggers** | Add **On pull requests**, and select your repository |
+| **Agents** | Add `secrets-auditor` |
+| **Output** | Add **Comment on triggering pull request** |
+
+Click **Save**.
+
+The description isn't decoration — Console's orchestrator reads it as the goal and briefs your agent against
+it. Write it as an instruction, not a label. See [create a workflow](/workflows/create-a-workflow#description).
+
+## 5. Run it
+
+Click **Run workflow**, select your repository, and leave the git ref empty to use the default branch.
+
+Console provisions a sandbox, clones the repository, and runs your agent. Click **View runs** to watch the
+chain: each step shows status and duration as it completes, and the run page lists findings and output
+deliveries when it's done.
+
+Your pull request trigger is live too — open a pull request in that repository and the workflow fires on its
+own, against the pull request's head.
+
+<Note>
+  The **Comment on triggering pull request** output only acts on pull-request runs, so it's skipped on the
+  manual run you just did. Open a pull request to see it deliver.
+</Note>
+
+## What you just built
+
+- **Context** — a connected repository agents can read
+- **Harness** — your own agent, defined in YAML frontmatter and Markdown
+- **Workflow** — that agent running automatically on every pull request, reporting to your team
+
+Each layer is replaceable independently. Swap the agent, add a step, change where results go — the rest keeps
+working.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="The Harness" icon="wrench" href="/harness/overview">
+    Skills, detections, and the full tool surface.
+  </Card>
+
+  <Card title="Triage an existing backlog" icon="database" href="/context/vendor-data">
+    Connect a scanner and find what's actually reachable.
+  </Card>
+
+  <Card title="Gate merges on review" icon="shield-check" href="/workflows/outputs#gate-merging-on-security-review">
+    Block merging until security review passes.
+  </Card>
+
+  <Card title="Install the CLI" icon="terminal" href="/install-console">
+    Run the same agents on local, uncommitted code.
+  </Card>
+</CardGroup>

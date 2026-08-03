@@ -1,0 +1,79 @@
+---
+title: The Harness
+description: 'Console supplies the loop; you supply the domain logic as agents, skills, and detections.'
+---
+
+## What "harness" means
+
+Console runs an agentic loop: a model reasons, calls tools, reads the results, and reasons again, inside
+an isolated environment with access to your code. Building that loop — the orchestration, the tool
+implementations, the sandboxing, the sub-agent delegation, the event streaming — is Console's job.
+
+Deciding *what the loop should do* is yours. Console exposes three authorable primitives for that, and
+everything else in the product is built on top of them.
+
+| Primitive | What it is | Format | Authored in |
+| --- | --- | --- | --- |
+| **[Agent](/harness/agents)** | A participant that reasons, calls tools, and can delegate | Markdown + YAML frontmatter | Web console, CLI |
+| **[Skill](/harness/skills)** | A procedure an agent loads on demand | Markdown + YAML frontmatter | CLI, API |
+| **[Detection](/harness/detections)** | A rule that can be run repeatedly against code | OpenGrep YAML, or a natural-language policy | Web console, CLI |
+
+The distinction between them is worth getting right, because it's the most common early mistake:
+
+- An **agent** is *who* is working. It has its own model, tool permissions, and budget.
+- A **skill** is *how* to do one thing well. It has no budget of its own — an agent loads it when the
+  task calls for it.
+- A **detection** is *what* to look for. It's the durable artifact: a finding describes one moment, a
+  detection keeps checking forever.
+
+## Yours are first-class
+
+Console ships a library of agents, skills, and detections. Anything you write sits alongside them with no
+second-class status — the orchestrator that runs workflows treats platform and organization agents
+identically, briefing both from their stated `description`.
+
+An agent you write with the same name as a built-in one **shadows** it. That's the supported way to
+customize built-in behavior without breaking workflows that already reference that name.
+
+## The tool surface is the ceiling
+
+An agent can only do what some tool lets it do. However you word its instructions, its real capabilities
+are the union of the tools it's allowed to call — reading and writing files, running commands, querying
+code structure, scanning, fetching a URL, reading your vendors' findings, recording results, and spawning
+sub-agents.
+
+This is the single most useful thing to internalize before writing an agent, because it tells you which
+tasks are achievable and which aren't. The full inventory is in the
+[tool reference](/harness/tool-reference).
+
+## How the pieces run together
+
+A realistic chain uses all three primitives at once:
+
+1. A **workflow** step spawns your **agent**.
+2. The agent **activates a skill** for the vulnerability class it's investigating.
+3. It runs stored **detections** against the repository.
+4. It records **findings**, and optionally a patch.
+5. A workflow **output** posts the result to the pull request.
+
+Each layer is replaceable. That's the point of a harness.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Write an agent" icon="file-code" href="/harness/writing-an-agent">
+    The frontmatter reference and the editor.
+  </Card>
+
+  <Card title="Tool reference" icon="wrench" href="/harness/tool-reference">
+    Everything an agent can actually do.
+  </Card>
+
+  <Card title="The agent library" icon="books" href="/harness/agent-library">
+    What ships with Console.
+  </Card>
+
+  <Card title="Give it context" icon="plug" href="/context/overview">
+    Connect repositories and vendors.
+  </Card>
+</CardGroup>

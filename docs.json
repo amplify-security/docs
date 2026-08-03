@@ -20,7 +20,7 @@
           "anchors": [
             {
               "anchor": "GitHub App (Preview)",
-              "href": "https://github.com/apps/console-lab",
+              "href": "https://github.com/apps/console-staging",
               "icon": "code-simple"
             }
           ]
@@ -30,7 +30,49 @@
             "group": "Get Started",
             "pages": [
               "introduction",
+              "quickstart",
               "install-console"
+            ]
+          },
+          {
+            "group": "The Harness",
+            "pages": [
+              "harness/overview",
+              "harness/agents",
+              "harness/writing-an-agent",
+              "harness/agent-library",
+              "harness/skills",
+              "harness/detections",
+              "harness/tool-reference"
+            ]
+          },
+          {
+            "group": "Context",
+            "pages": [
+              "context/overview",
+              "context/projects",
+              "context/connections",
+              "context/vendor-data",
+              "context/findings"
+            ]
+          },
+          {
+            "group": "Working interactively",
+            "pages": [
+              "interactive/chat",
+              "interactive/cli"
+            ]
+          },
+          {
+            "group": "Workflows",
+            "pages": [
+              "workflows/overview",
+              "workflows/create-a-workflow",
+              "workflows/agent-chain",
+              "workflows/triggers",
+              "workflows/outputs",
+              "workflows/running",
+              "workflows/artifacts"
             ]
           }
         ]
@@ -108,7 +150,7 @@
     "primary": {
       "type": "button",
       "label": "Sign In",
-      "href": "https://app.console.lab.amplify.security/"
+      "href": "https://app.console.stg.amplify.security/"
     }
   },
   "footer": {
@@ -119,8 +161,8 @@
   },
   "redirects": [
     {
-      "source": "/quickstart",
-      "destination": "/legacy/quickstart"
+      "source": "/workflows/agents",
+      "destination": "/workflows/agent-chain"
     },
     {
       "source": "/sample-project",

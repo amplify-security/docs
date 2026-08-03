@@ -1,0 +1,99 @@
+---
+title: Chat
+description: 'Direct an agent by hand — and promote what works into a workflow.'
+---
+
+## What chat is for
+
+Chat is the interactive way to use the harness. You give an agent a task, watch it work, and redirect it as
+it goes.
+
+It's the right mode when you don't yet know what you're looking for. The agent doesn't answer from an index —
+it investigates: reads files, runs commands, traces call paths, and follows the code until it can answer.
+
+In a session an agent can:
+
+- **Explore your codebase** — read, search, and trace how data flows through the application
+- **Run commands** in its sandbox to test its own hypotheses
+- **Load [skills](/harness/skills)** for specialized procedures
+- **Delegate to sub-agents**, so a broad question can fan out without losing the thread
+- **Track its plan** as a running todo list you can watch
+- **Record [findings](/context/findings)** and write patches for what it confirms
+
+Ask open-ended questions — *"are there any exposed endpoints in this service that shouldn't be?"* — or point
+it at something specific and ask it to dig in.
+
+## Watching it work
+
+A session shows you what the agent is doing rather than just its conclusion:
+
+- **Tool calls** appear as they run, with a status dot and the command or arguments, so you can see the
+  reasoning path.
+- **The todo list** shows the plan and what's done, and disappears once everything completes.
+- **The sub-agent tree** appears when the agent delegates, showing which children are running.
+- **The Tools panel** on the right lists every tool call in the session; click one to jump to it in the
+  transcript.
+
+This visibility is the point. When an agent reaches a wrong conclusion, the tool trail usually shows exactly
+where it went sideways.
+
+## Sessions
+
+Chats persist to your organization, so work doesn't evaporate when you close the tab.
+
+| Action | Notes |
+| --- | --- |
+| **New chat** | Starts a fresh session |
+| **Rename** | Sessions title themselves from your first message |
+| **Archive** | Keeps the session read-only; unarchive to continue |
+| **Delete** | Permanent, with a confirmation |
+
+A session survives a page reload mid-turn — reconnecting picks the running turn back up rather than losing it.
+
+## Choosing a model
+
+The model picker in the header sets the model for the session, and you can switch **mid-conversation**.
+
+Switching carries your context forward: Console summarizes the conversation so far and hands that summary to
+the new model, marking the switch point in the transcript. If a turn is in flight, you'll be asked to confirm,
+since switching cancels it.
+
+Use a faster model to explore, then switch to a more capable one for the hard part.
+
+## Cancelling a turn
+
+Press <kbd>Escape</kbd> while a turn is running. The agent stops and the transcript notes the interruption, so
+you can redirect without starting over. Anything already recorded — findings, patches — stays.
+
+## Starting from a finding
+
+The fastest way into a productive session is from a [finding](/context/findings). **Start a chat** on any
+finding opens a session with the affected code, the agent's reasoning, and any generated patch already loaded,
+and you type your question in the same step.
+
+## Promote it to a workflow
+
+Chat is exploratory by design. Once you've asked the same question a third time, it belongs in a
+[workflow](/workflows/overview):
+
+| In chat | As a workflow |
+| --- | --- |
+| You pick the repository each time | The trigger names the repositories |
+| You type the task | The workflow's description and agent chain encode it |
+| You read the answer | [Outputs](/workflows/outputs) deliver it to the pull request |
+| Runs when you remember | Runs on every pull request |
+
+The translation is usually direct: the prompt you refined becomes the workflow description, and the agents you
+found useful become the chain.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="The CLI" icon="terminal" href="/interactive/cli">
+    Same agents, against your local working directory.
+  </Card>
+
+  <Card title="Build a workflow" icon="workflow" href="/workflows/create-a-workflow">
+    Automate what worked in chat.
+  </Card>
+</CardGroup>

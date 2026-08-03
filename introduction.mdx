@@ -1,13 +1,17 @@
 ---
 title: Introduction
-description: 'Amplify Console is an agentic AI platform for security analysis.'
+description: 'Amplify Console is an AI harness for security — you define the agents, give them context, and automate them as workflows.'
 ---
 
 ## What is Console?
 
-Console is Amplify Security's agentic AI platform for security analysis. It runs as an interactive
-terminal application that uses AI agents to reason about your codebase, surface security findings,
-and help your team understand and remediate vulnerabilities.
+Console is Amplify Security's AI harness for security work. It supplies the machinery — LLM
+orchestration, tool execution, isolated sandboxes, sub-agent delegation — and you supply the domain
+logic: the agents that reason, the skills they follow, and the detections they enforce.
+
+That distinction matters. Console is not a scanner with a fixed set of checks. It's a harness you point
+at your own problems, and you get the most out of it by defining your own agents rather than only using
+the ones we ship.
 
 <Note>
   Console is currently in alpha, undergoing rapid development. Contact
@@ -15,16 +19,71 @@ and help your team understand and remediate vulnerabilities.
   work with us to help our project come to fruition!
 </Note>
 
-## How it works
+## Three ideas
 
-Console operates as an interactive chat session in your terminal. The AI agent has access to your
-connected repositories and Amplify platform data, allowing it to answer questions about your
-security posture, investigate specific findings, and guide remediation.
+Everything in Console fits into one of three layers, and they build on each other in this order.
+
+<CardGroup cols={3}>
+  <Card title="The Harness" icon="wrench" href="/harness/overview">
+    The agents, skills, and detections that do the work. All of them are yours to write.
+  </Card>
+
+  <Card title="Context" icon="plug" href="/context/overview">
+    Repositories and vendor connections, so the harness reasons about your actual environment.
+  </Card>
+
+  <Card title="Workflows" icon="workflow" href="/workflows/overview">
+    Chain agents into automation that runs on every pull request and produces real artifacts.
+  </Card>
+</CardGroup>
+
+### 1. The harness
+
+An **agent** is a Markdown file with YAML frontmatter: the frontmatter declares its name, model, and
+which tools it may use, and the body is its instructions. That's the whole format, which is why writing
+one is a text-editing task rather than a programming one.
+
+Agents delegate to sub-agents, load **skills** for specialized procedures, and run **detections** —
+reusable rules that outlive any single conversation. Console ships a library of each, and yours sit
+alongside them as equals.
+
+### 2. Context
+
+A harness with no context is just a chatbot. Console gets context from two places:
+
+- **Projects** — the repositories it clones and reads.
+- **Connections** — your source control provider, plus the security and IT vendors you already run.
+  Connect Semgrep, Snyk, Cloudflare, Jira and others through the connector catalog.
+
+You direct that context two ways: interactively in **chat**, or declaratively in a **workflow**.
+
+### 3. Workflows
+
+Workflows are where it comes together. A workflow chains agents into an ordered sequence, fires on a
+schedule you choose — manually, or automatically on every pull request — and delivers results where your
+team already works: as review comments, or as a required check that blocks merging until security review
+passes.
+
+## Two interfaces
+
+The same agents run in both places. What differs is where they run and what code they can reach.
+
+|  | Web console | CLI |
+| --- | --- | --- |
+| Runs in | An isolated cloud sandbox | Your own machine |
+| Code it analyzes | Clones your connected projects on demand | The directory you started it in |
+| Best for | Team work, automation, anything shared | Code you're editing right now, including uncommitted changes |
+
+See [Chat](/interactive/chat) and [The CLI](/interactive/cli) for the differences in detail.
 
 ## Get started
 
 <CardGroup cols={2}>
-  <Card title="Installation" icon="terminal" href="/install-console">
-    Install Console on Linux or macOS.
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Connect a repository, ask an agent a question, and build your first workflow.
+  </Card>
+
+  <Card title="Install the CLI" icon="terminal" href="/install-console">
+    Run Console in your terminal on Linux or macOS.
   </Card>
 </CardGroup>
