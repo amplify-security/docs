@@ -9,7 +9,7 @@ An agent's capabilities are exactly the tools it can call. Instructions describe
 what's possible. Before writing an agent, check that the work you have in mind maps onto something here —
 otherwise the agent will try, fail, and narrate the failure.
 
-Use these names in an agent's [`allowed-tools`](/harness/writing-an-agent#frontmatter-reference). Omitting
+Use these names in an agent's [`allowed-tools`](/agents/writing-an-agent#frontmatter-reference). Omitting
 `allowed-tools` inherits the default set rather than granting everything.
 
 <Note>
@@ -45,7 +45,7 @@ the path neutralizes the input.
 | Tool | What it does |
 | --- | --- |
 | `opengrep_scan` | Runs OpenGrep static rules over the repository for a fast first pass, returning matches for the agent to triage. Defaults to the broad `auto` ruleset. **Does not** record findings — it produces candidates. |
-| `run_opengrep_detection` | Runs one *stored* OpenGrep [detection](/harness/detections) and emits matches as findings linked to that detection. Refuses non-OpenGrep detections. |
+| `run_opengrep_detection` | Runs one *stored* OpenGrep [detection](/agents/detections) and emits matches as findings linked to that detection. Refuses non-OpenGrep detections. |
 | `check_opengrep_rule` | Re-runs a stored detection's rule against a single file, read-only. Zero matches means a fix worked. This is the verification half of patch generation. |
 
 ## Confirming exploitability
@@ -84,7 +84,7 @@ the path neutralizes the input.
 | `get_leen_vulnerability_finding` | Fetches one vendor finding in full. |
 
 These three are the entire vendor-data surface today, and they are scoped to **vulnerability findings**.
-See [what agents can read](/context/vendor-data) for what that covers and what it doesn't.
+See [what agents can read](/data/what-agents-can-read) for what that covers and what it doesn't.
 
 ## Projects
 
@@ -116,7 +116,7 @@ See [what agents can read](/context/vendor-data) for what that covers and what i
 | --- | --- |
 | `spawn_agent` | Spawns a sub-agent on a focused task and returns its summary. How a broad job fans out without one agent losing the thread. |
 | `spawn_multiple_agents` | Spawns several sub-agents. Used to run one child per item — a policy evaluator per detection, for instance. |
-| `activate_skill` | Loads a [skill](/harness/skills) into the agent's context on demand. |
+| `activate_skill` | Loads a [skill](/agents/skills) into the agent's context on demand. |
 | `add_todo`, `start_todo`, `complete_todo`, `clear_todos` | Maintains the agent's plan as a visible todo list you can watch while it works. |
 
 ## Managing agents
@@ -128,11 +128,11 @@ See [what agents can read](/context/vendor-data) for what that covers and what i
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Write an agent" icon="file-code" href="/harness/writing-an-agent">
+  <Card title="Write an agent" icon="file-code" href="/agents/writing-an-agent">
     Put these names in `allowed-tools`.
   </Card>
 
-  <Card title="Skills" icon="book" href="/harness/skills">
+  <Card title="Skills" icon="book" href="/agents/skills">
     Package a procedure instead of a participant.
   </Card>
 </CardGroup>

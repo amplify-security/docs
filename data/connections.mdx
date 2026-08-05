@@ -20,7 +20,7 @@ about findings your existing stack has already produced.
 ### GitHub
 
 Install the Console GitHub App for your organization. You can grant access to every repository or pick a
-subset; the repositories you grant become [projects](/context/projects).
+subset; the repositories you grant become [projects](/data/projects).
 
 The App is what powers:
 
@@ -28,7 +28,7 @@ The App is what powers:
 - [Pull request triggers](/workflows/triggers#pull-request-triggers) firing on open, reopen, and new commits
 - [Review comments](/workflows/outputs#comment-on-triggering-pull-request)
 - [Merge gates](/workflows/outputs#gate-merging-on-security-review) as required checks
-- Opening a pull request from a [finding's suggested fix](/context/findings#accepting-a-fix)
+- Opening a pull request from a [finding's suggested fix](/data/findings#accepting-a-fix)
 
 See [Installation](/install-console#install-the-github-app) for the install flow.
 
@@ -71,7 +71,7 @@ connection and never handles the underlying vendor API key directly — requests
   connector in the catalog, but what an agent can query today is scoped to **vulnerability findings**. An
   agent can read your Snyk or Semgrep backlog; it cannot read Jira issues or Cloudflare configuration.
 
-  Read [what agents can read](/context/vendor-data) before designing a workflow around a connection.
+  Read [what agents can read](/data/what-agents-can-read) before designing a workflow around a connection.
 </Warning>
 
 ## Which connections do you need?
@@ -99,11 +99,11 @@ transient upstream failure shows there without affecting the rest of the page. R
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="What agents can read" icon="database" href="/context/vendor-data">
+  <Card title="What agents can read" icon="database" href="/data/what-agents-can-read">
     The exact vendor-data surface today.
   </Card>
 
-  <Card title="Projects" icon="folder-tree" href="/context/projects">
+  <Card title="Projects" icon="folder-tree" href="/data/projects">
     Turn a connection into analyzable code.
   </Card>
 </CardGroup>

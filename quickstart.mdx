@@ -3,7 +3,7 @@ title: Quickstart
 description: 'Connect a repository, ask an agent a question, and turn the answer into automation.'
 ---
 
-This walks through all three layers of Console in one pass: connect **context**, use the **harness**
+This walks through all three layers of Console in one pass: connect your **data**, use an **agent**
 interactively, then automate it as a **workflow**. Budget about twenty minutes.
 
 ## 1. Connect a repository
@@ -11,7 +11,7 @@ interactively, then automate it as a **workflow**. Budget about twenty minutes.
 Sign in to the web console and open **Connections**. Install the Console GitHub App for your organization,
 granting access to at least one repository you're comfortable experimenting on.
 
-The repositories you grant appear under **Projects**. That's your context — the code agents can read.
+The repositories you grant appear under **Projects** — the code agents can read.
 
 <Tip>
   Pick a real repository rather than an empty one. Agents reason about actual code, so a repository with real
@@ -31,11 +31,11 @@ look at next based on what it just found.
 Try following up. *Is that actually reachable from an HTTP handler?* The agent investigates rather than
 re-answering from memory.
 
-If it confirms something, it records a [finding](/context/findings) — durable, with its reasoning attached.
+If it confirms something, it records a [finding](/data/findings) — durable, with its reasoning attached.
 
 ## 3. Write an agent
 
-The built-in library covers a lot, but the harness is most useful when the agents are yours. Open **Agents**
+The built-in library covers a lot, but Console is most useful when the agents are yours. Open **Agents**
 and create one:
 
 ```markdown
@@ -62,7 +62,7 @@ clearly loaded from the environment, or anything under a fixtures directory.
 ```
 
 Save it. That's a working agent — YAML frontmatter declaring its name, model, and tools, plus instructions as
-the body. See [writing an agent](/harness/writing-an-agent) for every field.
+the body. See [writing an agent](/agents/writing-an-agent) for every field.
 
 ## 4. Automate it
 
@@ -99,8 +99,8 @@ own, against the pull request's head.
 
 ## What you just built
 
-- **Context** — a connected repository agents can read
-- **Harness** — your own agent, defined in YAML frontmatter and Markdown
+- **Data** — a connected repository agents can read
+- **An agent** — your own, defined in YAML frontmatter and Markdown
 - **Workflow** — that agent running automatically on every pull request, reporting to your team
 
 Each layer is replaceable independently. Swap the agent, add a step, change where results go — the rest keeps
@@ -109,11 +109,11 @@ working.
 ## Where to go next
 
 <CardGroup cols={2}>
-  <Card title="The Harness" icon="wrench" href="/harness/overview">
+  <Card title="Agents & detections" icon="wrench" href="/agents/overview">
     Skills, detections, and the full tool surface.
   </Card>
 
-  <Card title="Triage an existing backlog" icon="database" href="/context/vendor-data">
+  <Card title="Triage an existing backlog" icon="database" href="/data/what-agents-can-read">
     Connect a scanner and find what's actually reachable.
   </Card>
 

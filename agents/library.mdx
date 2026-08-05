@@ -9,7 +9,7 @@ Console ships the agents below. They appear in the agent list and the
 [workflow agent picker](/workflows/create-a-workflow#agents) alongside anything your organization writes.
 
 They're also the best available examples of the format — if you're about to
-[write an agent](/harness/writing-an-agent), open one first and read how its frontmatter and instructions
+[write an agent](/agents/writing-an-agent), open one first and read how its frontmatter and instructions
 are put together.
 
 ## Scanning
@@ -31,7 +31,7 @@ defined budget so the results stay reviewable.
 
 | Agent | What it does |
 | --- | --- |
-| `detections-runner` | Runs every [detection](/harness/detections) stored in your organization against the repository, dispatching by type — OpenGrep rules directly, policy detections via one child evaluator each. Findings are linked to the detection that produced them. |
+| `detections-runner` | Runs every [detection](/agents/detections) stored in your organization against the repository, dispatching by type — OpenGrep rules directly, policy detections via one child evaluator each. Findings are linked to the detection that produced them. |
 | `detection-author` | Reads findings from an earlier step and authors a reusable detection for each, choosing between an OpenGrep rule and a natural-language policy. |
 
 These two are the ends of a loop worth understanding: `detection-author` turns a one-time discovery into a
@@ -77,7 +77,7 @@ each step's agent in order, and composes each briefing. You don't add it to a ch
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Write your own" icon="file-code" href="/harness/writing-an-agent">
+  <Card title="Write your own" icon="file-code" href="/agents/writing-an-agent">
     Extend or shadow any of these.
   </Card>
 

@@ -24,12 +24,12 @@ the ones we ship.
 Everything in Console fits into one of three layers, and they build on each other in this order.
 
 <CardGroup cols={3}>
-  <Card title="The Harness" icon="wrench" href="/harness/overview">
+  <Card title="Agents & detections" icon="wrench" href="/agents/overview">
     The agents, skills, and detections that do the work. All of them are yours to write.
   </Card>
 
-  <Card title="Context" icon="plug" href="/context/overview">
-    Repositories and vendor connections, so the harness reasons about your actual environment.
+  <Card title="Data & connections" icon="plug" href="/data/overview">
+    Repositories and vendor connections, so agents reason about your actual environment.
   </Card>
 
   <Card title="Workflows" icon="workflow" href="/workflows/overview">
@@ -37,7 +37,7 @@ Everything in Console fits into one of three layers, and they build on each othe
   </Card>
 </CardGroup>
 
-### 1. The harness
+### 1. Agents and detections
 
 An **agent** is a Markdown file with YAML frontmatter: the frontmatter declares its name, model, and
 which tools it may use, and the body is its instructions. That's the whole format, which is why writing
@@ -47,15 +47,15 @@ Agents delegate to sub-agents, load **skills** for specialized procedures, and r
 reusable rules that outlive any single conversation. Console ships a library of each, and yours sit
 alongside them as equals.
 
-### 2. Context
+### 2. Data and connections
 
-A harness with no context is just a chatbot. Console gets context from two places:
+An agent with nothing to look at is just a chatbot. Console draws on two sources:
 
 - **Projects** — the repositories it clones and reads.
 - **Connections** — your source control provider, plus the security and IT vendors you already run.
   Connect Semgrep, Snyk, Cloudflare, Jira and others through the connector catalog.
 
-You direct that context two ways: interactively in **chat**, or declaratively in a **workflow**.
+You put that to work two ways: interactively in **chat**, or declaratively in a **workflow**.
 
 ### 3. Workflows
 

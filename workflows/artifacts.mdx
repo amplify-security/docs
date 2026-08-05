@@ -18,7 +18,7 @@ recorded while running.
 ## Findings
 
 The primary output. When an agent confirms a vulnerability it records a
-[finding](/context/findings) with the affected file and symbol, its reasoning, and provenance back to the run
+[finding](/data/findings) with the affected file and symbol, its reasoning, and provenance back to the run
 and the detection that produced it.
 
 Findings are deduplicated per project, so a recurring issue updates in place rather than accumulating
@@ -32,7 +32,7 @@ that finding.
 Patches are verified before they're recorded, not proposed speculatively: the agent edits the file, re-runs
 the detection to confirm the match is gone — for policy detections, an independent read-only verifier judges
 the result — and only then captures the diff. That's why a finding's suggested fix can
-[open a pull request](/context/findings#accepting-a-fix) directly.
+[open a pull request](/data/findings#accepting-a-fix) directly.
 
 ## The artifact model
 
@@ -80,7 +80,7 @@ status and duration, the findings the run produced, and each output with its del
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Findings" icon="magnifying-glass" href="/context/findings">
+  <Card title="Findings" icon="magnifying-glass" href="/data/findings">
     Review results and accept fixes.
   </Card>
 

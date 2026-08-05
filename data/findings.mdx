@@ -14,7 +14,7 @@ Every finding carries:
 - **What** — the vulnerability, its classification, and severity
 - **Why** — the agent's reasoning for believing it's genuinely exploitable
 - **The fix** — a suggested patch, when one was generated
-- **Provenance** — the run that produced it, and the [detection](/harness/detections) behind it if there was one
+- **Provenance** — the run that produced it, and the [detection](/agents/detections) behind it if there was one
 
 The reasoning is the part worth reading. A pattern match tells you a shape appeared; a finding tells you why
 the agent believes an attacker can actually reach it. That's what makes it triageable.
@@ -72,10 +72,10 @@ The session is titled after the finding's file and line, so it's easy to find la
 ## From finding to detection
 
 The highest-leverage move on a finding is turning it into a rule. A finding is one instance; a
-[detection](/harness/detections) catches the whole class from then on, in every repository, without an agent
+[detection](/agents/detections) catches the whole class from then on, in every repository, without an agent
 re-deriving it.
 
-Ask in chat, or add [`detection-author`](/harness/agent-library#detections) as a workflow step to do it
+Ask in chat, or add [`detection-author`](/agents/library#detections) as a workflow step to do it
 automatically for every finding a scan produces.
 
 ## Delivering findings automatically
@@ -89,7 +89,7 @@ Findings don't have to be pulled — a workflow can push them where your team al
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Turn findings into rules" icon="shield-check" href="/harness/detections">
+  <Card title="Turn findings into rules" icon="shield-check" href="/agents/detections">
     Catch the class, not the instance.
   </Card>
 

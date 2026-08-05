@@ -32,7 +32,7 @@ promote it to an agent later if it grows its own output.
 | --- | --- | --- | --- |
 | `name` | Yes | string | How the skill is activated and listed. |
 | `description` | Yes | string, ≤500 chars | When to use this skill. Agents read it to decide whether to activate. |
-| `allowed-tools` | No | string[] | Tools the procedure expects. See the [tool reference](/harness/tool-reference). |
+| `allowed-tools` | No | string[] | Tools the procedure expects. See the [tool reference](/agents/tool-reference). |
 | `license` | No | string | Optional license string. |
 | `compatibility` | No | object | `min-version` / `max-version` constraints. |
 | `metadata` | No | object | Free-form key/value data. |
@@ -73,10 +73,10 @@ applies.
 | `vulnerability-scan` | Uses natural-language policy descriptions to find vulnerabilities in application logic. |
 | `opengrep-rule-creator` | Authors OpenGrep rules for detecting a vulnerability or code pattern. |
 | `codeql-rule-creator` | Authors CodeQL queries for vulnerabilities, bug patterns, and code-quality issues. |
-| `policy-detection-creator` | Turns a security requirement into a stored natural-language [policy detection](/harness/detections). |
+| `policy-detection-creator` | Turns a security requirement into a stored natural-language [policy detection](/agents/detections). |
 
 The scanner agents also draw on an internal library of class-specific analysis skills, which is what
-distinguishes the `standard` and `comprehensive` [profiles](/harness/agent-library#scanning) from `basic`.
+distinguishes the `standard` and `comprehensive` [profiles](/agents/library#scanning) from `basic`.
 
 ## Where to author a skill
 
@@ -114,7 +114,7 @@ you specifically want followed.
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Detections" icon="shield-check" href="/harness/detections">
+  <Card title="Detections" icon="shield-check" href="/agents/detections">
     Turn a procedure's results into a permanent rule.
   </Card>
 

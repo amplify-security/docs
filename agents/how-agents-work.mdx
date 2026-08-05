@@ -1,5 +1,5 @@
 ---
-title: Agents
+title: How agents work
 description: 'What an agent is, how it runs, and how agents delegate to each other.'
 ---
 
@@ -23,7 +23,7 @@ interesting questions are about *whether* something is reachable rather than *wh
 5. **It records durable results** — findings, patches, detections — rather than only replying in prose.
 6. **It stops** when the task is done, the budget is exhausted, or it's cancelled.
 
-Everything an agent does in step 2 is bounded by the [tool surface](/harness/tool-reference).
+Everything an agent does in step 2 is bounded by the [tool surface](/agents/tool-reference).
 
 ## Budgets
 
@@ -52,7 +52,7 @@ You can watch the tree live — as a nested view in the CLI, and in the web cons
 
 ### Forcing sequential delegation
 
-Set [`sequential-spawns: true`](/harness/writing-an-agent#sequential-spawns) when steps depend on each other
+Set [`sequential-spawns: true`](/agents/writing-an-agent#sequential-spawns) when steps depend on each other
 and the agent must see one result before starting the next. Console's `workflow-runner` uses exactly this to
 guarantee workflow steps run in order.
 
@@ -60,7 +60,7 @@ guarantee workflow steps run in order.
 
 | Source | Description |
 | --- | --- |
-| **Platform agents** | The library Console ships. See [the agent library](/harness/agent-library). |
+| **Platform agents** | The library Console ships. See [the agent library](/agents/library). |
 | **Organization agents** | Agents your team writes, in the web console or the CLI. |
 
 Both appear together wherever agents are listed, and the workflow orchestrator treats them identically. An
@@ -75,13 +75,13 @@ Reach for a new agent when:
 - You want different tool permissions, like a read-only reviewer that can't modify code.
 - You want a different model for cost or depth reasons.
 
-Prefer a [skill](/harness/skills) instead when you're capturing *how to do one thing well* and an existing
+Prefer a [skill](/agents/skills) instead when you're capturing *how to do one thing well* and an existing
 agent could follow it. Skills are cheaper: no separate budget, no separate model, loaded only when relevant.
 
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Write an agent" icon="file-code" href="/harness/writing-an-agent">
+  <Card title="Write an agent" icon="file-code" href="/agents/writing-an-agent">
     The frontmatter reference.
   </Card>
 

@@ -71,7 +71,7 @@ description: Dependency helper.
 ### `allowed-tools` restricts, it doesn't grant
 
 Listing a tool doesn't create capability that doesn't exist — it narrows the agent to a subset of what the
-harness already offers. See the [tool reference](/harness/tool-reference) for valid names.
+harness already offers. See the [tool reference](/agents/tool-reference) for valid names.
 
 Restricting tools is a real design technique, not just hygiene. An agent that shouldn't modify code should
 not be given `shell`, and a verifier that must stay honest should not be given the ability to report
@@ -134,11 +134,11 @@ version.
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Tool reference" icon="wrench" href="/harness/tool-reference">
+  <Card title="Tool reference" icon="wrench" href="/agents/tool-reference">
     Valid `allowed-tools` values and what each does.
   </Card>
 
-  <Card title="The agent library" icon="books" href="/harness/agent-library">
+  <Card title="The agent library" icon="books" href="/agents/library">
     Built-in agents worth reading as examples.
   </Card>
 </CardGroup>

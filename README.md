@@ -11,8 +11,8 @@ on each other:
 | Group | Covers |
 | --- | --- |
 | `Get Started` | Introduction, quickstart, CLI installation |
-| `The Harness` (`harness/`) | The authorable primitives — agents, skills, detections — and the tool surface |
-| `Context` (`context/`) | Projects, connections, vendor data, findings |
+| `Agents & detections` (`agents/`) | The authorable primitives — agents, skills, detections — and the tool surface |
+| `Data & connections` (`data/`) | Projects, connections, vendor data, findings |
 | `Working interactively` (`interactive/`) | Chat and the CLI |
 | `Workflows` (`workflows/`) | Creating, triggering, running, and delivering workflow results |
 
@@ -49,7 +49,7 @@ mint dev --port 3333
 
 - Frontmatter requires `title` and `description`.
 - Mintlify components in use: `<Note>`, `<Tip>`, `<Warning>`, `<CardGroup>`, `<Card>`.
-- Internal links are root-relative and omit the extension — `/harness/writing-an-agent`.
+- Internal links are root-relative and omit the extension — `/agents/writing-an-agent`.
 - Document what ships today. Where a capability is partial, say so explicitly in a `<Warning>` or `<Note>`
   rather than describing the intended end state.
 

@@ -1,9 +1,9 @@
 ---
-title: The Harness
-description: 'Console supplies the loop; you supply the domain logic as agents, skills, and detections.'
+title: Agents & detections
+description: 'Console supplies the agentic loop; you supply the domain logic as agents, skills, and detections.'
 ---
 
-## What "harness" means
+## What you author
 
 Console runs an agentic loop: a model reasons, calls tools, reads the results, and reasons again, inside
 an isolated environment with access to your code. Building that loop — the orchestration, the tool
@@ -14,9 +14,9 @@ everything else in the product is built on top of them.
 
 | Primitive | What it is | Format | Authored in |
 | --- | --- | --- | --- |
-| **[Agent](/harness/agents)** | A participant that reasons, calls tools, and can delegate | Markdown + YAML frontmatter | Web console, CLI |
-| **[Skill](/harness/skills)** | A procedure an agent loads on demand | Markdown + YAML frontmatter | CLI, API |
-| **[Detection](/harness/detections)** | A rule that can be run repeatedly against code | OpenGrep YAML, or a natural-language policy | Web console, CLI |
+| **[Agent](/agents/how-agents-work)** | A participant that reasons, calls tools, and can delegate | Markdown + YAML frontmatter | Web console, CLI |
+| **[Skill](/agents/skills)** | A procedure an agent loads on demand | Markdown + YAML frontmatter | CLI, API |
+| **[Detection](/agents/detections)** | A rule that can be run repeatedly against code | OpenGrep YAML, or a natural-language policy | Web console, CLI |
 
 The distinction between them is worth getting right, because it's the most common early mistake:
 
@@ -44,7 +44,7 @@ sub-agents.
 
 This is the single most useful thing to internalize before writing an agent, because it tells you which
 tasks are achievable and which aren't. The full inventory is in the
-[tool reference](/harness/tool-reference).
+[tool reference](/agents/tool-reference).
 
 ## How the pieces run together
 
@@ -61,19 +61,19 @@ Each layer is replaceable. That's the point of a harness.
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Write an agent" icon="file-code" href="/harness/writing-an-agent">
+  <Card title="Write an agent" icon="file-code" href="/agents/writing-an-agent">
     The frontmatter reference and the editor.
   </Card>
 
-  <Card title="Tool reference" icon="wrench" href="/harness/tool-reference">
+  <Card title="Tool reference" icon="wrench" href="/agents/tool-reference">
     Everything an agent can actually do.
   </Card>
 
-  <Card title="The agent library" icon="books" href="/harness/agent-library">
+  <Card title="The agent library" icon="books" href="/agents/library">
     What ships with Console.
   </Card>
 
-  <Card title="Give it context" icon="plug" href="/context/overview">
+  <Card title="Give it context" icon="plug" href="/data/overview">
     Connect repositories and vendors.
   </Card>
 </CardGroup>
