@@ -1,0 +1,102 @@
+---
+title: Triggers
+description: 'Fire a workflow on demand, or automatically when a pull request opens.'
+---
+
+## What a trigger does
+
+A trigger decides **when** a workflow fires and **which repositories** it fires against. Triggers are
+optional: every workflow can always be run by hand, so add a trigger only when you want Console to fire
+it without you.
+
+Manage triggers in the **Triggers** section of the workflow editor. Click **Add trigger**, pick a type,
+and choose its repositories.
+
+## Manual runs
+
+Every workflow supports manual runs. There's nothing to configure and nothing appears in the Triggers
+section — it's always available.
+
+With a manual run you choose the repositories at the moment you fire it, and you can optionally pin a
+specific branch, tag, or commit. See [Running a workflow](/workflows/running).
+
+## Pull request triggers
+
+Select **On pull requests** to fire the workflow automatically against pull and merge requests.
+
+### When it fires
+
+Despite the name, this trigger fires on more than just opening a pull request. It fires when a pull
+request is:
+
+- **Opened**
+- **Reopened**
+- **Updated with new commits**
+
+An update supersedes the earlier run — Console cancels the in-flight run and starts a fresh one at the
+new head commit, so a [merge gate](/workflows/outputs#gate-merging-on-security-review) re-evaluates against
+the code that's actually there now, instead of staying stuck on a verdict for a commit nobody is merging.
+
+### Repositories
+
+Choose one or more connected repositories to watch. A trigger with no repositories won't save.
+
+Pull-request runs always clone **the pull request's head** — the proposed code, not the base branch. You
+cannot pin a branch or commit on a pull request trigger, because the head is what's under review.
+
+### Base branch filter
+
+By default the workflow fires on pull requests targeting **any** branch. Add one or more base branches
+to narrow it to pull requests aimed at those branches specifically — a common choice is to gate only
+what's merging into `main`.
+
+Matching is exact. A pull request whose base branch isn't in your list is skipped before Console
+provisions anything, so filtered-out pull requests cost you nothing.
+
+### Draft pull requests
+
+Draft pull requests are always skipped. Work in progress doesn't warrant a run, and the workflow will
+fire once the pull request is marked ready.
+
+### Requirements
+
+Pull request triggers depend on Console receiving events from your source control provider, which means
+the repository must be connected and the Console GitHub App installed for it. See
+[Installation](/install-console#install-the-github-app).
+
+## One run per repository
+
+A trigger that names three repositories produces **three runs** when it fires — one per repository, each
+in its own sandbox. Runs from the same firing are grouped, so you can see them together in the run
+history, but they succeed or fail independently.
+
+## Superseding in-flight runs
+
+When a workflow fires again from the same trigger, Console cancels any of that trigger's runs that are
+still pending or running before starting the new ones.
+
+This keeps a rapidly-updated pull request from stacking up parallel sandboxes for commits that are
+already stale, and it means the verdict on a pull request always reflects its latest commit. It applies
+to manual runs too: firing a workflow manually while an earlier manual run is still going replaces it.
+
+<Note>
+  Cancellation is scoped to the trigger. A manual run does not cancel a pull-request run of the same
+  workflow, and vice versa.
+</Note>
+
+## Scheduled triggers
+
+Scheduled triggers aren't available to create yet. If your organization has any from an earlier
+configuration, the editor displays them read-only.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Configure outputs" icon="arrow-right" href="/workflows/outputs">
+    Decide what a triggered run posts back.
+  </Card>
+
+  <Card title="Run and monitor" icon="circle-play" href="/workflows/running">
+    Fire a run and follow it through.
+  </Card>
+</CardGroup>

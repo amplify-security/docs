@@ -1,0 +1,87 @@
+---
+title: The agent library
+description: 'The agents Console ships, what each is for, and which ones to put in a workflow.'
+---
+
+## Using the library
+
+Console ships the agents below. They appear in the agent list and the
+[workflow agent picker](/workflows/create-a-workflow#agents) alongside anything your organization writes.
+
+They're also the best available examples of the format — if you're about to
+[write an agent](/agents/writing-an-agent), open one first and read how its frontmatter and instructions
+are put together.
+
+## Scanning
+
+The vulnerability scanners share one approach: map the repository's security conventions, hunt for places
+the implementation diverges from that intent, then confirm candidates through analysis. They differ only in
+how broadly they hunt and how deeply they confirm.
+
+| Agent | Profile | Use when |
+| --- | --- | --- |
+| `vulnerability-scanner-basic` | Pursues the top 6 candidates, caps at 6 findings, generic analysis only. | You want a fast signal — a pull request check where latency matters. |
+| `vulnerability-scanner-standard` | Pursues the top 10 candidates, caps at 10 findings, uses the class-specific skill library plus confirmation. | The default choice for most workflows. |
+| `vulnerability-scanner-comprehensive` | Pursues the top 40 candidates, caps at 40 findings, uses the full skill library and a more capable model. | Auditing a repository in depth, where thoroughness matters more than speed. |
+
+The caps are deliberate. A scanner that returns everything it half-suspects is noise; these stop at a
+defined budget so the results stay reviewable.
+
+## Detections
+
+| Agent | What it does |
+| --- | --- |
+| `detections-runner` | Runs every [detection](/agents/detections) stored in your organization against the repository, dispatching by type — OpenGrep rules directly, policy detections via one child evaluator each. Findings are linked to the detection that produced them. |
+| `detection-author` | Reads findings from an earlier step and authors a reusable detection for each, choosing between an OpenGrep rule and a natural-language policy. |
+
+These two are the ends of a loop worth understanding: `detection-author` turns a one-time discovery into a
+permanent rule, and `detections-runner` is what applies every rule you've accumulated from then on.
+
+## Review
+
+| Agent | What it does |
+| --- | --- |
+| `code-reviewer` | Reviews code for security vulnerabilities, performance issues, and best practices. |
+| `security-analyzer` | Deep security analysis with taint tracking and vulnerability assessment. |
+
+## Agents spawned by other agents
+
+These exist in the library but are normally driven by another agent rather than added directly as workflow
+steps:
+
+| Agent | Spawned by | Role |
+| --- | --- | --- |
+| `patch-generator` | `detections-runner`, when patch generation is enabled | Generates a verified patch for one detection's findings in one file: edits the file, re-runs the detection to confirm the fix, captures the diff, and records it. |
+| `policy-evaluator` | `detections-runner` | Evaluates one policy detection against the repository, bound to that detection so every finding links back to it. |
+| `policy-fix-verifier` | `patch-generator` | Independently judges whether a patched file still violates a policy. Deliberately read-only — it returns a verdict and cannot report findings or edit code. |
+
+You *can* name one as a workflow step, but they expect a briefing their usual parent provides, so they work
+best left to it.
+
+## The orchestrator
+
+`workflow-runner` is the agent that executes workflows: it reads a workflow's description and steps, spawns
+each step's agent in order, and composes each briefing. You don't add it to a chain — it *is* the chain. See
+[the agent chain](/workflows/agent-chain) for how it composes briefings.
+
+## Common chains
+
+| Goal | Chain |
+| --- | --- |
+| Fast pull request check | `vulnerability-scanner-basic` |
+| Standard pull request review | `vulnerability-scanner-standard` |
+| Turn findings into permanent rules | `vulnerability-scanner-standard` → `detection-author` |
+| Apply everything you've already vetted | `detections-runner` |
+| Deep audit | `vulnerability-scanner-comprehensive` → `security-analyzer` |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Write your own" icon="file-code" href="/agents/writing-an-agent">
+    Extend or shadow any of these.
+  </Card>
+
+  <Card title="Build a workflow" icon="workflow" href="/workflows/create-a-workflow">
+    Put a chain to work.
+  </Card>
+</CardGroup>

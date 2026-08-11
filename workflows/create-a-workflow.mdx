@@ -1,0 +1,147 @@
+---
+title: Create a workflow
+description: 'Build a workflow section by section, and what each part of the editor is for.'
+---
+
+## Before you start
+
+You need at least one **connected repository**. Workflows run against the projects Console has access
+to through your source control provider — if the Projects page is empty, connect a repository first.
+
+You do not need to create any agents. Console ships a library of agents that covers scanning,
+detection authoring, patching, and review. See [the agent library](/agents/library) for the catalog.
+
+## Create it
+
+From **Workflows**, click **New workflow**. You land in the editor with an empty draft and four
+sections to fill in, top to bottom. Nothing is saved until you click **Save**.
+
+<Tip>
+  Click **Save** at any point to see what's still missing — incomplete fields highlight in red with a
+  message explaining what's required. Nothing is submitted until the draft is valid.
+</Tip>
+
+## Name
+
+The field at the top of the editor. It identifies the workflow in lists, run history, and — if you add a
+[merge gate](/workflows/outputs#gate-merging-on-security-review) — in the GitHub check that appears on
+pull requests.
+
+- Required, and must be unique within your organization.
+- Choose something durable. Once a workflow has a **merge gate** output, its name is locked, because
+  the check name customers pin in branch protection is derived from it. Renaming would silently stop
+  the check from reporting and leave pull requests waiting forever. To rename, remove the merge gate
+  output, save, then rename.
+
+## Description
+
+A short statement of what the whole workflow is for.
+
+This is the most important field in the editor, and the easiest to underestimate. Console runs your
+chain through an orchestrating agent, and that orchestrator:
+
+1. Reads the description as the **intent** of the entire workflow.
+2. Composes a briefing for each step, quoting the description so the agent knows the larger goal.
+3. Passes the relevant parts of earlier steps' results into later steps.
+
+The description is the instruction that shapes every step's task, so write it as a goal, in plain language.
+
+**Good:**
+
+> Scan the pull request for injection and access-control vulnerabilities, then generate a patch for
+> anything confirmed exploitable and post it as a review comment.
+
+**Too vague:**
+
+> Security workflow.
+
+<Note>
+  If your description and your agent chain disagree, the chain wins — the orchestrator runs the steps
+  as declared and notes the disagreement in its summary. Keep the two aligned.
+</Note>
+
+## Triggers
+
+*Optional.* When the workflow should fire on its own.
+
+You can save a workflow with no triggers at all and still run it by hand whenever you like — every
+workflow supports manual runs. Add a trigger only when you want it to fire automatically.
+
+Click **Add trigger** and pick a type. Today that means **on pull requests**, where you choose which
+repositories to watch and, optionally, restrict it to specific base branches.
+
+If you add a trigger, it must name at least one repository, or the workflow won't save.
+
+See [Triggers](/workflows/triggers) for the full details.
+
+## Agents
+
+*Required.* The ordered chain of agents that does the actual work.
+
+Click the **+** button to search the agent library and add an agent. Each one becomes a step, drawn as
+a pill with an arrow to the next — the chain reads left to right, and that's the order it runs in.
+
+- **At least one** agent, **at most twenty**.
+- **Reorder** by dragging a pill.
+- **Remove** a step by clicking the grip icon on its pill and choosing *Remove from chain*.
+
+Steps run strictly one at a time. Each waits for the previous one to finish, and if any step fails the
+run stops there — later steps don't run.
+
+See [The agent chain](/workflows/agent-chain) for how sequencing works, and [the agent library](/agents/library) for which agents to use.
+
+## Output
+
+*Optional.* Where the results go when a run completes.
+
+Click **Add output** and choose a destination:
+
+- **Comment on triggering pull request** — posts review comments on the pull or merge request that
+  fired the run.
+- **Gate merging on security review** — adds a required check that blocks merging until the agent's
+  verdict passes or a human approves the pull request.
+
+You can add one of each, but not two of the same type — an already-added destination shows as
+*Already added* in the picker.
+
+Both destinations describe a *triggering pull request*, so they only do something on runs that a pull
+request started. On a manual run they're skipped. See [Outputs](/workflows/outputs).
+
+## Save
+
+Click **Save**. Console creates the workflow, then applies your triggers and outputs.
+
+If a trigger or output can't be applied, the workflow is still created — you'll land on its detail page
+with a banner explaining what didn't stick, and you can finish wiring it up there.
+
+Clicking **Cancel** with unsaved changes asks you to confirm before discarding.
+
+## Edit or delete later
+
+Open a workflow from the **Workflows** list to see it in read-only form, then click **Edit**. The same
+four sections become editable, with **Save**, **Cancel**, and **Delete** in the header.
+
+Editing a workflow does not affect runs already in flight — each run uses the definition as it was
+when it fired.
+
+## Requirements at a glance
+
+| Field | Rule |
+| --- | --- |
+| Name | Required, unique, non-blank. Locked while a merge gate output exists. |
+| Description | Required, non-blank. |
+| Agents | At least 1, at most 20. |
+| Triggers | Optional. Any trigger you add must name at least one repository. |
+| Outputs | Optional. One per destination type. |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Run your workflow" icon="circle-play" href="/workflows/running">
+    Fire it manually and watch the run.
+  </Card>
+
+  <Card title="Pick the right agents" icon="robot" href="/agents/library">
+    The agent catalog and common chains.
+  </Card>
+</CardGroup>

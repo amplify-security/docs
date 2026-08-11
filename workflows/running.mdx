@@ -1,0 +1,100 @@
+---
+title: Running a workflow
+description: 'Fire a workflow manually, then follow the run through to its results.'
+---
+
+## Run a workflow manually
+
+Open the workflow from the **Workflows** list and click **Run workflow**.
+
+In the dialog:
+
+1. **Repositories** — select one or more connected repositories to run against. The button stays
+   disabled until you pick at least one.
+2. **Git ref** *(optional)* — a branch, tag, or commit. It's applied to **every** selected repository, so
+   leave it empty unless they share the ref you want. Empty means each repository's own default branch.
+3. Click **Run workflow**.
+
+Console fires immediately and starts one run per repository.
+
+<Note>
+  Firing a workflow manually cancels any earlier **manual** runs of that workflow still pending or
+  running. It does not touch runs started by a pull request. See
+  [superseding in-flight runs](/workflows/triggers#superseding-in-flight-runs).
+</Note>
+
+## Run it automatically
+
+Add a [pull request trigger](/workflows/triggers#pull-request-triggers) and Console fires the workflow
+whenever a pull request in the selected repositories is opened, reopened, or updated with new commits.
+Automatic runs always use the pull request's head commit.
+
+## Follow a run
+
+From a workflow, click **View runs**. From anywhere, the **Runs** page lists every run in your
+organization; filter it by **status** or by **workflow name**.
+
+Open a run to see:
+
+- **The chain** — each step drawn in order with its agent name, how long it took, and its status icon.
+  Steps light up as they complete, so you can watch progress on a running workflow.
+- **Findings** — what the run confirmed, linked through to the full finding.
+- **Outputs** — each configured destination and whether it was delivered. See
+  [checking delivery](/workflows/outputs#checking-delivery).
+- **Go to workflow** — jump back to the definition that produced this run.
+
+A run page refreshes itself while the run is active, so you can leave it open.
+
+## Run statuses
+
+| Status | Meaning |
+| --- | --- |
+| **Pending** | Queued. Console is provisioning a sandbox and cloning the repository. |
+| **Running** | The agent chain is executing. |
+| **Completed** | Every step finished successfully and outputs were dispatched. |
+| **Error** | A step failed. The run stopped there and later steps did not run. |
+| **Cancelled** | Cancelled by you, or superseded by a newer run from the same trigger. |
+
+## Cancel a run
+
+Open the run and click **Cancel**. Console stops the agent chain and tears down the sandbox.
+
+Cancelling doesn't undo anything already done — findings recorded before the cancellation stay, and any
+output already delivered stays delivered. If a [merge gate](/workflows/outputs#gate-merging-on-security-review)
+was posted, a cancelled run leaves it blocking
+rather than passing.
+
+## Reading a failed run
+
+A run ending in **Error** stops at the failing step. Open it and look at the chain: the step with the
+error icon is where it stopped, and everything to its right never ran.
+
+Common causes:
+
+- **The repository couldn't be cloned.** Usually a permissions problem — confirm the Console GitHub App
+  is still installed for that repository, or that a `Git ref` you pinned actually exists.
+- **A step exceeded its time budget.** Long chains against large repositories can run out of budget.
+  Splitting a broad scan into a narrower profile (see
+  [scanning agents](/agents/library#scanning)) usually resolves it.
+- **A step named an agent that no longer exists.** If you deleted an agent your workflow references,
+  edit the workflow and repair the chain.
+
+Because Console snapshots the workflow definition when a run fires, fixing the workflow doesn't repair
+an existing failed run — edit the workflow, then fire it again.
+
+## Run history at a glance
+
+The **Workflows** list shows a run count per workflow, and you can switch the window between **7d**,
+**30d**, and **90d** to see how often each one has been firing.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Configure outputs" icon="arrow-right" href="/workflows/outputs">
+    Push results to pull requests automatically.
+  </Card>
+
+  <Card title="Tune the agent chain" icon="robot" href="/workflows/agent-chain">
+    Adjust scan depth and sequencing.
+  </Card>
+</CardGroup>

@@ -1,0 +1,138 @@
+---
+title: Tool reference
+description: 'Every tool an agent can call — the real ceiling on what any agent you write can do.'
+---
+
+## Why this page matters
+
+An agent's capabilities are exactly the tools it can call. Instructions describe intent; tools determine
+what's possible. Before writing an agent, check that the work you have in mind maps onto something here —
+otherwise the agent will try, fail, and narrate the failure.
+
+Use these names in an agent's [`allowed-tools`](/agents/writing-an-agent#frontmatter-reference). Omitting
+`allowed-tools` inherits the default set rather than granting everything.
+
+<Note>
+  Availability differs slightly by surface. Tools that operate on a cloned target repository or on your
+  organization's connections are available to cloud agents; the CLI runs against your working directory
+  instead.
+</Note>
+
+## Reading and searching code
+
+| Tool | What it does |
+| --- | --- |
+| `shell` | Runs a shell command in the agent's environment. The general-purpose escape hatch — reading files, running builds, invoking any CLI. Output is truncated past a limit, and a blocked-pattern list rejects dangerous commands. |
+| `ripgrep_search` | Fast regex or literal search across the repository, returning file, line number, and matching text. `.gitignore`-aware. The right choice for plain search, and the fallback for languages without a tree-sitter grammar. |
+| `read_pdf` | Extracts text from a PDF — useful for threat models, policy documents, and vendor reports. |
+
+## Understanding code structure
+
+`code_lineage` provides three structural operations backed by tree-sitter. Coverage is limited to
+languages with a grammar; on anything else, use `ripgrep_search`.
+
+| Operation | What it does |
+| --- | --- |
+| `find_symbol` | Finds where a function, method, or class is defined and every place it's referenced. |
+| `call_graph` | Traces callers or callees of a symbol to a bounded depth (1–3). `direction='callers'` finds what invokes it; `callees` finds what it invokes. Computed on demand — no persistent index. |
+| `ast_query` | Runs a tree-sitter S-expression query against one file and returns captured nodes with line ranges. For precise structural search, like every call expression in a file. |
+
+This is how an agent traces taint: find the sink, walk callers back toward a source, and confirm nothing on
+the path neutralizes the input.
+
+## Scanning
+
+| Tool | What it does |
+| --- | --- |
+| `opengrep_scan` | Runs OpenGrep static rules over the repository for a fast first pass, returning matches for the agent to triage. Defaults to the broad `auto` ruleset. **Does not** record findings — it produces candidates. |
+| `run_opengrep_detection` | Runs one *stored* OpenGrep [detection](/agents/detections) and emits matches as findings linked to that detection. Refuses non-OpenGrep detections. |
+| `check_opengrep_rule` | Re-runs a stored detection's rule against a single file, read-only. Zero matches means a fix worked. This is the verification half of patch generation. |
+
+## Confirming exploitability
+
+| Tool | What it does |
+| --- | --- |
+| `generate_poc` | Produces a proof-of-concept for a candidate vulnerability. |
+| `execute_poc` | Runs a generated PoC against a configured running target to confirm the vulnerability. Passes a safety gate first, and only executes when a target URL is configured — otherwise it returns `executed=false` with a reason and the agent falls back to reasoning-only confirmation. Supports bash, Python, and JavaScript. |
+| `vuln_poc_evaluation` | Judges the PoC result to decide whether the vulnerability is confirmed. |
+
+<Warning>
+  PoC execution requires an explicitly configured target and clears a safety screen. Without a running
+  target, agents confirm by reasoning — tracing the data flow end to end — rather than by executing an
+  exploit.
+</Warning>
+
+## Reading the outside world
+
+| Tool | What it does |
+| --- | --- |
+| `web_fetch` | Fetches a URL and extracts its text. Accepts custom headers and an extraction mode. |
+
+<Note>
+  `web_fetch` performs **reads only** — it takes a URL, headers, and an extraction mode, with no request
+  method or body. There is no built-in tool for writing to a third-party API, so agents cannot create
+  tickets or update external records through it. Console's outbound writes go through
+  [workflow outputs](/workflows/outputs).
+</Note>
+
+## Your vendors' data
+
+| Tool | What it does |
+| --- | --- |
+| `list_leen_connections` | Lists the vendor connections configured for your organization, returning each connection's id and vendor. The discovery step before either query below. |
+| `get_leen_vulnerability_findings` | Queries normalized vulnerability findings from a connected vendor. Filters by severity, state, and whether a fix is available; paginates with a cursor. |
+| `get_leen_vulnerability_finding` | Fetches one vendor finding in full. |
+
+These three are the entire vendor-data surface today, and they are scoped to **vulnerability findings**.
+See [what agents can read](/data/what-agents-can-read) for what that covers and what it doesn't.
+
+## Projects
+
+| Tool | What it does |
+| --- | --- |
+| `list_projects` | Lists the repositories connected to your organization, with ids, `owner/repo` names, and clone URLs. |
+| `clone_project` | Clones a repository into the workspace so the agent can read and search it. |
+
+## Recording results
+
+| Tool | What it does |
+| --- | --- |
+| `report_finding` | Records a confirmed vulnerability, with evidence. This is what makes a result durable rather than conversational. |
+| `list_findings` | Lists findings already recorded. |
+| `report_patch` | Attaches a verified remediation patch (a unified diff) to the finding(s) it fixes. Call it only after editing the file **and** confirming the fix. It stores the patch; it does not verify. |
+
+## Detections
+
+| Tool | What it does |
+| --- | --- |
+| `create_detection` | Stores a new detection. |
+| `list_detections` | Lists stored detections with id, name, description, and type. |
+| `get_detection` | Fetches one detection, including its rule body. |
+| `delete_detection` | Removes a detection. |
+
+## Coordination
+
+| Tool | What it does |
+| --- | --- |
+| `spawn_agent` | Spawns a sub-agent on a focused task and returns its summary. How a broad job fans out without one agent losing the thread. |
+| `spawn_multiple_agents` | Spawns several sub-agents. Used to run one child per item — a policy evaluator per detection, for instance. |
+| `activate_skill` | Loads a [skill](/agents/skills) into the agent's context on demand. |
+| `add_todo`, `start_todo`, `complete_todo`, `clear_todos` | Maintains the agent's plan as a visible todo list you can watch while it works. |
+
+## Managing agents
+
+| Tool | What it does |
+| --- | --- |
+| `create_agent`, `get_agent`, `list_agents`, `update_agent`, `delete_agent` | Lets an agent read and write agent definitions — so an agent can help you author another one. |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Write an agent" icon="file-code" href="/agents/writing-an-agent">
+    Put these names in `allowed-tools`.
+  </Card>
+
+  <Card title="Skills" icon="book" href="/agents/skills">
+    Package a procedure an agent can load on demand.
+  </Card>
+</CardGroup>

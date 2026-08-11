@@ -20,7 +20,7 @@
           "anchors": [
             {
               "anchor": "GitHub App (Preview)",
-              "href": "https://github.com/apps/console-lab",
+              "href": "https://github.com/apps/console-staging",
               "icon": "code-simple"
             }
           ]
@@ -30,7 +30,49 @@
             "group": "Get Started",
             "pages": [
               "introduction",
+              "quickstart",
               "install-console"
+            ]
+          },
+          {
+            "group": "Agents & detections",
+            "pages": [
+              "agents/overview",
+              "agents/how-agents-work",
+              "agents/writing-an-agent",
+              "agents/library",
+              "agents/skills",
+              "agents/detections",
+              "agents/tool-reference"
+            ]
+          },
+          {
+            "group": "Data & connections",
+            "pages": [
+              "data/overview",
+              "data/projects",
+              "data/connections",
+              "data/what-agents-can-read",
+              "data/findings"
+            ]
+          },
+          {
+            "group": "Working interactively",
+            "pages": [
+              "interactive/chat",
+              "interactive/cli"
+            ]
+          },
+          {
+            "group": "Workflows",
+            "pages": [
+              "workflows/overview",
+              "workflows/create-a-workflow",
+              "workflows/agent-chain",
+              "workflows/triggers",
+              "workflows/outputs",
+              "workflows/running",
+              "workflows/artifacts"
             ]
           }
         ]
@@ -108,7 +150,7 @@
     "primary": {
       "type": "button",
       "label": "Sign In",
-      "href": "https://app.console.lab.amplify.security/"
+      "href": "https://app.console.stg.amplify.security/"
     }
   },
   "footer": {
@@ -119,8 +161,56 @@
   },
   "redirects": [
     {
-      "source": "/quickstart",
-      "destination": "/legacy/quickstart"
+      "source": "/harness/overview",
+      "destination": "/agents/overview"
+    },
+    {
+      "source": "/harness/agents",
+      "destination": "/agents/how-agents-work"
+    },
+    {
+      "source": "/harness/writing-an-agent",
+      "destination": "/agents/writing-an-agent"
+    },
+    {
+      "source": "/harness/agent-library",
+      "destination": "/agents/library"
+    },
+    {
+      "source": "/harness/skills",
+      "destination": "/agents/skills"
+    },
+    {
+      "source": "/harness/detections",
+      "destination": "/agents/detections"
+    },
+    {
+      "source": "/harness/tool-reference",
+      "destination": "/agents/tool-reference"
+    },
+    {
+      "source": "/context/overview",
+      "destination": "/data/overview"
+    },
+    {
+      "source": "/context/projects",
+      "destination": "/data/projects"
+    },
+    {
+      "source": "/context/connections",
+      "destination": "/data/connections"
+    },
+    {
+      "source": "/context/vendor-data",
+      "destination": "/data/what-agents-can-read"
+    },
+    {
+      "source": "/context/findings",
+      "destination": "/data/findings"
+    },
+    {
+      "source": "/workflows/agents",
+      "destination": "/workflows/agent-chain"
     },
     {
       "source": "/sample-project",

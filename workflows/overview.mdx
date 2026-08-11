@@ -1,0 +1,85 @@
+---
+title: Workflows
+description: 'Chain agents into repeatable automation that fires on a trigger and routes its results wherever you need them.'
+---
+
+## What is a workflow?
+
+A workflow is a saved sequence of agents that Console runs against your repositories. Where chat is a
+conversation you drive turn by turn, a workflow is the same agents running unattended: you define the
+sequence once, and Console executes it whenever a trigger fires or you run it by hand.
+
+Workflows are where the other two layers pay off. [Agents, skills, and detections](/agents/overview) do
+the work; [your repositories and connections](/data/overview) give them something real to reason about. A
+workflow puts those to work on a schedule, with no one in the loop, and delivers the result to where your
+team already works.
+
+A typical workflow scans a repository for vulnerabilities, hands what it found to a second agent that
+authors reusable detections or generates patches, and routes the result to whichever outputs you have
+attached.
+
+## Anatomy of a workflow
+
+Every workflow is made of four parts. Only the first two are required.
+
+| Part | Required | What it does |
+| --- | --- | --- |
+| **Name** | Yes | Identifies the workflow. Must be unique in your organization. |
+| **Description** | Yes | States the workflow's *intent*. The orchestrating agent reads it and briefs every step against it. |
+| **Agents** | Yes | The ordered chain of agents to run. At least one, at most twenty. |
+| **Triggers** | No | When the workflow fires automatically. Manual runs are always available without a trigger. |
+| **Outputs** | No | Where the results go when the run finishes. Attach as many destinations as you need. |
+
+<Note>
+  Console's orchestrator reads the description as the goal of the whole workflow and quotes it into each
+  agent's briefing, so a vague description produces vague step instructions. See
+  [Create a workflow](/workflows/create-a-workflow#description) for how to write one.
+</Note>
+
+## What happens during a run
+
+When a workflow fires, Console does the following for **each** repository you targeted:
+
+1. **Creates a run.** Every run gets its own record, visible under [Runs](/workflows/running).
+2. **Snapshots the definition.** The run captures the workflow's name, description, and steps as they
+   are at that moment. Editing the workflow later never changes a run that is already in flight.
+3. **Provisions an isolated sandbox** and clones the repository into it. For pull-request runs, it
+   clones the pull request's head — not the default branch.
+4. **Runs the chain in order.** An orchestrating agent spawns each step's agent one at a time, waits
+   for it to finish, and passes the relevant parts of earlier steps' results into the next briefing.
+5. **Stops on failure.** If a step fails, the run stops there and later steps do not run.
+6. **Records findings** from the run, and **dispatches your outputs** once the run completes.
+
+Targeting three repositories produces three independent runs — one per repository — not one run that
+loops. Each gets its own sandbox, and one failing does not stop the others.
+
+## Where workflows live
+
+- **Workflows** — the list of workflows in your organization, with a run count for the last 7, 30, or
+  90 days. This is where you create, edit, and manually fire them.
+- **Runs** — the execution history for every workflow, including per-step status, findings, and
+  whether each output was delivered.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Create a workflow" icon="plus" href="/workflows/create-a-workflow">
+    Walk through the editor section by section.
+  </Card>
+
+  <Card title="Build the agent chain" icon="robot" href="/workflows/agent-chain">
+    How steps run in sequence and how to order them.
+  </Card>
+
+  <Card title="Configure triggers" icon="bolt" href="/workflows/triggers">
+    Decide what starts a run, and when.
+  </Card>
+
+  <Card title="Configure outputs" icon="arrow-right" href="/workflows/outputs">
+    Route results to where your team works.
+  </Card>
+
+  <Card title="Run and monitor" icon="circle-play" href="/workflows/running">
+    Fire a workflow and read its run history.
+  </Card>
+</CardGroup>

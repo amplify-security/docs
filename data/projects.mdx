@@ -1,0 +1,73 @@
+---
+title: Projects
+description: 'Connect the repositories Console clones, reads, and analyzes.'
+---
+
+## What a project is
+
+A project is a repository Console can reach. It carries a name in `owner/repo` form, a clone URL, and the
+source-control connection that authorizes access.
+
+Projects are the unit of targeting everywhere else in the product:
+
+- **Chat** clones a project on demand so an agent can read its code.
+- **Manual workflow runs** ask which projects to run against.
+- **Pull request triggers** watch a set of projects.
+- **Findings** are recorded against a project, and deduplicated within it.
+
+## Connecting a repository
+
+Projects come from a source-control [connection](/data/connections). Install the Console GitHub App for
+your organization — granting access to all repositories or a chosen subset — or connect a GitLab instance,
+and the repositories become available as projects.
+
+See [Connections](/data/connections#source-control) for both flows.
+
+<Note>
+  Access is inherited from the connection. If a repository isn't showing up, the usual cause is that the
+  GitHub App installation doesn't include it — adjust the installation's repository access rather than
+  looking for a per-project setting.
+</Note>
+
+## How code reaches an agent
+
+Console never analyzes code in place. Each run gets an isolated sandbox and clones the repository into it,
+which is why an agent can run builds and execute commands without touching anything of yours.
+
+What gets cloned depends on how the run started:
+
+| Run type | Cloned |
+| --- | --- |
+| Chat | The project you're asking about |
+| Manual workflow run | Each selected project, at its default branch — or at a [git ref](/workflows/running#run-a-workflow-manually) you pin |
+| Pull request run | The pull request's **head** — the proposed code, not the base branch |
+
+Agents can also discover and clone projects themselves through `list_projects` and `clone_project`, which is
+how a chat session pulls in a repository mid-conversation.
+
+## Local code and the CLI
+
+The CLI is the exception: it runs against **the directory you started it in**, with no project or clone
+involved. That makes it the right tool for code you're actively editing, including uncommitted changes that
+don't exist in any repository yet.
+
+Projects still matter to the CLI when it's authenticated, since detections and findings sync to your
+organization. See [The CLI](/interactive/cli).
+
+## Findings are scoped per project
+
+Findings are deduplicated within a project by identity, so the same issue rediscovered on a later run
+updates the existing finding instead of creating a second one. Run history stays readable and a recurring
+issue doesn't inflate your counts.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Connections" icon="plug" href="/data/connections">
+    Set up source control and vendor connectors.
+  </Card>
+
+  <Card title="Ask about your code" icon="message" href="/interactive/chat">
+    Start a chat against a connected project.
+  </Card>
+</CardGroup>

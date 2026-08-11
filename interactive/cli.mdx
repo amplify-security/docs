@@ -1,0 +1,132 @@
+---
+title: The CLI
+description: 'Run the same agents in your terminal, against the code you have checked out right now.'
+---
+
+## Why use the CLI
+
+The CLI runs the same agents as the web console, with one important difference: it works on **the directory
+you started it in**, on your machine.
+
+That makes it the right tool for code you're actively editing. An agent can look at uncommitted changes,
+work-in-progress branches, and files that exist nowhere but your laptop — none of which a cloud sandbox can
+reach.
+
+See [Installation](/install-console) to get set up.
+
+## Web console vs. CLI
+
+The agents' capabilities are the same. What differs is where they run and what they can reach.
+
+|  | Web console | CLI |
+| --- | --- | --- |
+| Runs in | An isolated cloud sandbox | Your own machine |
+| Code it analyzes | Clones connected projects on demand | The directory you started it in |
+| Uncommitted changes | Not visible | Visible |
+| Chat history | Saved to your organization; resume, rename, archive | Not persisted between sessions |
+| Choosing a model | Model picker | `/model` |
+| Slash commands | Not available | `/help`, `/model`, `/skills`, `/skill`, `/context`, `/clear`, `/quit` |
+| One-shot prompts | Not available | `console --prompt "..."` |
+| Authoring skills | Not available | Files on disk |
+| Starting from a finding | Yes | No |
+| Works offline | No | Yes |
+
+## Starting a session
+
+```bash
+cd ~/src/hello-world
+console
+```
+
+Ask it something:
+
+- *Find and resolve any vectors for XSRF/XSS attacks within this project.*
+- *Are there any exposed service endpoints in this project that shouldn't be?*
+
+The footer shows whether you're connected to Amplify Cloud (and which organization) or running offline, plus
+the active model.
+
+## One-shot prompts
+
+Run a single prompt and exit — useful in scripts, git hooks, and CI:
+
+```bash
+console --prompt "Scan this project for vulnerabilities"
+```
+
+It prints the agent's final answer and exits. Also `--version`.
+
+## Slash commands
+
+| Command | Aliases | What it does |
+| --- | --- | --- |
+| `/help` | `/?` | Lists all commands |
+| `/model` | | Opens the model picker |
+| `/skills` | | Lists available skills and which are active |
+| `/skill <name>` | | Toggles a skill on or off |
+| `/context <org>` | | Switches organization |
+| `/clear` | | Clears the conversation |
+| `/quit` | `/q`, `/exit` | Exits |
+
+Type `/` to get an autocomplete dropdown rather than memorizing them.
+
+### The model picker
+
+`/model` opens a tabbed picker:
+
+- **Popular** — a curated shortlist. Works even if the model catalog is unreachable.
+- **Browse** — grouped by provider; drill into one to see its models.
+- **Search** — substring match across the full catalog, with pricing and context length per model.
+
+Switching models mid-session carries your context forward via a summary, the same as the web console, and the
+transcript notes the switch.
+
+## Authoring skills and agents
+
+The CLI is where [skills](/agents/skills) are authored, because it loads both skills and agents from the
+filesystem:
+
+```
+~/.amplify/skills/<name>/SKILL.md     # available in every session
+~/.amplify/agents/<name>/AGENT.md
+./skills/<name>/SKILL.md              # project-local
+./agents/<name>/AGENT.md
+```
+
+Override with `AMPLIFY_SKILLS_DIR` and `AMPLIFY_AGENTS_DIR`. Both load at startup, so restart after adding
+one.
+
+The loop is quick: write the file, restart, `/skill <name>` to activate, then give the agent a task that
+should trigger it.
+
+## Offline mode
+
+Without an Amplify API key the CLI runs fully local: detections and findings go to a SQLite database under
+`~/.amplify` instead of your organization, and the footer shows a red **offline mode** indicator.
+
+Once authenticated, detections write through to your organization instead, so work done locally shows up for
+your team.
+
+## Cancelling and exiting
+
+<kbd>Ctrl+C</kbd> cancels a running turn and leaves the session open so you can redirect. Pressing it again
+when nothing is running exits.
+
+## What the CLI doesn't do
+
+- **No persistent chat history.** Sessions aren't saved; `/clear` is final and there's no resuming a past
+  conversation. Findings and detections do persist.
+- **No input history recall.** Arrow keys don't walk previous messages.
+- **No workflows.** Workflows are a cloud feature — the CLI runs agents interactively, one session at a time.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Write a skill" icon="book" href="/agents/skills">
+    The CLI is where skills are authored.
+  </Card>
+
+  <Card title="Install the CLI" icon="terminal" href="/install-console">
+    Setup and API keys.
+  </Card>
+</CardGroup>

@@ -1,0 +1,90 @@
+---
+title: What a run produces
+description: 'Findings, patches, and the artifact model behind them.'
+---
+
+## Two kinds of result
+
+A workflow run produces results in two places, and it's worth keeping them straight:
+
+| Result | Where it lives | Durable? |
+| --- | --- | --- |
+| **Findings and patches** | Your organization, attached to the project and the run | Yes — they outlive the run |
+| **Output deliveries** | The pull request, as comments or a check | Yes, but they're a *copy* delivered elsewhere |
+
+The run itself is a record — status, per-step timings, which agents ran. The *results* are what the agents
+recorded while running.
+
+## Findings
+
+The primary output. When an agent confirms a vulnerability it records a
+[finding](/data/findings) with the affected file and symbol, its reasoning, and provenance back to the run
+and the detection that produced it.
+
+Findings are deduplicated per project, so a recurring issue updates in place rather than accumulating
+duplicates across runs.
+
+## Patches
+
+When patch generation is part of the chain, an agent that fixes a finding records the resulting diff against
+that finding.
+
+Patches are verified before they're recorded, not proposed speculatively: the agent edits the file, re-runs
+the detection to confirm the match is gone — for policy detections, an independent read-only verifier judges
+the result — and only then captures the diff. That's why a finding's suggested fix can
+[open a pull request](/data/findings#accepting-a-fix) directly.
+
+## The artifact model
+
+Underneath findings and patches, Console stores results as **artifacts**. An artifact has:
+
+- A **kind** — what type of thing it is
+- A **summary** — a short description
+- **Files** — one or more, each with a path, a content type, and its contents
+- **Subjects** — optionally, the findings the artifact addresses
+
+This model is deliberately open-ended: an artifact is *a set of files an agent produced, with provenance and
+optional linkage to the findings it relates to*. Nothing about it is specific to security. A risk assessment,
+a compliance report, a threat model, a generated test suite are all describable in the same shape.
+
+<Note>
+  Today the only artifact kind produced in practice is the **patch**. The model is general, but patch
+  generation is the one producer that's wired up. Treat the broader shape as where this is heading, not as a
+  set of features to build against right now.
+</Note>
+
+## Getting results out
+
+Recording a result and delivering it are different steps. A run's results sit in Console until an
+[output](/workflows/outputs) pushes them somewhere:
+
+| Output | Delivers |
+| --- | --- |
+| Comment on triggering pull request | Findings as review comments, with links back to the full finding |
+| Gate merging on security review | A required check reflecting the run's verdict |
+
+Both act on the pull request that triggered the run, so they're skipped on manual runs.
+
+<Warning>
+  These two destinations are the whole set today. There's no built-in delivery to ticketing systems, chat
+  tools, or arbitrary webhooks, and no general outbound-write tool — `web_fetch` performs reads only. If you
+  need results elsewhere, read them from Console rather than expecting a workflow to push them.
+</Warning>
+
+## Inspecting a run's results
+
+Open the run from **Runs** or from **View runs** on the workflow. You'll see the step chain with per-step
+status and duration, the findings the run produced, and each output with its delivery status. See
+[running a workflow](/workflows/running#follow-a-run).
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Findings" icon="magnifying-glass" href="/data/findings">
+    Review results and accept fixes.
+  </Card>
+
+  <Card title="Outputs" icon="arrow-right" href="/workflows/outputs">
+    Deliver results to pull requests.
+  </Card>
+</CardGroup>

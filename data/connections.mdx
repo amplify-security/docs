@@ -1,0 +1,109 @@
+---
+title: Connections
+description: 'Connect your source control provider and the security and IT vendors you already run.'
+---
+
+## Two kinds of connection
+
+The **Connections** page handles two different jobs behind one interface:
+
+| Kind | What it enables |
+| --- | --- |
+| **Source control** | Cloning repositories, pull request triggers, review comments, merge gates |
+| **Vendor connectors** | Reading signal from the security and IT tools you already run |
+
+Source control is what makes Console able to *act* on your code. Vendor connectors are what let it reason
+about findings your existing stack has already produced.
+
+## Source control
+
+### GitHub
+
+Install the Console GitHub App for your organization. You can grant access to every repository or pick a
+subset; the repositories you grant become [projects](/data/projects).
+
+The App is what powers:
+
+- Cloning repositories into sandboxes
+- [Pull request triggers](/workflows/triggers#pull-request-triggers) firing on open, reopen, and new commits
+- [Review comments](/workflows/outputs#comment-on-triggering-pull-request)
+- [Merge gates](/workflows/outputs#gate-merging-on-security-review) as required checks
+- Opening a pull request from a [finding's suggested fix](/data/findings#accepting-a-fix)
+
+See [Installation](/install-console#install-the-github-app) for the install flow.
+
+### GitLab
+
+Connect a GitLab instance by providing its host URL, the project, and a personal access token.
+
+<Note>
+  GitLab supports cloning and merge request comments. **Merge blocking is not supported yet** — a
+  [merge gate](/workflows/outputs#gitlab) on a GitLab run is recorded as skipped.
+</Note>
+
+## Vendor connectors
+
+Console connects to the security and IT tools you already run, so agents can reason about the findings
+already sitting in them.
+
+Open **Connections**, add a connection, and search the connector catalog. Connectors are grouped by
+category:
+
+| Category | Covers |
+| --- | --- |
+| **EDR** | Endpoint detection and response |
+| **AppSec** | Application security scanners — SAST, SCA, and similar |
+| **VMS** | Vulnerability management |
+| **CSPM** | Cloud security posture management |
+| **IDP** | Identity providers |
+| **GRC** | Governance, risk, and compliance |
+| **TPRM** | Third-party risk management |
+| **ITSM** | IT service management and ticketing |
+
+The catalog is searchable by vendor name or slug, and a connector spanning more than one category appears
+under each — AWS Inspector shows up under both AppSec and VMS, for instance.
+
+Completing a connection walks you through that vendor's own authorization flow. Console stores the resulting
+connection and never handles the underlying vendor API key directly — requests are brokered server-side.
+
+<Warning>
+  Connecting a vendor and *reading from it* are two different things. A connection can be established for any
+  connector in the catalog, but what an agent can query today is scoped to **vulnerability findings**. An
+  agent can read your Snyk or Semgrep backlog; it cannot read Jira issues or Cloudflare configuration.
+
+  Read [what agents can read](/data/what-agents-can-read) before designing a workflow around a connection.
+</Warning>
+
+## Which connections do you need?
+
+| If you want to | You need |
+| --- | --- |
+| Ask an agent about your code | A source-control connection |
+| Run workflows on pull requests | GitHub |
+| Block merges on security review | GitHub |
+| Triage an existing scanner backlog against real code | An AppSec or VMS connector |
+| Just use the CLI on local code | Nothing — the CLI reads your working directory |
+
+## Troubleshooting
+
+**A repository isn't available as a project.** The GitHub App installation probably doesn't include it.
+Adjust the installation's repository access.
+
+**An output shows Failed on a run.** Confirm the App is still installed for that repository and has
+permission to write checks and pull request comments. See
+[checking delivery](/workflows/outputs#checking-delivery).
+
+**The connector catalog is empty or won't load.** The catalog is fetched when you open the dialog, so a
+transient upstream failure shows there without affecting the rest of the page. Retry.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="What agents can read" icon="database" href="/data/what-agents-can-read">
+    The exact vendor-data surface today.
+  </Card>
+
+  <Card title="Projects" icon="folder-tree" href="/data/projects">
+    Turn a connection into analyzable code.
+  </Card>
+</CardGroup>
