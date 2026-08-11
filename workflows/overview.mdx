@@ -1,22 +1,22 @@
 ---
 title: Workflows
-description: 'Chain security agents into a repeatable, automated review you can trigger on demand or on every pull request.'
+description: 'Chain agents into repeatable automation that fires on a trigger and routes its results wherever you need them.'
 ---
 
 ## What is a workflow?
 
 A workflow is a saved sequence of agents that Console runs against your repositories. Where chat is a
 conversation you drive turn by turn, a workflow is the same agents running unattended: you define the
-sequence once, and Console executes it whenever you fire it manually or when a pull request opens.
+sequence once, and Console executes it whenever a trigger fires or you run it by hand.
 
 Workflows are where the other two layers pay off. [Agents, skills, and detections](/agents/overview) do
 the work; [your repositories and connections](/data/overview) give them something real to reason about. A
 workflow puts those to work on a schedule, with no one in the loop, and delivers the result to where your
 team already works.
 
-A typical workflow scans a repository for vulnerabilities, then hands what it found to a second agent
-that authors reusable detections or generates patches — and finally posts the result back to the pull
-request that started it.
+A typical workflow scans a repository for vulnerabilities, hands what it found to a second agent that
+authors reusable detections or generates patches, and routes the result to whichever outputs you have
+attached.
 
 ## Anatomy of a workflow
 
@@ -25,14 +25,14 @@ Every workflow is made of four parts. Only the first two are required.
 | Part | Required | What it does |
 | --- | --- | --- |
 | **Name** | Yes | Identifies the workflow. Must be unique in your organization. |
-| **Description** | Yes | States the workflow's *intent*. This is not a comment — the orchestrating agent reads it and briefs every step against it. |
+| **Description** | Yes | States the workflow's *intent*. The orchestrating agent reads it and briefs every step against it. |
 | **Agents** | Yes | The ordered chain of agents to run. At least one, at most twenty. |
 | **Triggers** | No | When the workflow fires automatically. Manual runs are always available without a trigger. |
-| **Outputs** | No | Where the results go when the run finishes — a pull request comment, a merge gate, or both. |
+| **Outputs** | No | Where the results go when the run finishes. Attach as many destinations as you need. |
 
 <Note>
-  The description does real work. Console's orchestrator reads it as the goal of the whole workflow and
-  quotes it into each agent's briefing, so a vague description produces vague step instructions. See
+  Console's orchestrator reads the description as the goal of the whole workflow and quotes it into each
+  agent's briefing, so a vague description produces vague step instructions. See
   [Create a workflow](/workflows/create-a-workflow#description) for how to write one.
 </Note>
 
@@ -72,11 +72,11 @@ loops. Each gets its own sandbox, and one failing does not stop the others.
   </Card>
 
   <Card title="Configure triggers" icon="bolt" href="/workflows/triggers">
-    Fire on pull requests, or run on demand.
+    Decide what starts a run, and when.
   </Card>
 
   <Card title="Configure outputs" icon="arrow-right" href="/workflows/outputs">
-    Post comments and gate merges on review.
+    Route results to where your team works.
   </Card>
 
   <Card title="Run and monitor" icon="circle-play" href="/workflows/running">

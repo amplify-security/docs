@@ -25,7 +25,7 @@ it at something specific and ask it to dig in.
 
 ## Watching it work
 
-A session shows you what the agent is doing rather than just its conclusion:
+A session shows you what the agent is doing as it works:
 
 - **Tool calls** appear as they run, with a status dot and the command or arguments, so you can see the
   reasoning path.
@@ -34,8 +34,7 @@ A session shows you what the agent is doing rather than just its conclusion:
 - **The Tools panel** on the right lists every tool call in the session; click one to jump to it in the
   transcript.
 
-This visibility is the point. When an agent reaches a wrong conclusion, the tool trail usually shows exactly
-where it went sideways.
+When an agent reaches a wrong conclusion, the tool trail usually shows exactly where it went sideways.
 
 ## Sessions
 
@@ -80,8 +79,8 @@ Chat is exploratory by design. Once you've asked the same question a third time,
 | --- | --- |
 | You pick the repository each time | The trigger names the repositories |
 | You type the task | The workflow's description and agent chain encode it |
-| You read the answer | [Outputs](/workflows/outputs) deliver it to the pull request |
-| Runs when you remember | Runs on every pull request |
+| You read the answer | [Outputs](/workflows/outputs) deliver it where your team works |
+| Runs when you remember | Runs whenever its trigger fires |
 
 The translation is usually direct: the prompt you refined becomes the workflow description, and the agents you
 found useful become the chain.

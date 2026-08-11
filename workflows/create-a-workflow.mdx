@@ -23,8 +23,9 @@ sections to fill in, top to bottom. Nothing is saved until you click **Save**.
 
 ## Name
 
-The field at the top of the editor. It identifies the workflow in lists, run history, and — if you add
-a merge gate — in the GitHub check that appears on pull requests.
+The field at the top of the editor. It identifies the workflow in lists, run history, and — if you add a
+[merge gate](/workflows/outputs#gate-merging-on-security-review) — in the GitHub check that appears on
+pull requests.
 
 - Required, and must be unique within your organization.
 - Choose something durable. Once a workflow has a **merge gate** output, its name is locked, because
@@ -43,8 +44,7 @@ chain through an orchestrating agent, and that orchestrator:
 2. Composes a briefing for each step, quoting the description so the agent knows the larger goal.
 3. Passes the relevant parts of earlier steps' results into later steps.
 
-So the description isn't documentation for your teammates — it's the instruction that shapes every
-step's task. Write it as a goal, in plain language.
+The description is the instruction that shapes every step's task, so write it as a goal, in plain language.
 
 **Good:**
 

@@ -8,9 +8,9 @@ description: 'Reusable rules that outlive any one conversation — OpenGrep patt
 A finding describes one moment: this file, this commit, this vulnerability. A **detection** is the rule
 behind it, and it keeps checking forever.
 
-This is the difference between an agent that's useful once and a platform that compounds. When an agent
-confirms a vulnerability, the valuable output isn't only the fix — it's the rule that catches the same
-mistake in every repository from then on, cheaply, without an agent having to re-derive it.
+That is what makes the work compound. When an agent confirms a vulnerability, the durable value is the rule
+it leaves behind: one that catches the same mistake in every repository from then on, cheaply, with no agent
+needing to re-derive it.
 
 ## Detection types
 
@@ -35,8 +35,8 @@ OpenGrep rules support two modes:
 - **`taint`** — track data flow. Declare `pattern-sources`, `pattern-sinks`, and optionally
   `pattern-sanitizers`; a match is a source reaching a sink with nothing neutralizing it in between.
 
-Taint mode is the one that earns its keep for security work, because it encodes *reachability* rather than
-mere presence.
+Taint mode is the one that matters most for security work: it encodes *reachability*, which is usually the
+question you actually care about.
 
 Rules carry a severity of `INFO`, `WARNING`, or `ERROR`, and OpenGrep filters by the rule's own `languages`
 field at run time — so an irrelevant rule exits cheaply rather than wasting a pass.

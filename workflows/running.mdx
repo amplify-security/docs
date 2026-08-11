@@ -60,7 +60,8 @@ A run page refreshes itself while the run is active, so you can leave it open.
 Open the run and click **Cancel**. Console stops the agent chain and tears down the sandbox.
 
 Cancelling doesn't undo anything already done — findings recorded before the cancellation stay, and any
-output already delivered stays delivered. If a merge gate was posted, a cancelled run leaves it blocking
+output already delivered stays delivered. If a [merge gate](/workflows/outputs#gate-merging-on-security-review)
+was posted, a cancelled run leaves it blocking
 rather than passing.
 
 ## Reading a failed run

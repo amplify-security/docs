@@ -17,8 +17,7 @@ workflow definition and drives it:
 5. When every step succeeds, it writes a short summary of what each step did and how the results chained
    together.
 
-Steps never run in parallel. That's the point of a chain — each step gets to see what the previous one
-produced.
+Steps run strictly in sequence, so each one can see what the previous step produced.
 
 <Note>
   If a step fails, the run **stops immediately** and later steps do not run. Workflow steps do not retry by
@@ -46,7 +45,7 @@ Two descriptions shape every step's briefing:
 
 A vague description on either produces a vague briefing. This is the most common reason a chain
 underperforms, and it's usually fixed by editing prose rather than by changing agents. See
-[writing an agent](/agents/writing-an-agent#description-is-not-a-comment).
+[writing an agent](/agents/writing-an-agent#the-description-is-read-at-runtime).
 
 ## Choosing agents
 

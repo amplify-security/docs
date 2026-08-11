@@ -51,11 +51,11 @@ That's the entire contract. No build step, no registration.
 | `timeout` | No | positive int (ms) | Wall-clock limit for one execution. |
 | `sequential-spawns` | No | boolean | Rejects concurrent `spawn_agent` calls, forcing one child at a time. |
 
-### `description` is not a comment
+### The description is read at runtime
 
-The description does real work at runtime. When a workflow runs your agent, the orchestrator reads the
-description to compose that step's briefing, and reflects the agent's stated role back at it. Other agents
-deciding whether to delegate also see only the name and description.
+The description does real work. When a workflow runs your agent, the orchestrator reads the description to
+compose that step's briefing and reflects the agent's stated role back at it. Other agents deciding whether
+to delegate see only the name and description, so those two lines are the whole interface.
 
 A vague description produces a vague briefing. Write it as a precise statement of what the agent does and
 what it produces:

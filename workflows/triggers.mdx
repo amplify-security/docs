@@ -34,8 +34,8 @@ request is:
 - **Updated with new commits**
 
 An update supersedes the earlier run — Console cancels the in-flight run and starts a fresh one at the
-new head commit, so a merge gate re-evaluates against the code that's actually there now rather than
-staying stuck on a verdict for a commit nobody is merging.
+new head commit, so a [merge gate](/workflows/outputs#gate-merging-on-security-review) re-evaluates against
+the code that's actually there now, instead of staying stuck on a verdict for a commit nobody is merging.
 
 ### Repositories
 

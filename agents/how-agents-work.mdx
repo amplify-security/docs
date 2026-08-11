@@ -8,10 +8,10 @@ description: 'What an agent is, how it runs, and how agents delegate to each oth
 An agent is a participant in the harness: a model, a set of tools it may call, a budget, and a body of
 instructions. Give it a task and it works until the task is done or the budget runs out.
 
-Unlike a scanner, an agent decides what to do next based on what it just learned. It reads a file, notices a
-suspicious call, traces the caller, runs a command to check a hypothesis, and either confirms or discards it.
-That loop — reason, act, observe, reason again — is what makes agents suited to security work, where the
-interesting questions are about *whether* something is reachable rather than *whether* a pattern appears.
+An agent decides what to do next based on what it just learned. It reads a file, notices a suspicious call,
+traces the caller, runs a command to check a hypothesis, and either confirms or discards it. That loop —
+reason, act, observe, reason again — suits security work, where the question is usually reachability: can an
+attacker actually get there?
 
 ## How a run proceeds
 

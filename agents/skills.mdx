@@ -5,9 +5,9 @@ description: 'Package a procedure an agent loads on demand — and when to write
 
 ## What a skill is
 
-A skill is a documented procedure an agent loads when it becomes relevant. It's a Markdown file with YAML
-frontmatter, same as an agent, but it isn't a participant: it has no model, no budget, and it never runs on
-its own. An agent calls `activate_skill` and the skill's instructions enter its context.
+A skill is a documented procedure an agent loads when it becomes relevant — a Markdown file with YAML
+frontmatter, same shape as an agent. A skill has no model and no budget of its own: an agent calls
+`activate_skill`, and the skill's instructions enter that agent's context and run on its budget.
 
 The reason skills exist is context economy. A comprehensive scanner might know how to analyze twenty
 vulnerability classes, but loading all twenty procedures up front would crowd out the code it's supposed to

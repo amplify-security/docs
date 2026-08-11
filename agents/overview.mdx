@@ -18,7 +18,7 @@ everything else in the product is built on top of them.
 | **[Skill](/agents/skills)** | A procedure an agent loads on demand | Markdown + YAML frontmatter | CLI, API |
 | **[Detection](/agents/detections)** | A rule that can be run repeatedly against code | OpenGrep YAML, or a natural-language policy | Web console, CLI |
 
-The distinction between them is worth getting right, because it's the most common early mistake:
+Telling them apart is the most common early stumble:
 
 - An **agent** is *who* is working. It has its own model, tool permissions, and budget.
 - A **skill** is *how* to do one thing well. It has no budget of its own — an agent loads it when the
@@ -28,8 +28,8 @@ The distinction between them is worth getting right, because it's the most commo
 
 ## Yours are first-class
 
-Console ships a library of agents, skills, and detections. Anything you write sits alongside them with no
-second-class status — the orchestrator that runs workflows treats platform and organization agents
+Console ships a library of agents and skills to start from. Detections are yours to build up — nothing is
+prebuilt there. Anything you write sits alongside the built-ins with no second-class status — the orchestrator that runs workflows treats platform and organization agents
 identically, briefing both from their stated `description`.
 
 An agent you write with the same name as a built-in one **shadows** it. That's the supported way to
@@ -56,7 +56,7 @@ A realistic chain uses all three primitives at once:
 4. It records **findings**, and optionally a patch.
 5. A workflow **output** posts the result to the pull request.
 
-Each layer is replaceable. That's the point of a harness.
+Each layer is replaceable independently.
 
 ## Next steps
 

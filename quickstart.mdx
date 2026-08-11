@@ -25,11 +25,10 @@ Open **Console** in the sidebar and start a new chat. Ask a question about the r
 > Look at this repository and tell me where user input reaches a database query without parameterization.
 
 Watch what happens. The agent clones the repository, reads files, searches, and traces call paths — and you
-see each tool call as it runs. This is the difference between an agent and a scanner: it's deciding what to
-look at next based on what it just found.
+see each tool call as it runs. It decides what to look at next based on what it just found.
 
-Try following up. *Is that actually reachable from an HTTP handler?* The agent investigates rather than
-re-answering from memory.
+Try following up. *Is that actually reachable from an HTTP handler?* The agent goes back to the code to
+answer.
 
 If it confirms something, it records a [finding](/data/findings) — durable, with its reasoning attached.
 
@@ -78,8 +77,8 @@ Open **Workflows** and click **New workflow**.
 
 Click **Save**.
 
-The description isn't decoration — Console's orchestrator reads it as the goal and briefs your agent against
-it. Write it as an instruction, not a label. See [create a workflow](/workflows/create-a-workflow#description).
+Console's orchestrator reads the description as the goal and briefs your agent against it, so write it as an
+instruction. See [create a workflow](/workflows/create-a-workflow#description).
 
 ## 5. Run it
 

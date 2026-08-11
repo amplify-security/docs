@@ -9,9 +9,8 @@ Console is Amplify Security's AI harness for security work. It supplies the mach
 orchestration, tool execution, isolated sandboxes, sub-agent delegation — and you supply the domain
 logic: the agents that reason, the skills they follow, and the detections they enforce.
 
-That distinction matters. Console is not a scanner with a fixed set of checks. It's a harness you point
-at your own problems, and you get the most out of it by defining your own agents rather than only using
-the ones we ship.
+Teams get the most out of Console by writing their own agents and detections — encoding the security
+questions that matter for their codebase and their stack, then pointing those agents at them.
 
 <Note>
   Console is currently in alpha, undergoing rapid development. Contact
@@ -40,29 +39,29 @@ Everything in Console fits into one of three layers, and they build on each othe
 ### 1. Agents and detections
 
 An **agent** is a Markdown file with YAML frontmatter: the frontmatter declares its name, model, and
-which tools it may use, and the body is its instructions. That's the whole format, which is why writing
-one is a text-editing task rather than a programming one.
+which tools it may use, and the body is its instructions. That's the whole format — you write an agent in a
+text editor, and it runs.
 
 Agents delegate to sub-agents, load **skills** for specialized procedures, and run **detections** —
-reusable rules that outlive any single conversation. Console ships a library of each, and yours sit
-alongside them as equals.
+reusable rules that outlive any single conversation. Console ships a library of agents and skills to
+start from; detections are yours to build up as you go. Anything you write sits alongside the built-ins
+as an equal.
 
 ### 2. Data and connections
 
 An agent with nothing to look at is just a chatbot. Console draws on two sources:
 
 - **Projects** — the repositories it clones and reads.
-- **Connections** — your source control provider, plus the security and IT vendors you already run.
-  Connect Semgrep, Snyk, Cloudflare, Jira and others through the connector catalog.
+- **Connections** — your source control provider, plus the security and IT vendors you already run,
+  added from the [connector catalog](/data/connections#vendor-connectors).
 
 You put that to work two ways: interactively in **chat**, or declaratively in a **workflow**.
 
 ### 3. Workflows
 
-Workflows are where it comes together. A workflow chains agents into an ordered sequence, fires on a
-schedule you choose — manually, or automatically on every pull request — and delivers results where your
-team already works: as review comments, or as a required check that blocks merging until security review
-passes.
+Workflows are where it comes together. A workflow chains agents into an ordered sequence, fires on the
+**triggers** you configure, and routes whatever it produces to the **outputs** you attach. Run one on
+demand, or let events in your connected systems start it for you.
 
 ## Two interfaces
 
