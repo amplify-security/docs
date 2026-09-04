@@ -35,29 +35,26 @@ pull requests.
 
 ## Description
 
-A short statement of what the whole workflow is for.
+A short statement of what the whole workflow is for — shown in the workflow list and in run history so
+your team can tell workflows apart at a glance.
 
-This is the most important field in the editor, and the easiest to underestimate. Console runs your
-chain through an orchestrating agent, and that orchestrator:
-
-1. Reads the description as the **intent** of the entire workflow.
-2. Composes a briefing for each step, quoting the description so the agent knows the larger goal.
-3. Passes the relevant parts of earlier steps' results into later steps.
-
-The description is the instruction that shapes every step's task, so write it as a goal, in plain language.
+It doesn't shape what any step does. Each agent in the chain already carries its own instructions, and runs
+the same way whether it's the only step or one of many — write the description for the humans who'll read
+the workflow list, not as an instruction to the chain:
 
 **Good:**
 
-> Scan the pull request for injection and access-control vulnerabilities, then generate a patch for
-> anything confirmed exploitable and post it as a review comment.
+> Scans pull requests for injection and access-control vulnerabilities, patches anything confirmed
+> exploitable, and posts the result as a review comment.
 
-**Too vague:**
+**Too vague to tell apart from your other workflows:**
 
 > Security workflow.
 
 <Note>
-  If your description and your agent chain disagree, the chain wins — the orchestrator runs the steps
-  as declared and notes the disagreement in its summary. Keep the two aligned.
+  If you want a step to behave differently, change that agent or its own `description` — see
+  [writing an agent](/agents/writing-an-agent). The workflow description is documentation, not an
+  instruction.
 </Note>
 
 ## Triggers
@@ -79,16 +76,17 @@ See [Triggers](/workflows/triggers) for the full details.
 *Required.* The ordered chain of agents that does the actual work.
 
 Click the **+** button to search the agent library and add an agent. Each one becomes a step, drawn as
-a pill with an arrow to the next — the chain reads left to right, and that's the order it runs in.
+a pill with an arrow to the next — the chain reads left to right.
 
 - **At least one** agent, **at most twenty**.
 - **Reorder** by dragging a pill.
 - **Remove** a step by clicking the grip icon on its pill and choosing *Remove from chain*.
 
-Steps run strictly one at a time. Each waits for the previous one to finish, and if any step fails the
-run stops there — later steps don't run.
+The order you drag steps into sets which *earlier* steps a later one can draw on — see
+[the agent chain](/workflows/agent-chain) for how that actually determines when each step runs. If any
+step fails, nothing depending on it runs and the run ends in error.
 
-See [The agent chain](/workflows/agent-chain) for how sequencing works, and [the agent library](/agents/library) for which agents to use.
+See [the agent library](/agents/library) for which agents to use.
 
 ## Output
 

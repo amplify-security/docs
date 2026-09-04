@@ -37,7 +37,9 @@ organization; filter it by **status** or by **workflow name**.
 Open a run to see:
 
 - **The chain** — each step drawn in order with its agent name, how long it took, and its status icon.
-  Steps light up as they complete, so you can watch progress on a running workflow.
+  Steps light up as they complete, so you can watch progress on a running workflow. A step that fanned out
+  into more than one agent run shows the count (`×3`); hover a **Skipped** step to see why, in the run's own
+  words — for example, no findings had been produced yet, or none matched what that step groups by.
 - **Findings** — what the run confirmed, linked through to the full finding.
 - **Outputs** — each configured destination and whether it was delivered. See
   [checking delivery](/workflows/outputs#checking-delivery).
@@ -51,9 +53,16 @@ A run page refreshes itself while the run is active, so you can leave it open.
 | --- | --- |
 | **Pending** | Queued. Console is provisioning a sandbox and cloning the repository. |
 | **Running** | The agent chain is executing. |
-| **Completed** | Every step finished successfully and outputs were dispatched. |
-| **Error** | A step failed. The run stopped there and later steps did not run. |
+| **Completed** | Every step finished — or was legitimately skipped — and outputs were dispatched. |
+| **Error** | A step failed. Nothing depending on it ran. |
 | **Cancelled** | Cancelled by you, or superseded by a newer run from the same trigger. |
+
+<Note>
+  An individual step can also show **Skipped** — its input was empty, or nothing in it matched what the
+  step [groups by](/agents/writing-an-agent#group-by). A skipped step is not a failure: the run around it
+  still completes normally. It's a separate, distinct outcome from a step that ran and simply found
+  nothing to report.
+</Note>
 
 ## Cancel a run
 
@@ -66,8 +75,9 @@ rather than passing.
 
 ## Reading a failed run
 
-A run ending in **Error** stops at the failing step. Open it and look at the chain: the step with the
-error icon is where it stopped, and everything to its right never ran.
+A run ending in **Error** has a step with the error icon — that's where something failed. Any step that
+depended on it never ran at all; an independent step elsewhere in the chain may have already finished
+before the failure landed, and keeps its own result.
 
 Common causes:
 

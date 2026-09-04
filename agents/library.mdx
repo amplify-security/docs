@@ -37,12 +37,20 @@ defined budget so the results stay reviewable.
 These two are the ends of a loop worth understanding: `detection-author` turns a one-time discovery into a
 permanent rule, and `detections-runner` is what applies every rule you've accumulated from then on.
 
-## Review
+## Patching
 
 | Agent | What it does |
 | --- | --- |
-| `code-reviewer` | Reviews code for security vulnerabilities, performance issues, and best practices. |
-| `security-analyzer` | Deep security analysis with taint tracking and vulnerability assessment. |
+| `patch-generator` | Generates a verified patch for one detection's findings in one file: edits the file, re-runs the detection to confirm the fix, captures the diff, and records it. |
+
+Add it as its own step after any agent that produces findings — `detections-runner`, a vulnerability
+scanner, or one of your own. It [consumes findings grouped by detection and file](/agents/writing-an-agent#group-by)
+by default, so it runs once per (detection, file) pair rather than once per individual match.
+
+<Note>
+  Patch generation used to be a setting on `detections-runner` itself. It's its own step now — if your
+  workflow used the old setting, Console already added `patch-generator` as a step for you.
+</Note>
 
 ## Agents spawned by other agents
 
@@ -51,18 +59,11 @@ steps:
 
 | Agent | Spawned by | Role |
 | --- | --- | --- |
-| `patch-generator` | `detections-runner`, when patch generation is enabled | Generates a verified patch for one detection's findings in one file: edits the file, re-runs the detection to confirm the fix, captures the diff, and records it. |
 | `policy-evaluator` | `detections-runner` | Evaluates one policy detection against the repository, bound to that detection so every finding links back to it. |
 | `policy-fix-verifier` | `patch-generator` | Independently judges whether a patched file still violates a policy. Deliberately read-only — it returns a verdict and cannot report findings or edit code. |
 
 You *can* name one as a workflow step, but they expect a briefing their usual parent provides, so they work
 best left to it.
-
-## The orchestrator
-
-`workflow-runner` is the agent that executes workflows: it reads a workflow's description and steps, spawns
-each step's agent in order, and composes each briefing. You don't add it to a chain — it *is* the chain. See
-[the agent chain](/workflows/agent-chain) for how it composes briefings.
 
 ## Common chains
 
@@ -72,7 +73,8 @@ each step's agent in order, and composes each briefing. You don't add it to a ch
 | Standard pull request review | `vulnerability-scanner-standard` |
 | Turn findings into permanent rules | `vulnerability-scanner-standard` → `detection-author` |
 | Apply everything you've already vetted | `detections-runner` |
-| Deep audit | `vulnerability-scanner-comprehensive` → `security-analyzer` |
+| Apply everything you've already vetted, and patch it | `detections-runner` → `patch-generator` |
+| Deep audit | `vulnerability-scanner-comprehensive` |
 
 ## Next steps
 
