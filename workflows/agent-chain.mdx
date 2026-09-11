@@ -64,12 +64,12 @@ The rules of thumb:
 
 | Goal | Chain |
 | --- | --- |
-| Fast pull request check | `vulnerability-scanner-basic` |
-| Standard pull request review | `vulnerability-scanner-standard` |
+| Fastest signal | `vulnerability-scanner-basic` |
+| Balanced scan | `vulnerability-scanner-standard` |
+| Deepest audit | `vulnerability-scanner-comprehensive` |
 | Turn findings into permanent rules | `vulnerability-scanner-standard` → `detection-author` |
 | Apply everything you've already vetted | `detections-runner` |
 | Apply everything you've already vetted, and patch it | `detections-runner` → `patch-generator` |
-| Deep audit | `vulnerability-scanner-comprehensive` |
 
 ## Editing a chain
 
