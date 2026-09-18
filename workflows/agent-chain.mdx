@@ -1,56 +1,46 @@
 ---
 title: The agent chain
-description: 'How workflow steps run in sequence, pass results forward, and how to order them.'
+description: 'How workflow steps depend on each other, pass results forward, and how to order them.'
 ---
 
 ## How the chain runs
 
-The agents you add to a workflow form an ordered chain. When a run starts, an orchestrating agent takes your
-workflow definition and drives it:
+The agents you add to a workflow form a chain, and what each one **[produces and consumes](/agents/writing-an-agent#contracts-what-a-step-produces-and-consumes)**
+decides how it actually runs:
 
-1. It reads your **description** as the goal of the whole workflow.
-2. It walks the chain **in declared order**, spawning one agent at a time.
-3. For each step it composes a briefing from the workflow's intent, that agent's role, what triggered the run
-   (for a pull-request run: the PR number, head and base commits, the diff), and the relevant parts of earlier
-   steps' results.
-4. It **waits** for each step to finish before starting the next.
-5. When every step succeeds, it writes a short summary of what each step did and how the results chained
-   together.
-
-Steps run strictly in sequence, so each one can see what the previous step produced.
+1. A step becomes eligible to run once every step it depends on has **settled** — either finished normally or
+   been legitimately [skipped](/workflows/running#run-statuses). A step with nothing it depends on is eligible
+   immediately.
+2. **Steps with no dependency between them may run at the same time.** The order you drag them into sets which
+   *earlier* steps a later one is allowed to draw on — a step can only consume a kind an earlier step in the
+   list produces — but it doesn't by itself force one step to wait for another that it doesn't actually need.
+3. **Two steps that both edit the repository never run at the same time**, whether or not they depend on each
+   other — they'd be racing on the same checkout. This is `mutates-worktree` on the agent, not something you
+   configure per workflow.
+4. Each step is told what triggered the run (for a pull-request run: the PR number, head and base commits,
+   the diff) and reads the actual results earlier steps recorded of the kinds it consumes — not a text summary
+   of what an earlier step said it did.
+5. **If a step fails, nothing that depends on it runs, and the run ends in error.** Workflow steps do not
+   retry by default.
 
 <Note>
-  If a step fails, the run **stops immediately** and later steps do not run. Workflow steps do not retry by
-  default. Design chains so the expensive, broad step comes first and the steps that depend on it come after.
+  A step whose input turns out to be empty runs **zero times** and is recorded as **skipped** — a distinct
+  outcome from *failed* and from *ran and found nothing*. See [run statuses](/workflows/running#run-statuses).
 </Note>
 
 ## Passing results between steps
 
-You don't wire inputs and outputs together by hand. Each agent returns a summary of what it did, and the
-orchestrator quotes the relevant parts of that summary into later steps' briefings verbatim.
-
-In practice this means a two-step chain works because the second agent is *told* what the first one found —
-for example, a scanner reports findings to a manifest, and the next agent is briefed on where that manifest is
-and what's in it.
+You don't wire inputs and outputs together by hand. What flows from one step to the next is exactly what the
+consuming agent's `consumes` names — the actual results (findings, patches, or a kind of your own) that an
+earlier step's `produces` recorded, not a prose account of what happened.
 
 What this does **not** do is let you transform or filter results between steps. If you need different
 handling, that belongs inside an agent, not between them.
 
-## The briefing is why descriptions matter
-
-Two descriptions shape every step's briefing:
-
-- **The workflow's description** — quoted as the overall intent.
-- **Each agent's `description`** — reflected back at the agent to confirm its role.
-
-A vague description on either produces a vague briefing. This is the most common reason a chain
-underperforms, and it's usually fixed by editing prose rather than by changing agents. See
-[writing an agent](/agents/writing-an-agent#the-description-is-read-at-runtime).
-
 ## Choosing agents
 
 Any agent can be a step — Console's or your own. Your organization's agents appear in the picker alongside the
-built-in ones, and the orchestrator treats them identically.
+built-in ones, and Console treats them identically.
 
 - For what ships with Console and what each is for, see [the agent library](/agents/library).
 - To write your own, see [writing an agent](/agents/writing-an-agent).
@@ -63,8 +53,10 @@ A few agents in the library are designed to be spawned *by* other agents rather 
 The rules of thumb:
 
 - **Broad before narrow.** Discover first, then act on what was discovered.
-- **Expensive before dependent.** If a step fails, everything after it is skipped — so put the step most
-  likely to fail where it costs least.
+- **Declare what a step actually needs.** Two steps that don't consume each other's output can run
+  concurrently; a step only waits on the steps its `consumes` names.
+- **Expensive before dependent.** If a step fails, nothing depending on it runs — so put the step most likely
+  to fail where it costs least.
 - **One step is a valid chain.** A single scanner plus an [output](/workflows/outputs) is a complete, useful
   workflow. Don't add steps for symmetry.
 
@@ -72,11 +64,12 @@ The rules of thumb:
 
 | Goal | Chain |
 | --- | --- |
-| Fast pull request check | `vulnerability-scanner-basic` |
-| Standard pull request review | `vulnerability-scanner-standard` |
+| Fastest signal | `vulnerability-scanner-basic` |
+| Balanced scan | `vulnerability-scanner-standard` |
+| Deepest audit | `vulnerability-scanner-comprehensive` |
 | Turn findings into permanent rules | `vulnerability-scanner-standard` → `detection-author` |
 | Apply everything you've already vetted | `detections-runner` |
-| Deep audit | `vulnerability-scanner-comprehensive` → `security-analyzer` |
+| Apply everything you've already vetted, and patch it | `detections-runner` → `patch-generator` |
 
 ## Editing a chain
 

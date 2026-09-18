@@ -100,6 +100,9 @@ See [what agents can read](/data/what-agents-can-read) for what that covers and 
 | `report_finding` | Records a confirmed vulnerability, with evidence. This is what makes a result durable rather than conversational. |
 | `list_findings` | Lists findings already recorded. |
 | `report_patch` | Attaches a verified remediation patch (a unified diff) to the finding(s) it fixes. Call it only after editing the file **and** confirming the fix. It stores the patch; it does not verify. |
+| `emit_artifact` | Records a result of a kind your agent declares in [`produces:`](/agents/writing-an-agent#contracts-what-a-step-produces-and-consumes) — Console's own kinds or one you've defined yourself. Rejects `amplify:finding`: findings always go through `report_finding` instead. |
+| `list_artifacts` | Lists recorded artifacts, optionally filtered by kind. |
+| `get_artifact` | Fetches one artifact's full content by id. |
 
 ## Detections
 

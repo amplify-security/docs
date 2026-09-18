@@ -15,8 +15,8 @@ attacker actually get there?
 
 ## How a run proceeds
 
-1. **The agent receives a task.** In chat that's your message; in a workflow it's a briefing composed by the
-   orchestrator.
+1. **The agent receives a task.** In chat that's your message; in a workflow it's the task Console composes
+   for that step.
 2. **It reasons and calls tools.** Each call returns a result it reads before deciding the next step.
 3. **It may load a skill** with `activate_skill` when it hits a task a documented procedure covers.
 4. **It may delegate** with `spawn_agent`, handing focused work to a child and waiting for the summary.
@@ -50,12 +50,6 @@ between agents.
 
 You can watch the tree live — as a nested view in the CLI, and in the web console's chat while a turn runs.
 
-### Forcing sequential delegation
-
-Set [`sequential-spawns: true`](/agents/writing-an-agent#sequential-spawns) when steps depend on each other
-and the agent must see one result before starting the next. Console's `workflow-runner` uses exactly this to
-guarantee workflow steps run in order.
-
 ## Where agents come from
 
 | Source | Description |
@@ -63,7 +57,7 @@ guarantee workflow steps run in order.
 | **Platform agents** | The library Console ships. See [the agent library](/agents/library). |
 | **Organization agents** | Agents your team writes, in the web console or the CLI. |
 
-Both appear together wherever agents are listed, and the workflow orchestrator treats them identically. An
+Both appear together wherever agents are listed, and a workflow treats them identically. An
 organization agent whose `name` matches a platform agent **shadows** it — the supported way to customize
 built-in behavior.
 

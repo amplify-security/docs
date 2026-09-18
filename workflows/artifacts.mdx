@@ -47,10 +47,14 @@ This model is deliberately open-ended: an artifact is *a set of files an agent p
 optional linkage to the findings it relates to*. Nothing about it is specific to security. A risk assessment,
 a compliance report, a threat model, a generated test suite are all describable in the same shape.
 
+Console ships several kinds of its own — findings and patches among them — but your own agents can define
+and record their own, with no setup outside the agent's own definition. See
+[defining your own kind](/agents/writing-an-agent#defining-your-own-kind) for how to declare one.
+
 <Note>
-  Today the only artifact kind produced in practice is the **patch**. The model is general, but patch
-  generation is the one producer that's wired up. Treat the broader shape as where this is heading, not as a
-  set of features to build against right now.
+  A kind's shape is fixed once it's registered. Saving the identical shape again is a no-op; changing it is
+  rejected outright, so a kind never silently reinterprets artifacts you've already recorded under the old
+  shape. If a kind's shape needs to change, give it a new name.
 </Note>
 
 ## Getting results out

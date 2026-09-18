@@ -29,8 +29,9 @@ Telling them apart is the most common early stumble:
 ## Yours are first-class
 
 Console ships a library of agents and skills to start from. Detections are yours to build up — nothing is
-prebuilt there. Anything you write sits alongside the built-ins with no second-class status — the orchestrator that runs workflows treats platform and organization agents
-identically, briefing both from their stated `description`.
+prebuilt there. Anything you write sits alongside the built-ins with no second-class status — a workflow
+runs platform and organization agents identically, and both are picked from the same list by their stated
+`description`.
 
 An agent you write with the same name as a built-in one **shadows** it. That's the supported way to
 customize built-in behavior without breaking workflows that already reference that name.

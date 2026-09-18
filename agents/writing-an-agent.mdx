@@ -49,22 +49,26 @@ That's the entire contract. No build step, no registration.
 | `allowed-tools` | No | string[] | Restricts the agent to these tools. Omit to inherit. |
 | `maxIterations` | No | positive int | Budget of reasoning↔tool cycles before the agent is stopped. |
 | `timeout` | No | positive int (ms) | Wall-clock limit for one execution. |
-| `sequential-spawns` | No | boolean | Rejects concurrent `spawn_agent` calls, forcing one child at a time. |
+| `produces` | No | list | The kinds of result this agent's step may record. See [contracts](#contracts-what-a-step-produces-and-consumes) below. |
+| `consumes` | No | list | The kinds this agent's step reads, and how. See [contracts](#contracts-what-a-step-produces-and-consumes) below. |
+| `mutates-worktree` | No | boolean | Declares that this agent edits files in the repository. See below. |
 
-### The description is read at runtime
+### Why the description matters
 
-The description does real work. When a workflow runs your agent, the orchestrator reads the description to
-compose that step's briefing and reflects the agent's stated role back at it. Other agents deciding whether
-to delegate see only the name and description, so those two lines are the whole interface.
+Two audiences read `description`, and neither is your agent itself:
 
-A vague description produces a vague briefing. Write it as a precise statement of what the agent does and
-what it produces:
+- **You, choosing agents for a workflow** — the [workflow editor](/workflows/create-a-workflow#agents) and
+  the [agent library](/agents/library) show it as the one-line summary of what an agent does.
+- **Other agents, deciding whether to delegate to it** — an agent choosing a sub-agent to spawn sees only its
+  name and description, so those two lines are the entire interface it has to go on.
+
+Write it as an external, precise statement of the job and its output — not a note to yourself:
 
 ```yaml
 # Good — states the job and the output
 description: Audits third-party dependencies for known-vulnerable versions and unmaintained packages, and reports each one as a finding.
 
-# Too vague to brief against
+# Too vague to be useful to anyone deciding whether to use this agent
 description: Dependency helper.
 ```
 
@@ -87,14 +91,132 @@ Both are ceilings, not targets. Leave them unset unless the agent is an outlier.
 - Raise `timeout` for **orchestrators**, whose wall clock includes every child they spawn. Set it above the
   worst-case sum of the children's durations.
 
-### `sequential-spawns`
+## Contracts: what a step produces and consumes
 
-By default an agent may spawn several sub-agents at once. Setting `sequential-spawns: true` makes a second
-concurrent spawn return an error instead of queuing, which forces the agent to observe each child's result
-before starting the next.
+When you chain agents into a [workflow](/workflows/create-a-workflow), Console needs to know which step's
+output feeds which step's input, so it can run steps that don't depend on each other together, wait for the
+ones that do, and skip a step that has nothing to work on. You declare that with `produces` and `consumes`.
 
-Use it for orchestrators whose steps depend on each other. It applies only to the agent that declares it —
-children are free to fan out.
+### `produces`
+
+The kinds of result this agent's step may record:
+
+```yaml
+produces:
+  - kind: amplify:finding
+```
+
+`produces` is a *may*, never a promise — an agent that looked thoroughly and found nothing has still done
+its job, and nothing checks that a declared kind was actually emitted.
+
+A kind is either one of Console's own (prefixed `amplify:`, like `amplify:finding` or `amplify:patch`) or one
+you define yourself. See [defining your own kind](#defining-your-own-kind) below.
+
+### `consumes`
+
+The kinds this agent's step reads, and how it wants them delivered:
+
+```yaml
+consumes:
+  - kind: amplify:finding
+    mode: each
+```
+
+| Field | Required | What it does |
+| --- | --- | --- |
+| `kind` | Yes | The kind this step reads. |
+| `mode` | No | `each` or `all`. Defaults to `all`. |
+| `group-by` | No | Only with `mode: each`. See below. |
+
+**`mode: all`** (the default) runs your agent once, with everything matching that kind from earlier in the
+chain — including an empty set. Use this for a step whose job is to summarize or report on the whole run:
+"no issues found" is itself a result worth producing, so it needs to run even when there's nothing to say.
+
+**`mode: each`** runs a separate copy of your agent per item (or per group, if you set `group-by`). Zero
+items means the step doesn't run at all — it's recorded as [skipped](/workflows/running#run-statuses), not
+as having run and found nothing. Use this when your agent's job only makes sense one item at a time, like
+generating a fix for a single bug.
+
+<Note>
+  A step can only consume a kind that an earlier step in the same workflow actually produces. Console checks
+  this when you save the workflow, not when it runs.
+</Note>
+
+### `group-by`
+
+For a `mode: each` step, `group-by` controls what counts as "one item." By default every result is its own
+item; naming fields under `group-by` batches results that share the same values into a single item instead.
+
+`patch-generator`, Console's built-in patching agent, is the canonical example — one patch should fix every
+match of the same underlying issue in the same file, not one patch per individual match:
+
+```yaml
+consumes:
+  - kind: amplify:finding
+    mode: each
+    group-by: [detection_id, properties.filePath]
+```
+
+Names in `group-by` come from the kind you're consuming — never from anything about how Console stores it:
+
+- **A field the kind itself declares**, including one nested inside another declared field, like
+  `properties.filePath` above.
+- **A documented attribute of that kind.** `amplify:finding` additionally exposes `detection_id` and
+  `severity` this way.
+- **`id`** — every item is its own group, overriding any default grouping. `amplify:finding` already groups
+  by detection and file when you set no `group-by` of your own, so write `group-by: [id]` explicitly if you
+  want one child per finding instead.
+
+An empty `group-by: []` isn't allowed: grouping by nothing means everything is one group, which is what
+`mode: all` already means. Console rejects it and suggests `[id]` if that's what you meant.
+
+<Note>
+  A result your grouping can't place — a finding with no detection behind it, say — is left out of that
+  step, with the reason recorded on the step. It still reaches any other step consuming the same kind with
+  `mode: all`.
+</Note>
+
+### `mutates-worktree`
+
+Set this to `true` if your agent edits files in the repository:
+
+```yaml
+mutates-worktree: true
+```
+
+This states a fact, not a scheduling request. Console uses it to make sure two steps that both edit the
+checkout never run at the same time and clobber each other's changes. Leave it unset (the default) for an
+agent that only reads.
+
+### Defining your own kind
+
+If `produces` names a kind that doesn't already exist in your organization, attach a `schema:` block and
+Console registers it the moment you save the agent — no separate setup step:
+
+```yaml
+produces:
+  - kind: scan-report
+    schema:
+      fields:
+        verdict:
+          type: string
+          enum: [clean, issues-found]
+        total_findings:
+          type: integer
+```
+
+Each field has a `type` (`string`, `number`, `integer`, `boolean`, `object`, or `array`) and can be marked
+`required`. A `string` field can restrict its values with `enum`; an `object` field declares its own nested
+`fields`; an `array` field declares the shape of its `items`.
+
+Saving the identical schema again is a no-op. Changing an already-registered kind's shape is not allowed —
+Console rejects the save rather than reinterpreting artifacts you've already recorded under the old shape.
+If a kind's shape needs to change, give it a new name.
+
+<Note>
+  Names starting with `amplify:` are reserved for Console's own kinds. You can *consume* `amplify:finding`
+  or `amplify:patch` in your own agents, but you can't register a `schema:` under that prefix.
+</Note>
 
 ## Writing one in the web console
 
