@@ -57,6 +57,20 @@
             ]
           },
           {
+            "group": "Agent tools",
+            "pages": [
+              "agent-tools/overview",
+              "agent-tools/connecting",
+              "agent-tools/using-in-agents",
+              "agent-tools/slack",
+              "agent-tools/atlassian",
+              "agent-tools/linear",
+              "agent-tools/notion",
+              "agent-tools/asana",
+              "agent-tools/google"
+            ]
+          },
+          {
             "group": "Working interactively",
             "pages": [
               "interactive/chat",

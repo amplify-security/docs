@@ -1,0 +1,57 @@
+---
+title: Asana
+description: 'Agents create, read, and comment on Asana tasks in the workspaces the bot account belongs to.'
+---
+
+## What it's for
+
+Tracking findings as Asana tasks. A workflow step creates a task per confirmed finding in the project your
+team triages from; a chat agent checks whether a finding is already tracked and adds what it learned as a
+comment.
+
+## Before you connect
+
+1. Create the bot Asana account and invite it to the workspaces and projects agents should reach. See
+   [the bot account](/agent-tools/connecting#the-bot-account). A guest or project-limited member is usually
+   right.
+2. Sign your browser into the bot account, then follow [the connect flow](/agent-tools/connecting#connecting).
+
+The authorization screen asks for Asana's standard access, which grants what the bot account itself can do.
+
+## What agents can do
+
+| Tool | What it does |
+| --- | --- |
+| `Asana_ListWorkspaces` | Lists the workspaces the bot account can see. |
+| `Asana_ListProjects` | Lists projects. |
+| `Asana_GetProjectById` | Returns one project. |
+| `Asana_GetTasksWithoutId` | Searches for tasks. |
+| `Asana_GetTaskById` | Returns one task. |
+| `Asana_CreateTask` | Creates a task in a project, workspace, or under a parent task. |
+| `AsanaApi_AddTaskComment` | Comments on a task. |
+| `AsanaApi_GetUserDetails` | Looks up a user. |
+
+A task created without an assignee is assigned to the bot account — that's Asana's default for the
+authenticated user, and agents are told about it. If you want tasks unassigned or assigned to someone
+specific, say so in the agent's instructions.
+
+## What agents can't do
+
+- Update a task's fields, or mark it complete
+- Delete tasks, projects, or comments
+- Reach a workspace or project the bot account isn't a member of
+
+## Example
+
+Ask in chat, with Asana connected:
+
+```
+Search the "Security backlog" project for a task about finding #9. If there
+isn't one, create it with the finding's title, assign it to nobody, and put the
+explanation and a link back here in the description.
+```
+
+## Revoking fully
+
+Disconnecting in Console deletes Amplify's stored authorization. To remove Asana's side of the grant too,
+sign in as the bot account and remove the Amplify app under **Asana Settings → Apps**.

@@ -1,0 +1,87 @@
+---
+title: Agent tools
+description: 'Let agents work in the apps your team already uses — Slack, Jira, Confluence, Linear, Notion, Asana, and Google Docs.'
+---
+
+## What agent tools are
+
+An agent tool connection gives Console's agents a set of tools for one app your team uses. Once an
+organization admin connects Slack, every agent in your organization can post to Slack. Connect Jira, and
+agents can file and update issues. Connect Confluence, and they can write up what they found.
+
+These are the apps you can connect today:
+
+| App | What agents can do | Tools |
+| --- | --- | --- |
+| [Slack](/agent-tools/slack) | Post messages, reply in threads, react, and read channel history | 11 |
+| [Atlassian](/agent-tools/atlassian) | Create, search, comment on, and transition Jira issues; read and write Confluence pages | 36 |
+| [Linear](/agent-tools/linear) | Create, update, comment on, and transition issues | 20 |
+| [Notion](/agent-tools/notion) | Search, read, create, and append to pages | 10 |
+| [Asana](/agent-tools/asana) | Create, read, and comment on tasks | 8 |
+| [Google Docs](/agent-tools/google) | Search, read, create, edit, and comment on documents | 11 |
+
+Each app's page lists every tool by name, what it needs before you connect, and what it can't do.
+
+<Note>
+  Agent tools are a different thing from the [vendor connectors](/data/connections#vendor-connectors) on the
+  same Connections page. Vendor connectors let agents *read findings* from security scanners. Agent tools let
+  agents *act* in your team's collaboration and tracking apps.
+</Note>
+
+## How it works
+
+**One connection per app, per organization.** An organization admin connects the app once, and the
+connection is shared by everyone in the organization. There is nothing to configure per agent or per
+workflow — once an app is connected, its tools are offered to every agent that runs, in
+[chat](/interactive/chat) and in [workflows](/workflows/overview) alike.
+
+**Agents act as a bot account you own.** You create a dedicated account for Amplify in the app — an
+`amplify-agent@yourcompany.com`, say — and authorize *that* account when you connect. Everything agents do
+is attributed to it, and its permissions in the app bound what agents can reach. See
+[the bot account](/agent-tools/connecting#the-bot-account) for how to set one up.
+
+**Tools are named after the app.** Every agent tool is named `<App>_<Action>` — `Jira_CreateIssue`,
+`Slack_GetThreadMessages`, `Notion_SearchByTitle`. That's the name you use in an agent's
+[`allowed-tools`](/agents/writing-an-agent#allowed-tools-restricts-it-doesnt-grant). See
+[using agent tools in an agent](/agent-tools/using-in-agents).
+
+**Nothing destructive is exposed.** No agent tool deletes, removes, archives, or trashes anything, in any
+app. The toolset for each app is a fixed, curated allowlist — agents cannot reach an app's other API surface,
+and Console's own tools can't be used to call the app's API directly either.
+
+## What agents see
+
+An agent only ever sees the tools for apps that are connected. There is no "connect Slack" prompt in the
+middle of a run — if Slack isn't connected, the Slack tools simply aren't there, and an agent asked to post
+to Slack will say it has no way to.
+
+If a connection stops working mid-run, the agent is told and moves on rather than stalling:
+
+| State | What the agent gets | What you see |
+| --- | --- | --- |
+| App not connected | The app's tools are absent | Nothing on the Connections page for that app |
+| Authorization revoked in the app | Every call to that app's tools returns an error telling the agent to continue without them | The app's card reads **Authorization lost — reconnect from Add Connection** |
+| App or broker temporarily unreachable | Each call returns a "temporarily unavailable" error; the run completes | Nothing — the connection stays Connected |
+
+Each tool call is given 60 seconds, and a result longer than 16,000 characters is truncated with a note
+saying so.
+
+## Where agent tools are available
+
+| Surface | Available |
+| --- | --- |
+| Chat in the web console | Yes |
+| Workflows | Yes |
+| The CLI | No — the CLI runs against your local working directory and has no organization connections |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Connect an app" icon="plug" href="/agent-tools/connecting">
+    The bot account, the connect flow, and disconnecting.
+  </Card>
+
+  <Card title="Use agent tools in an agent" icon="file-code" href="/agent-tools/using-in-agents">
+    Grant tools, and add a Slack or Jira step to a workflow.
+  </Card>
+</CardGroup>

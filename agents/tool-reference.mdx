@@ -70,8 +70,8 @@ the path neutralizes the input.
 
 <Note>
   `web_fetch` performs **reads only** — it takes a URL, headers, and an extraction mode, with no request
-  method or body. There is no built-in tool for writing to a third-party API, so agents cannot create
-  tickets or update external records through it. Console's outbound writes go through
+  method or body. There is no general-purpose tool for writing to a third-party API. Agents write to other
+  systems only through [agent tools](#your-teams-apps) for connected apps and through
   [workflow outputs](/workflows/outputs).
 </Note>
 
@@ -85,6 +85,24 @@ the path neutralizes the input.
 
 These three are the entire vendor-data surface today, and they are scoped to **vulnerability findings**.
 See [what agents can read](/data/what-agents-can-read) for what that covers and what it doesn't.
+
+## Your team's apps
+
+When an organization admin [connects an app](/agent-tools/connecting), its tools join this list for every
+agent in the organization. They're named `<App>_<Action>`, and each app's page lists them in full:
+
+| App | Tools | Examples |
+| --- | --- | --- |
+| [Slack](/agent-tools/slack) | 11 | `SlackApi_SendSlackMessage`, `Slack_GetThreadMessages` |
+| [Atlassian](/agent-tools/atlassian) | 36 | `Jira_CreateIssue`, `Jira_SearchIssuesWithoutJql`, `Confluence_CreatePage` |
+| [Linear](/agent-tools/linear) | 20 | `Linear_CreateIssue`, `Linear_TransitionIssueState` |
+| [Notion](/agent-tools/notion) | 10 | `Notion_SearchByTitle`, `Notion_AppendContentToEndOfPage` |
+| [Asana](/agent-tools/asana) | 8 | `Asana_CreateTask`, `AsanaApi_AddTaskComment` |
+| [Google Docs](/agent-tools/google) | 11 | `GoogleDocs_GetDocumentAsDocmd`, `GoogleDocs_CommentOnDocument` |
+
+None of these delete, remove, or archive anything. If an app isn't connected, its tools are absent rather
+than failing. See [using agent tools in an agent](/agent-tools/using-in-agents) for how to grant them and
+add a Slack or Jira step to a workflow.
 
 ## Projects
 

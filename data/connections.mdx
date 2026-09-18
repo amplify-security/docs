@@ -3,17 +3,19 @@ title: Connections
 description: 'Connect your source control provider and the security and IT vendors you already run.'
 ---
 
-## Two kinds of connection
+## Three kinds of connection
 
-The **Connections** page handles two different jobs behind one interface:
+The **Connections** page handles three different jobs behind one interface:
 
 | Kind | What it enables |
 | --- | --- |
 | **Source control** | Cloning repositories, pull request triggers, review comments, merge gates |
 | **Vendor connectors** | Reading signal from the security and IT tools you already run |
+| **Agent tools** | Letting agents act in Slack, Jira, Confluence, Linear, Notion, Asana, and Google Docs |
 
 Source control is what makes Console able to *act* on your code. Vendor connectors are what let it reason
-about findings your existing stack has already produced.
+about findings your existing stack has already produced. Agent tools are what let it put results where your
+team works. This page covers the first two; agent tools have [their own section](/agent-tools/overview).
 
 ## Source control
 
@@ -68,11 +70,28 @@ connection and never handles the underlying vendor API key directly — requests
 
 <Warning>
   Connecting a vendor and *reading from it* are two different things. A connection can be established for any
-  connector in the catalog, but what an agent can query today is scoped to **vulnerability findings**. An
-  agent can read your Snyk or Semgrep backlog; it cannot read Jira issues or Cloudflare configuration.
+  connector in the catalog, but what an agent can query through it today is scoped to **vulnerability
+  findings**. An agent can read your Snyk or Semgrep backlog through a vendor connector; it cannot read
+  Cloudflare configuration through one.
 
   Read [what agents can read](/data/what-agents-can-read) before designing a workflow around a connection.
 </Warning>
+
+<Note>
+  Jira appears in the vendor catalog under ITSM, but reading and filing Jira issues is an
+  [agent tool](/agent-tools/atlassian), not a vendor connector. Connect Atlassian from the **Agent Tools**
+  section of the dialog for that.
+</Note>
+
+## Agent tools
+
+The **Agent Tools** section of the Add Connection dialog connects the apps your team works in, so agents
+can post to Slack, file Jira or Linear issues, and read and write Confluence, Notion, and Google Docs. An
+organization admin connects each app once, as a bot account you own, and every agent in the organization
+gets that app's tools.
+
+See [Agent tools](/agent-tools/overview) for what each app exposes, and
+[connecting an app](/agent-tools/connecting) for the flow.
 
 ## Which connections do you need?
 
@@ -82,6 +101,7 @@ connection and never handles the underlying vendor API key directly — requests
 | Run workflows on pull requests | GitHub |
 | Block merges on security review | GitHub |
 | Triage an existing scanner backlog against real code | An AppSec or VMS connector |
+| Have agents post results to Slack, or file them in Jira or Linear | The matching [agent tool](/agent-tools/overview) |
 | Just use the CLI on local code | Nothing — the CLI reads your working directory |
 
 ## Troubleshooting
@@ -105,5 +125,9 @@ transient upstream failure shows there without affecting the rest of the page. R
 
   <Card title="Projects" icon="folder-tree" href="/data/projects">
     Turn a connection into analyzable code.
+  </Card>
+
+  <Card title="Agent tools" icon="plug" href="/agent-tools/overview">
+    Let agents act in Slack, Jira, Linear, Notion, and more.
   </Card>
 </CardGroup>
