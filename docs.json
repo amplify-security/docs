@@ -19,8 +19,8 @@
         "global": {
           "anchors": [
             {
-              "anchor": "GitHub App (Preview)",
-              "href": "https://github.com/apps/console-staging",
+              "anchor": "GitHub App",
+              "href": "https://github.com/apps/amplify-console",
               "icon": "code-simple"
             }
           ]
@@ -150,7 +150,7 @@
     "primary": {
       "type": "button",
       "label": "Sign In",
-      "href": "https://app.console.stg.amplify.security/"
+      "href": "https://console.amplify.security/"
     }
   },
   "footer": {
