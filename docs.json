@@ -57,6 +57,20 @@
             ]
           },
           {
+            "group": "Integrations",
+            "pages": [
+              "integrations/overview",
+              "integrations/connecting",
+              "integrations/using-in-agents",
+              "integrations/slack",
+              "integrations/atlassian",
+              "integrations/linear",
+              "integrations/notion",
+              "integrations/asana",
+              "integrations/google"
+            ]
+          },
+          {
             "group": "Working interactively",
             "pages": [
               "interactive/chat",

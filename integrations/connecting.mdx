@@ -1,0 +1,109 @@
+---
+title: Connecting an app
+description: 'Set up a bot account, authorize it from the Connections page, and revoke it when you need to.'
+---
+
+## Before you start
+
+Connecting an app requires an **organization admin**. Other members see the apps on the Connections page
+but can't connect or disconnect them.
+
+You also need a bot account in the app. Read the next section before you click anything — signing in with
+the wrong account is the most common mistake in this flow, and it's the one that's hardest to notice.
+
+## The bot account
+
+Agents act in each app through a dedicated account that your team owns — the same idea as a service
+account. Amplify never sees its credentials; you hold them.
+
+1. **Create the account in your own domain**, for example `amplify-agent@yourcompany.com`, and sign it up
+   for the app.
+2. **Give it exactly the access agents should have.** Invite it to the Slack channels agents may read or
+   post in, the Jira projects they may file into, the Notion pages they may read. Its permissions in the app
+   are the ceiling on what agents can do. A guest or project-limited member is usually right, and in many
+   apps doesn't consume a paid seat.
+3. **Name it clearly.** A display name like "Amplify Agent" and a recognizable avatar, because every issue,
+   message, and page agents create is attributed to this account.
+4. **Sign your browser into the bot account before connecting.** The authorization step grants access for
+   whichever account the browser is signed into. If that's your personal account, agents will act as *you*.
+
+<Warning>
+  Authorize from the bot account, not your own. Open a private window, sign into the app as the bot, and
+  run the connect flow from there.
+</Warning>
+
+Each app has its own prerequisites on top of these — Atlassian needs both Jira and Confluence access on the
+account *before* you authorize, Notion asks you to pick pages during consent. They're on each app's page.
+
+## Connecting
+
+1. Open **Connections** and click **Add connection**.
+2. Expand **Agent Tools** — the dialog's name for the integrations section — and choose the app.
+3. Read the steps shown — they're the app-specific version of the bot-account checklist above — then click
+   **Start connection**.
+4. Click **Approve in \<App\>**. The app's authorization page opens in a new tab, signed in as whichever
+   account that browser holds. Approve it.
+5. Partway through, you'll briefly see a Console page reading **Confirming your authorization...** before
+   being returned to the app. That's expected.
+6. Back on the Connections page, the app's card reads **Waiting for authorization** until the flow completes,
+   then switches to **Connected as** the bot account's name and email.
+
+The card shows who authorized the connection and when. From this point, every agent in your organization
+has that app's tools.
+
+<Tip>
+  If the card stays on *Waiting for authorization*, the approval tab was probably closed before finishing.
+  Click **Add connection** and start the same app again — it restarts the flow cleanly.
+</Tip>
+
+## Reconnecting
+
+Connecting an app that's already connected simply starts a fresh authorization. Do this when:
+
+- The card reads **Authorization lost**. Someone revoked the app from the bot account, or the account was
+  deactivated.
+- You want to switch to a different bot account.
+- The app's page tells you to. Atlassian, for instance, fixes the products the connection can reach at the
+  moment of consent, so granting the bot Confluence access later means reconnecting.
+
+## Disconnecting
+
+Click the trash icon on the app's card and confirm. Agents lose that app's tools on their next run or chat
+turn.
+
+<Warning>
+  Disconnecting deletes the authorization Amplify holds, but the app keeps its side of the grant. To revoke
+  fully, also remove Amplify Console from the bot account inside the app. The confirmation dialog tells you
+  where, and so does each app's page.
+</Warning>
+
+## Troubleshooting
+
+**Agents can't see something the bot can.** Most often the connection was authorized from the wrong
+account — check the *Connected as* line on the card. Otherwise it's the app-specific scoping: Slack agents
+see only channels the bot is in, Notion agents see only pages shared with the connection, Atlassian agents
+see only the one site chosen at consent. Each app's page has the details.
+
+**The card reads Authorization lost.** The app revoked the grant — usually because someone removed Amplify
+Console from the bot account's authorized apps, or the account was deactivated. Reconnect from
+**Add connection**.
+
+**Approve in \<App\> opens a page for the wrong account.** The browser is signed into your personal account.
+Close the tab, sign that browser out of the app (or use a private window signed in as the bot), then start
+the connection again.
+
+**The app says Amplify Console needs admin approval.** Slack workspaces with app approval turned on, and
+Google Workspace organizations that restrict third-party apps, require an admin to approve the app once
+before any account can authorize it. Have an admin of that app approve Amplify Console, then reconnect.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Use integration tools in an agent" icon="file-code" href="/integrations/using-in-agents">
+    Grant tools by name and add a delivery step to a workflow.
+  </Card>
+
+  <Card title="Integrations overview" icon="plug" href="/integrations/overview">
+    Which apps you can connect and what agents can do in each.
+  </Card>
+</CardGroup>

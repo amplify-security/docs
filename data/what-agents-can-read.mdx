@@ -8,10 +8,16 @@ description: 'Exactly what a vendor connection exposes to an agent today — and
 Once a vendor is connected, an agent can do two things: **discover your connections**, and **query
 normalized vulnerability findings** from them.
 
-That's the whole surface today. It's genuinely useful — it's what lets an agent triage an existing scanner
-backlog against your real code — but it is narrower than the
+That's the whole vendor-connector surface today. It's genuinely useful — it's what lets an agent triage an
+existing scanner backlog against your real code — but it is narrower than the
 [connector catalog](/data/connections#vendor-connectors), so it is worth being precise before you design a
 workflow around it.
+
+<Note>
+  This page is about **vendor connectors** — the security scanners in the catalog. The apps your team works
+  in are a separate thing: through [integration tools](/integrations/overview), agents can read *and write* Slack,
+  Jira, Confluence, Linear, Notion, Asana, and Google Docs.
+</Note>
 
 ## What an agent can do
 
@@ -50,17 +56,18 @@ agent's context without improving its reasoning.
   makes the connection available, but does not give agents a way to read that vendor's other data.
 </Warning>
 
-Concretely, today an agent **cannot**:
+Concretely, through a vendor connector an agent **cannot**:
 
-- Read Jira or other ITSM issues, or create tickets in them
 - Read cloud or CSPM configuration state
 - Read identity provider users, groups, or policies
 - Read GRC controls or evidence
-- Write anything back to a vendor — update a finding's state, comment, or close it
+- Write anything back to the vendor — update a finding's state, comment, or close it
 
 There is also no general-purpose outbound write tool. `web_fetch` performs reads only, with no request method
-or body, so an agent cannot use it to POST to a vendor API. Console's outbound writes go through
-[workflow outputs](/workflows/outputs), which today deliver to pull requests and GitHub checks.
+or body, so an agent cannot use it to POST to a vendor API. Writes to other systems happen only through
+[integration tools](/integrations/overview) — a fixed set of tools per connected app, with nothing destructive
+in it — and through [workflow outputs](/workflows/outputs), which deliver to pull requests and GitHub
+checks.
 
 ## What this is good for
 
@@ -123,5 +130,9 @@ You triage an existing scanner backlog against real code.
 
   <Card title="Write an agent" icon="file-code" href="/agents/writing-an-agent">
     Grant these tools and put them to work.
+  </Card>
+
+  <Card title="Integrations" icon="plug" href="/integrations/overview">
+    Read and write the apps your team works in.
   </Card>
 </CardGroup>

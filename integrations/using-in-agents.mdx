@@ -1,0 +1,195 @@
+---
+title: Using integration tools in an agent
+description: 'How integration tools reach an agent, how to name them in allowed-tools, and how to add a Slack or Jira step to a workflow.'
+---
+
+## Nothing to enable
+
+Once an app is [connected](/integrations/connecting), its tools are offered to every agent in your
+organization automatically. An agent that doesn't set [`allowed-tools`](/agents/writing-an-agent#allowed-tools-restricts-it-doesnt-grant)
+already has them; an agent that does needs to list the ones it should use.
+
+That's true in chat, too. Ask an agent to "post a summary of this to #security" and, with Slack connected,
+it can.
+
+## Naming tools in `allowed-tools`
+
+Integration tools follow the pattern `<App>_<Action>`, and the name must match exactly:
+
+```yaml
+allowed-tools:
+  - Jira_CreateIssue
+  - Jira_ListIssueTypesByProject
+  - SlackApi_SendSlackMessage
+```
+
+- **No wildcards.** `Jira_*` matches nothing. List each tool.
+- **Case matters.** `Jira_CreateIssue`, not `jira_createissue`.
+- **The app prefix is the toolkit's name, not always the app's.** Slack's send and react tools are
+  `SlackApi_…`, Asana's comment tool is `AsanaApi_…`, Google's are all `GoogleDocs_…`. Each app's page has
+  the exact list.
+
+Listing an integration tool doesn't connect the app. If the app isn't connected when the agent runs, the tool is
+absent and the agent works without it.
+
+## Prompting
+
+The tools carry their own guardrails, baked into the descriptions agents read: create an issue only when
+asked and never in bulk, post in a finding's existing Slack thread rather than starting a new one, read a
+page before replacing its content. You don't need to repeat those. What your agent's instructions should add
+is the *where* and *what*:
+
+- **Name the destination.** The Jira project key, the Slack channel, the Confluence space, the Notion parent
+  page. Agents can discover these — `Jira_ListProjects`, `Slack_ListConversations` — but an agent told
+  "the SEC project" doesn't have to guess.
+- **Say what one item looks like.** A title format, which fields to fill, what to link back to. Console's
+  findings have ids and URLs; ask for them in the issue body so the two stay connected.
+- **Say what to do with nothing.** Post "no issues found", or post nothing? An agent will pick one if you
+  don't.
+
+## Adding a delivery step to a workflow
+
+The natural place for integration tools in a [workflow](/workflows/overview) is a final step that takes what
+earlier steps produced and puts it where your team will see it. Console's built-in
+[outputs](/workflows/outputs) deliver to the triggering pull request; a step with integration tools can deliver
+anywhere an app is connected.
+
+Such a step [consumes](/agents/writing-an-agent#consumes) findings, and the `mode` you choose decides
+its shape.
+
+### One message per run
+
+A summary step consumes with `mode: all`. It runs exactly once, with every finding from earlier in the
+chain — including none — so it can say "clean" as readily as it can list problems:
+
+```markdown
+---
+name: slack-run-summary
+description: Posts one message to the team's security channel summarizing a workflow run's confirmed findings, or reporting that there were none.
+allowed-tools:
+  - list_findings
+  - Slack_ListConversations
+  - SlackApi_SendSlackMessage
+consumes:
+  - kind: amplify:finding
+    mode: all
+---
+
+You report the outcome of a security workflow run to the team.
+
+1. Review the findings this run produced. Group them by severity.
+2. Post exactly one message to the `#security-reports` channel. Lead with the
+   count by severity, then one line per finding: severity, title, and a link.
+3. If there are no findings, post a single line saying the run found nothing.
+4. Never post anywhere else, and never send direct messages.
+```
+
+### One issue per finding
+
+A filing step consumes with `mode: each`. It runs once per finding, and if there are none it's recorded as
+[skipped](/workflows/running#run-statuses) rather than running with nothing to file:
+
+```markdown
+---
+name: jira-issue-filer
+description: Files one Jira issue in the SEC project for each confirmed finding, unless an open issue for the same finding already exists.
+allowed-tools:
+  - list_findings
+  - Jira_ListIssueTypesByProject
+  - Jira_SearchIssuesWithoutJql
+  - Jira_CreateIssue
+consumes:
+  - kind: amplify:finding
+    mode: each
+    group-by: [id]
+---
+
+You track one confirmed security finding as a Jira issue.
+
+1. Search the SEC project for an open issue whose summary contains this
+   finding's id. If one exists, stop — do not file a duplicate.
+2. Create a Bug in the SEC project. Summary: `[Amplify] <finding title>`.
+   Description: the finding's severity, affected file and line, the agent's
+   explanation, and a link back to the finding in Console.
+3. Do not assign the issue or change its status.
+```
+
+`group-by: [id]` matters here. `amplify:finding` groups by detection and file by default, which is right for
+patching but would file one issue for several findings. See [`group-by`](/agents/writing-an-agent#group-by).
+
+<Tip>
+  To make what the step did visible on the run page, have it record an artifact. Declare a kind of your own
+  in `produces:`, add `emit_artifact` to `allowed-tools`, and ask the agent to record each issue's key and
+  URL:
+
+  ```yaml
+  produces:
+    - kind: jira-issue
+      schema:
+        fields:
+          key:
+            type: string
+            required: true
+          url:
+            type: string
+  ```
+
+  See [defining your own kind](/agents/writing-an-agent#defining-your-own-kind).
+</Tip>
+
+### Putting them in a chain
+
+Add the delivery step **after** the steps that produce findings. A step can only consume a kind an earlier
+step in the chain produces, and Console checks that when you save the workflow:
+
+| Goal | Chain |
+| --- | --- |
+| Scan a pull request and tell the channel | `vulnerability-scanner-standard` → `slack-run-summary` |
+| Apply your detections and track each hit | `detections-runner` → `jira-issue-filer` |
+| Both | `detections-runner` → `jira-issue-filer` → `slack-run-summary` |
+
+Two delivery steps that don't depend on each other may run at the same time. That's fine for these — they
+write to different apps — but if ordering matters, have the later one consume something the earlier one
+produces.
+
+## In chat
+
+Everything above applies to chat, minus the contracts. With an app connected you can ask directly:
+
+```
+Search Jira for open issues in SEC mentioning "SQL injection" and tell me
+which ones overlap with the findings from this session.
+```
+
+```
+Write up finding #42 as a Confluence page under the Security Reviews space.
+Include the affected code and the suggested fix.
+```
+
+```
+Post a summary of what you found to #security-reports, one message, in a thread
+under the last message I posted there.
+```
+
+The agent uses the connected app's tools the same way it uses any other tool, and each call appears in the
+session's tool trail so you can see exactly what it read and wrote.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Slack" icon="slack" href="/integrations/slack">
+    Tools and limits for posting and reading.
+  </Card>
+
+  <Card title="Atlassian" icon="ticket" href="/integrations/atlassian">
+    Jira issues and Confluence pages.
+  </Card>
+
+  <Card title="Writing an agent" icon="file-code" href="/agents/writing-an-agent">
+    The AGENT.md format, `consumes`, and `produces`.
+  </Card>
+
+  <Card title="Tool reference" icon="wrench" href="/agents/tool-reference">
+    Everything else an agent can call.
+  </Card>
+</CardGroup>

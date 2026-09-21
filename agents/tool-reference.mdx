@@ -48,20 +48,6 @@ the path neutralizes the input.
 | `run_opengrep_detection` | Runs one *stored* OpenGrep [detection](/agents/detections) and emits matches as findings linked to that detection. Refuses non-OpenGrep detections. |
 | `check_opengrep_rule` | Re-runs a stored detection's rule against a single file, read-only. Zero matches means a fix worked. This is the verification half of patch generation. |
 
-## Confirming exploitability
-
-| Tool | What it does |
-| --- | --- |
-| `generate_poc` | Produces a proof-of-concept for a candidate vulnerability. |
-| `execute_poc` | Runs a generated PoC against a configured running target to confirm the vulnerability. Passes a safety gate first, and only executes when a target URL is configured — otherwise it returns `executed=false` with a reason and the agent falls back to reasoning-only confirmation. Supports bash, Python, and JavaScript. |
-| `vuln_poc_evaluation` | Judges the PoC result to decide whether the vulnerability is confirmed. |
-
-<Warning>
-  PoC execution requires an explicitly configured target and clears a safety screen. Without a running
-  target, agents confirm by reasoning — tracing the data flow end to end — rather than by executing an
-  exploit.
-</Warning>
-
 ## Reading the outside world
 
 | Tool | What it does |
@@ -70,8 +56,8 @@ the path neutralizes the input.
 
 <Note>
   `web_fetch` performs **reads only** — it takes a URL, headers, and an extraction mode, with no request
-  method or body. There is no built-in tool for writing to a third-party API, so agents cannot create
-  tickets or update external records through it. Console's outbound writes go through
+  method or body. There is no general-purpose tool for writing to a third-party API. Agents write to other
+  systems only through [integration tools](#integrations) for connected apps and through
   [workflow outputs](/workflows/outputs).
 </Note>
 
@@ -85,6 +71,24 @@ the path neutralizes the input.
 
 These three are the entire vendor-data surface today, and they are scoped to **vulnerability findings**.
 See [what agents can read](/data/what-agents-can-read) for what that covers and what it doesn't.
+
+## Integrations
+
+When an organization admin [connects a third-party app](/integrations/connecting), its tools join this list
+for every agent in the organization. They're named `<App>_<Action>`, and each app's page lists them in full:
+
+| App | Tools | Examples |
+| --- | --- | --- |
+| [Slack](/integrations/slack) | 11 | `SlackApi_SendSlackMessage`, `Slack_GetThreadMessages` |
+| [Atlassian](/integrations/atlassian) | 36 | `Jira_CreateIssue`, `Jira_SearchIssuesWithoutJql`, `Confluence_CreatePage` |
+| [Linear](/integrations/linear) | 20 | `Linear_CreateIssue`, `Linear_TransitionIssueState` |
+| [Notion](/integrations/notion) | 10 | `Notion_SearchByTitle`, `Notion_AppendContentToEndOfPage` |
+| [Asana](/integrations/asana) | 8 | `Asana_CreateTask`, `AsanaApi_AddTaskComment` |
+| [Google Docs](/integrations/google) | 11 | `GoogleDocs_GetDocumentAsDocmd`, `GoogleDocs_CommentOnDocument` |
+
+None of these delete, remove, or archive anything. If an app isn't connected, its tools are absent rather
+than failing. See [using integration tools in an agent](/integrations/using-in-agents) for how to grant them and
+add a Slack or Jira step to a workflow.
 
 ## Projects
 

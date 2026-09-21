@@ -69,11 +69,15 @@ Recording a result and delivering it are different steps. A run's results sit in
 
 Both act on the pull request that triggered the run, so they're skipped on manual runs.
 
-<Warning>
-  These two destinations are the whole set today. There's no built-in delivery to ticketing systems, chat
-  tools, or arbitrary webhooks, and no general outbound-write tool — `web_fetch` performs reads only. If you
-  need results elsewhere, read them from Console rather than expecting a workflow to push them.
-</Warning>
+Those two are the only Console-managed destinations. To deliver anywhere else, add a **step** rather than an
+output: an agent at the end of the chain that consumes the run's findings and posts them through a connected
+app's [integration tools](/integrations/overview) — a Slack summary, one Jira issue per finding, a Confluence
+write-up. See [adding a delivery step](/integrations/using-in-agents#adding-a-delivery-step-to-a-workflow).
+
+<Note>
+  There's no delivery to arbitrary webhooks and no general outbound-write tool — `web_fetch` performs reads
+  only. Delivery goes through the outputs above or through an app your organization has connected.
+</Note>
 
 ## Inspecting a run's results
 

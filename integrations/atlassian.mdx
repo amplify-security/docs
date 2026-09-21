@@ -1,0 +1,129 @@
+---
+title: Atlassian
+description: 'One connection for Jira and Confluence — agents file and update issues, and read and write pages, on the site you choose.'
+---
+
+## What it's for
+
+Tracking findings as Jira issues and writing them up in Confluence. A workflow step files one issue per
+confirmed finding and skips duplicates; a chat agent checks whether a finding is already tracked, comments
+on the issue with what it learned, or drafts a review page in the space your team reads.
+
+One Atlassian connection covers both products. The bot account's product access decides which of the two
+agents can actually reach.
+
+## Before you connect
+
+1. Create the bot Atlassian account. See [the bot account](/integrations/connecting#the-bot-account).
+2. Give it product access to **both Jira and Confluence** on the site agents should use, and add it to the
+   projects and spaces they should work in.
+3. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
+   During authorization, Atlassian asks you to **choose a site** — pick the one from step 2.
+
+<Warning>
+  Atlassian fixes what the connection can reach at the moment you approve it. The bot account must already
+  have Confluence access on the site *before* you authorize — if you grant Confluence later, agents' Confluence
+  tools fail with "no authorized Atlassian clouds" until an admin disconnects and reconnects.
+</Warning>
+
+Atlassian labels Amplify Console an **unreviewed integration** on the consent screen. That's expected for an
+app shared by link rather than listed in the Marketplace.
+
+The authorization screen asks for: read and write Jira work items, read Jira users, manage Jira
+configuration, and read, search, and write Confluence pages and spaces. The Jira configuration scope is
+required by Atlassian for the issue-creation tools; a bot account without Jira admin rights still authorizes
+normally, and admin-only operations simply aren't available to it.
+
+## What agents can do
+
+### Jira
+
+| Tool | What it does |
+| --- | --- |
+| `Jira_WhoAmI` | Returns the bot account's profile. Agents call it first to establish which site they're on. |
+| `Jira_GetAvailableAtlassianClouds` | Lists the Atlassian sites the connection can reach. |
+| `Jira_ListProjects` | Browses the projects the bot account can see. |
+| `Jira_SearchProjects` | Returns project details, searchable by name or key. |
+| `Jira_GetProjectById` | Returns one project by id or key. |
+| `Jira_ListIssueTypesByProject` | Lists the issue types a project accepts. |
+| `Jira_GetIssueTypeById` | Returns one issue type. |
+| `Jira_SearchIssuesWithoutJql` | Searches issues with plain parameters — project, status, assignee, text. The preferred search. |
+| `Jira_SearchIssuesWithJql` | Searches issues with a JQL query. |
+| `Jira_ListIssues` | Lists the issues in a project. |
+| `Jira_GetIssueById` | Returns one issue in full. |
+| `Jira_GetIssueComments` | Reads an issue's comments. |
+| `Jira_GetCommentById` | Returns one comment. |
+| `Jira_AddCommentToIssue` | Comments on an issue. |
+| `Jira_CreateIssue` | Creates an issue. Accepts project, issue type, priority, and assignee by name rather than id. |
+| `Jira_UpdateIssue` | Updates an issue's summary, description, assignee, priority, or labels. |
+| `Jira_ListLabels` | Lists the labels in use on the site. |
+| `Jira_AddLabelsToIssue` | Adds labels to an issue. |
+| `Jira_GetTransitionsAvailableForIssue` | Lists the status transitions an issue currently allows. |
+| `Jira_GetTransitionByStatusName` | Finds a transition by the name of its target status. |
+| `Jira_GetTransitionById` | Returns one transition. |
+| `Jira_TransitionIssueToNewStatus` | Moves an issue to a new status. |
+| `Jira_ListPrioritiesAvailableToAProject` | Lists the priorities a project accepts. |
+| `Jira_GetPriorityById` | Returns one priority. |
+| `Jira_GetUsersWithoutId` | Finds users by display name or email, for assigning. |
+
+Agents are instructed to create issues only for findings you asked to track, never in bulk, and to check a
+project's issue types before filing. Status changes go through the transition tools, not through
+`Jira_UpdateIssue`.
+
+### Confluence
+
+| Tool | What it does |
+| --- | --- |
+| `Confluence_WhoAmI` | Returns the bot account's profile. Agents call it first to establish which site they're on. |
+| `Confluence_GetAvailableAtlassianClouds` | Lists the Atlassian sites the connection can reach. |
+| `Confluence_ListSpaces` | Lists the spaces the bot account can see. |
+| `Confluence_GetSpace` | Returns one space by id or key. |
+| `Confluence_ListDirectChildren` | Lists the pages directly under a page or space. |
+| `Confluence_SearchContent` | Searches page content. |
+| `Confluence_GetPage` | Reads one page by id or title. |
+| `Confluence_GetPagesById` | Reads several pages in one call. |
+| `Confluence_ListPages` | Lists pages, with their content. |
+| `Confluence_CreatePage` | Creates a page at the root of a space. |
+| `Confluence_UpdatePageContent` | Replaces a page's body. Agents are instructed to read the page first and preserve what they weren't asked to change. |
+
+## What agents can't do
+
+- Delete issues, pages, or comments, or remove labels from an issue (labels are removed by updating the
+  issue's label list)
+- Attach files to issues
+- Create or manage sprints or boards
+- Comment on Confluence pages, or rename them
+- Reach a site other than the one chosen at authorization, or a project or space the bot account can't see
+
+## Example
+
+A filing step that runs once per finding:
+
+```markdown
+---
+name: jira-issue-filer
+description: Files one Jira issue in the SEC project for each confirmed finding, unless an open issue for the same finding already exists.
+allowed-tools:
+  - list_findings
+  - Jira_ListIssueTypesByProject
+  - Jira_SearchIssuesWithoutJql
+  - Jira_CreateIssue
+consumes:
+  - kind: amplify:finding
+    mode: each
+    group-by: [id]
+---
+
+Search the SEC project for an open issue mentioning this finding's id; if one
+exists, stop. Otherwise create a Bug titled `[Amplify] <finding title>` whose
+description carries the severity, file and line, explanation, and a link back
+to the finding. Do not assign it or change its status.
+```
+
+See [using integration tools in an agent](/integrations/using-in-agents#one-issue-per-finding) for why
+`group-by: [id]` is there.
+
+## Revoking fully
+
+Disconnecting in Console deletes Amplify's stored authorization. To remove Atlassian's side of the grant
+too, sign in as the bot account at **id.atlassian.com → Connected apps** and revoke Amplify Console.

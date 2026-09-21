@@ -1,0 +1,76 @@
+---
+title: Linear
+description: 'Agents create, update, comment on, and transition Linear issues in every team the bot account belongs to.'
+---
+
+## What it's for
+
+Tracking findings as Linear issues. A workflow step files an issue per confirmed finding in the right team;
+a chat agent checks whether something is already tracked, adds what it learned as a comment, or moves an
+issue to the next state once a fix is verified.
+
+## Before you connect
+
+1. Create the bot Linear user. See [the bot account](/integrations/connecting#the-bot-account).
+2. Add it to every team agents should file into. Linear has no picker at authorization — the connection
+   reaches **every team the bot account belongs to**, so team membership is the only scoping lever.
+3. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
+
+The authorization screen asks for read and write access to the bot account's workspace, plus permission to
+create comments.
+
+## What agents can do
+
+| Tool | What it does |
+| --- | --- |
+| `Linear_WhoAmI` | Returns the bot account's profile and team memberships. |
+| `Linear_ListTeams` | Lists teams, optionally filtered by keyword. |
+| `Linear_GetTeam` | Returns one team in detail. |
+| `Linear_ListProjects` | Lists projects, filterable by keyword, status, team, or creation date. |
+| `Linear_GetProject` | Returns one project in detail. |
+| `Linear_GetProjectDescription` | Returns a project's full description, paginated. |
+| `Linear_ListIssues` | Lists issues, filterable by keyword and other criteria. |
+| `Linear_GetIssue` | Returns one issue in detail. |
+| `Linear_ListComments` | Reads an issue's comments. |
+| `Linear_ListLabels` | Lists the workspace's labels. |
+| `Linear_ListWorkflowStates` | Lists the workflow states available in the workspace. |
+| `Linear_ListCycles` | Lists cycles, filterable by team and status. |
+| `Linear_GetCycle` | Returns one cycle in detail. |
+| `Linear_CreateIssue` | Creates an issue. Team, assignee, labels, state, project, cycle, and parent are validated first, with suggestions if one isn't found. |
+| `Linear_UpdateIssue` | Updates an issue's title, description, assignee, labels, priority, or estimate. |
+| `Linear_TransitionIssueState` | Moves an issue to a new workflow state. |
+| `Linear_AddComment` | Comments on an issue. |
+| `Linear_ReplyToComment` | Replies to an existing comment. |
+| `Linear_CreateIssueRelation` | Relates two issues — blocks, duplicates, related. |
+| `Linear_CreateLabel` | Creates a label and optionally applies it. |
+
+Agents are instructed to create issues only for findings you asked to track, never in bulk. Status changes
+go through `Linear_TransitionIssueState`, not `Linear_UpdateIssue`. An issue created without an assignee is
+assigned to the bot account, which is Linear's behavior for the authenticated user.
+
+## What agents can't do
+
+- Delete, archive, or trash anything
+- Create or edit projects, initiatives, documents, milestones, or project statuses
+- Attach files or manage subscriptions
+- Reach a team the bot account isn't a member of
+
+## Example
+
+Ask in chat, with Linear connected:
+
+```
+Is finding #17 already tracked in the Platform team? Search open issues for the
+file path. If not, create one labeled "security" with the finding's summary and
+a link back here, and leave it in Triage.
+```
+
+For a workflow step that files one issue per finding, adapt the
+[Jira example](/integrations/using-in-agents#one-issue-per-finding): swap the tools for `Linear_ListTeams`,
+`Linear_ListIssues`, and `Linear_CreateIssue`, and name the team instead of a project key.
+
+## Revoking fully
+
+Disconnecting in Console deletes Amplify's stored authorization. To remove Linear's side of the grant too,
+sign in as the bot account and revoke Amplify Console under
+**Settings → Security & access → Authorized applications**.

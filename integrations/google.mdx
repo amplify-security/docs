@@ -1,0 +1,76 @@
+---
+title: Google Docs
+description: 'Agents search, read, create, edit, and comment on Google Docs that you share with a bot account or grant through Choose files.'
+---
+
+## What it's for
+
+Reading the documents your team writes — design docs, security reviews, policies — and producing new ones. A
+chat agent reads the design doc for the service under review; a workflow step writes a scan report as a new
+document, or comments on an existing one with what it found.
+
+## What agents can see
+
+Google Docs has two layers of access, and it helps to know both before you connect:
+
+| If you… | Agents can… |
+| --- | --- |
+| **Share a document with the bot account** | Open it by id or URL — read it, edit it, append to it |
+| **Also grant it through Choose files** | Find it in searches and comment on it |
+
+Documents agents *create* are owned by the bot account and are searchable automatically. Documents you
+merely share with the bot are reachable when an agent is given the link, but don't appear in searches until
+an admin picks them with **Choose files** on the connection's card.
+
+## Before you connect
+
+1. Create the bot Google account. See [the bot account](/integrations/connecting#the-bot-account).
+2. Share any existing documents agents should work on with it.
+3. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
+4. Optionally, click **Choose files** on the connected card and pick the documents agents should be able to
+   search. The picker grants access for whichever Google account the browser is signed into, so do this from
+   the bot account too.
+
+The authorization screen asks for access to Google Docs, to the Drive files the app creates or you pick, and
+to the bot account's name and email.
+
+## What agents can do
+
+| Tool | What it does |
+| --- | --- |
+| `GoogleDocs_WhoAmI` | Returns the bot account's name, email, and profile picture. |
+| `GoogleDocs_SearchDocuments` | Searches for documents, returning metadata only. Covers documents agents created plus those granted through Choose files. |
+| `GoogleDocs_SearchAndRetrieveDocuments` | Searches and returns matching documents with their body content. |
+| `GoogleDocs_GetDocumentMetadata` | Returns a document's metadata, including its tab structure. |
+| `GoogleDocs_GetDocumentAsDocmd` | Reads a document by id as annotated Markdown. Works for any document shared with the bot account. |
+| `GoogleDocs_CreateBlankDocument` | Creates an empty document with a title. |
+| `GoogleDocs_CreateDocumentFromText` | Creates a document from text or Markdown. |
+| `GoogleDocs_EditDocument` | Makes structured edits to a document. |
+| `GoogleDocs_InsertTextAtEndOfDocument` | Appends text to a document. |
+| `GoogleDocs_CommentOnDocument` | Comments on a document. |
+| `GoogleDocs_ListDocumentComments` | Lists a document's comments and replies. |
+
+When a document isn't found, agents are instructed to treat that as "not shared with the bot account" and
+ask you for the link or to share it, rather than concluding the document doesn't exist.
+
+## What agents can't do
+
+- Delete documents, or move them between folders
+- Work with Sheets, Slides, or any Drive file that isn't a Google Doc
+- Find a document in search that was shared with the bot but never picked with Choose files
+
+## Example
+
+Ask in chat, with Google Docs connected:
+
+```
+Here's our API design doc: <link>. Compare the authentication section against
+the middleware in this repository and leave a comment on each claim in the doc
+that the code doesn't back up.
+```
+
+## Revoking fully
+
+Disconnecting in Console deletes Amplify's stored authorization. To remove Google's side of the grant too,
+sign in as the bot account and remove Amplify Console under **Google Account → Security → Third-party apps
+& services**.

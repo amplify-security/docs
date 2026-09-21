@@ -1,0 +1,71 @@
+---
+title: Notion
+description: 'Agents search, read, create, and append to the Notion pages you share with the connection.'
+---
+
+## What it's for
+
+Reading the context your team keeps in Notion — threat models, runbooks, architecture notes — and writing
+up what agents find. A chat agent reads the design doc for the service it's analyzing; a workflow step
+appends a run summary to a standing status page or creates a review page under the parent you name.
+
+## What agents can see
+
+A Notion connection sees **only the pages and databases you share with it**. You choose them in the page
+picker during authorization, and you can share more at any time from a page's **••• → Connections** menu.
+Nothing else in the workspace exists as far as agents are concerned — a freshly connected Notion with
+nothing shared looks empty to them.
+
+Sharing a page shares its children too, so sharing a top-level "Engineering" page is the usual shortcut.
+
+## Before you connect
+
+1. Create the bot Notion account and invite it to the workspace(s) agents should work in. See
+   [the bot account](/integrations/connecting#the-bot-account).
+2. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
+3. In Notion's authorization page, **select the pages and databases** agents may use before approving.
+
+The connection asks Notion for these capabilities: read content, insert content, read and insert comments,
+and read user information without email addresses. It does not ask to update or delete existing content.
+
+## What agents can do
+
+| Tool | What it does |
+| --- | --- |
+| `Notion_WhoAmI` | Returns the bot account's profile and workspace. |
+| `Notion_SearchByTitle` | Searches pages and databases by title. Titles only — not page content. |
+| `Notion_GetWorkspaceStructure` | Returns up to 100 recently edited pages and databases as a tree. |
+| `Notion_GetObjectMetadata` | Returns a page's or database's metadata by title or id. |
+| `Notion_GetObjectLocation` | Returns the breadcrumb path to a page or database. |
+| `Notion_ListChildObjects` | Lists the pages and databases directly under a page. |
+| `Notion_GetPageContentById` | Reads a page as Markdown, by id. |
+| `Notion_GetPageContentByTitle` | Reads a page as Markdown, by title. |
+| `Notion_CreatePage` | Creates a page under a parent page, named by title. |
+| `Notion_AppendContentToEndOfPage` | Appends Markdown to the end of a page. |
+
+When a page isn't found, agents are instructed to treat that as "not shared with the connection" and ask you
+to share it, rather than concluding the page doesn't exist.
+
+## What agents can't do
+
+- Edit or delete existing content — only append to a page or create a new one
+- Query a database by property (filter rows by status, owner, date). Database rows are pages and are found
+  by title only
+- Comment on pages
+- Reach any page that hasn't been shared with the connection
+
+## Example
+
+Ask in chat, with Notion connected:
+
+```
+Read the "Payments service threat model" page and check whether the trust
+boundaries it describes match what you see in this repository's request
+handlers. Append a dated "Verified against code" section to the page with any
+differences you found.
+```
+
+## Revoking fully
+
+Disconnecting in Console deletes Amplify's stored authorization. To remove Notion's side of the grant too,
+sign in as the bot account and remove Amplify Console under **Settings → Connections**.
