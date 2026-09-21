@@ -57,17 +57,17 @@
             ]
           },
           {
-            "group": "Agent tools",
+            "group": "Integrations",
             "pages": [
-              "agent-tools/overview",
-              "agent-tools/connecting",
-              "agent-tools/using-in-agents",
-              "agent-tools/slack",
-              "agent-tools/atlassian",
-              "agent-tools/linear",
-              "agent-tools/notion",
-              "agent-tools/asana",
-              "agent-tools/google"
+              "integrations/overview",
+              "integrations/connecting",
+              "integrations/using-in-agents",
+              "integrations/slack",
+              "integrations/atlassian",
+              "integrations/linear",
+              "integrations/notion",
+              "integrations/asana",
+              "integrations/google"
             ]
           },
           {

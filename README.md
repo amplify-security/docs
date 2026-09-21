@@ -13,6 +13,7 @@ on each other:
 | `Get Started` | Introduction, quickstart, CLI installation |
 | `Agents & detections` (`agents/`) | The authorable primitives — agents, skills, detections — and the tool surface |
 | `Data & connections` (`data/`) | Projects, connections, vendor data, findings |
+| `Integrations` (`integrations/`) | Third-party apps agents can act in — Slack, Atlassian, Linear, Notion, Asana, Google Docs — and how to use their tools in an agent |
 | `Working interactively` (`interactive/`) | Chat and the CLI |
 | `Workflows` (`workflows/`) | Creating, triggering, running, and delivering workflow results |
 

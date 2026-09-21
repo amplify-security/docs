@@ -1,30 +1,34 @@
 ---
-title: Agent tools
-description: 'Let agents work in the apps your team already uses — Slack, Jira, Confluence, Linear, Notion, Asana, and Google Docs.'
+title: Integrations
+description: 'Give agents tools in the third-party apps your team already uses — Slack, Jira, Confluence, Linear, Notion, Asana, and Google Docs.'
 ---
 
-## What agent tools are
+## What integrations are
 
-An agent tool connection gives Console's agents a set of tools for one app your team uses. Once an
+An integration gives Console's agents a set of tools in one third-party app your team uses. Once an
 organization admin connects Slack, every agent in your organization can post to Slack. Connect Jira, and
 agents can file and update issues. Connect Confluence, and they can write up what they found.
+
+These are separate from the built-in tools every agent already has for reading code, scanning, and
+recording findings — those are in the [tool reference](/agents/tool-reference). Integration tools exist
+only for apps an admin has connected.
 
 These are the apps you can connect today:
 
 | App | What agents can do | Tools |
 | --- | --- | --- |
-| [Slack](/agent-tools/slack) | Post messages, reply in threads, react, and read channel history | 11 |
-| [Atlassian](/agent-tools/atlassian) | Create, search, comment on, and transition Jira issues; read and write Confluence pages | 36 |
-| [Linear](/agent-tools/linear) | Create, update, comment on, and transition issues | 20 |
-| [Notion](/agent-tools/notion) | Search, read, create, and append to pages | 10 |
-| [Asana](/agent-tools/asana) | Create, read, and comment on tasks | 8 |
-| [Google Docs](/agent-tools/google) | Search, read, create, edit, and comment on documents | 11 |
+| [Slack](/integrations/slack) | Post messages, reply in threads, react, and read channel history | 11 |
+| [Atlassian](/integrations/atlassian) | Create, search, comment on, and transition Jira issues; read and write Confluence pages | 36 |
+| [Linear](/integrations/linear) | Create, update, comment on, and transition issues | 20 |
+| [Notion](/integrations/notion) | Search, read, create, and append to pages | 10 |
+| [Asana](/integrations/asana) | Create, read, and comment on tasks | 8 |
+| [Google Docs](/integrations/google) | Search, read, create, edit, and comment on documents | 11 |
 
 Each app's page lists every tool by name, what it needs before you connect, and what it can't do.
 
 <Note>
-  Agent tools are a different thing from the [vendor connectors](/data/connections#vendor-connectors) on the
-  same Connections page. Vendor connectors let agents *read findings* from security scanners. Agent tools let
+  Integrations are a different thing from the [vendor connectors](/data/connections#vendor-connectors) on the
+  same Connections page. Vendor connectors let agents *read findings* from security scanners. Integrations let
   agents *act* in your team's collaboration and tracking apps.
 </Note>
 
@@ -38,14 +42,14 @@ workflow — once an app is connected, its tools are offered to every agent that
 **Agents act as a bot account you own.** You create a dedicated account for Amplify in the app — an
 `amplify-agent@yourcompany.com`, say — and authorize *that* account when you connect. Everything agents do
 is attributed to it, and its permissions in the app bound what agents can reach. See
-[the bot account](/agent-tools/connecting#the-bot-account) for how to set one up.
+[the bot account](/integrations/connecting#the-bot-account) for how to set one up.
 
-**Tools are named after the app.** Every agent tool is named `<App>_<Action>` — `Jira_CreateIssue`,
+**Tools are named after the app.** Every integration tool is named `<App>_<Action>` — `Jira_CreateIssue`,
 `Slack_GetThreadMessages`, `Notion_SearchByTitle`. That's the name you use in an agent's
 [`allowed-tools`](/agents/writing-an-agent#allowed-tools-restricts-it-doesnt-grant). See
-[using agent tools in an agent](/agent-tools/using-in-agents).
+[using integration tools in an agent](/integrations/using-in-agents).
 
-**Nothing destructive is exposed.** No agent tool deletes, removes, archives, or trashes anything, in any
+**Nothing destructive is exposed.** No integration tool deletes, removes, archives, or trashes anything, in any
 app. The toolset for each app is a fixed, curated allowlist — agents cannot reach an app's other API surface,
 and Console's own tools can't be used to call the app's API directly either.
 
@@ -66,7 +70,7 @@ If a connection stops working mid-run, the agent is told and moves on rather tha
 Each tool call is given 60 seconds, and a result longer than 16,000 characters is truncated with a note
 saying so.
 
-## Where agent tools are available
+## Where integrations are available
 
 | Surface | Available |
 | --- | --- |
@@ -77,11 +81,11 @@ saying so.
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Connect an app" icon="plug" href="/agent-tools/connecting">
+  <Card title="Connect an app" icon="plug" href="/integrations/connecting">
     The bot account, the connect flow, and disconnecting.
   </Card>
 
-  <Card title="Use agent tools in an agent" icon="file-code" href="/agent-tools/using-in-agents">
+  <Card title="Use integration tools in an agent" icon="file-code" href="/integrations/using-in-agents">
     Grant tools, and add a Slack or Jira step to a workflow.
   </Card>
 </CardGroup>

@@ -11,10 +11,10 @@ issue to the next state once a fix is verified.
 
 ## Before you connect
 
-1. Create the bot Linear user. See [the bot account](/agent-tools/connecting#the-bot-account).
+1. Create the bot Linear user. See [the bot account](/integrations/connecting#the-bot-account).
 2. Add it to every team agents should file into. Linear has no picker at authorization — the connection
    reaches **every team the bot account belongs to**, so team membership is the only scoping lever.
-3. Sign your browser into the bot account, then follow [the connect flow](/agent-tools/connecting#connecting).
+3. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
 
 The authorization screen asks for read and write access to the bot account's workspace, plus permission to
 create comments.
@@ -66,7 +66,7 @@ a link back here, and leave it in Triage.
 ```
 
 For a workflow step that files one issue per finding, adapt the
-[Jira example](/agent-tools/using-in-agents#one-issue-per-finding): swap the tools for `Linear_ListTeams`,
+[Jira example](/integrations/using-in-agents#one-issue-per-finding): swap the tools for `Linear_ListTeams`,
 `Linear_ListIssues`, and `Linear_CreateIssue`, and name the team instead of a project key.
 
 ## Revoking fully

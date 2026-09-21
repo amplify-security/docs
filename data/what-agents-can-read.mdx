@@ -15,7 +15,7 @@ workflow around it.
 
 <Note>
   This page is about **vendor connectors** — the security scanners in the catalog. The apps your team works
-  in are a separate thing: through [agent tools](/agent-tools/overview), agents can read *and write* Slack,
+  in are a separate thing: through [integration tools](/integrations/overview), agents can read *and write* Slack,
   Jira, Confluence, Linear, Notion, Asana, and Google Docs.
 </Note>
 
@@ -65,7 +65,7 @@ Concretely, through a vendor connector an agent **cannot**:
 
 There is also no general-purpose outbound write tool. `web_fetch` performs reads only, with no request method
 or body, so an agent cannot use it to POST to a vendor API. Writes to other systems happen only through
-[agent tools](/agent-tools/overview) — a fixed set of tools per connected app, with nothing destructive
+[integration tools](/integrations/overview) — a fixed set of tools per connected app, with nothing destructive
 in it — and through [workflow outputs](/workflows/outputs), which deliver to pull requests and GitHub
 checks.
 
@@ -132,7 +132,7 @@ You triage an existing scanner backlog against real code.
     Grant these tools and put them to work.
   </Card>
 
-  <Card title="Agent tools" icon="plug" href="/agent-tools/overview">
+  <Card title="Integrations" icon="plug" href="/integrations/overview">
     Read and write the apps your team works in.
   </Card>
 </CardGroup>

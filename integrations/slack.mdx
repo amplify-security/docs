@@ -21,10 +21,13 @@ Slack grants Amplify a **user token** for the bot account, not a bot-app token. 
 ## Before you connect
 
 1. Create the bot Slack account in your workspace and set its display name and avatar. See
-   [the bot account](/agent-tools/connecting#the-bot-account).
+   [the bot account](/integrations/connecting#the-bot-account).
 2. Invite it to every channel agents should read or post in. It sees nothing else.
-3. If your workspace requires admin approval for apps, have a Slack admin approve **Amplify Console** first.
-4. Sign your browser into the bot account, then follow [the connect flow](/agent-tools/connecting#connecting).
+3. If your workspace requires admin approval for apps, the connect flow pauses on a Slack approval request.
+   A Slack admin can approve it from **Admin → Apps → Requests to install**, or pre-approve ahead of time
+   with an app-approval rule for app ID `A0C28V9SYJK` (Amplify Console). Amplify Console isn't listed in
+   the Slack Marketplace, so there is no Marketplace page to send them.
+4. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
 
 The authorization screen asks for these user scopes: read public and private channels, direct messages, and
 group messages the account belongs to; send messages; add reactions; and read user profiles.
@@ -80,7 +83,7 @@ by severity, then one line per finding with its title and a link. If there are
 none, say so in one line. Do not post anywhere else.
 ```
 
-See [using agent tools in an agent](/agent-tools/using-in-agents#adding-a-delivery-step-to-a-workflow) for
+See [using integration tools in an agent](/integrations/using-in-agents#adding-a-delivery-step-to-a-workflow) for
 where this fits in a chain.
 
 ## Revoking fully

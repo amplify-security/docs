@@ -1,11 +1,11 @@
 ---
-title: Using agent tools in an agent
-description: 'How agent tools reach an agent, how to name them in allowed-tools, and how to add a Slack or Jira step to a workflow.'
+title: Using integration tools in an agent
+description: 'How integration tools reach an agent, how to name them in allowed-tools, and how to add a Slack or Jira step to a workflow.'
 ---
 
 ## Nothing to enable
 
-Once an app is [connected](/agent-tools/connecting), its tools are offered to every agent in your
+Once an app is [connected](/integrations/connecting), its tools are offered to every agent in your
 organization automatically. An agent that doesn't set [`allowed-tools`](/agents/writing-an-agent#allowed-tools-restricts-it-doesnt-grant)
 already has them; an agent that does needs to list the ones it should use.
 
@@ -14,7 +14,7 @@ it can.
 
 ## Naming tools in `allowed-tools`
 
-Agent tools follow the pattern `<App>_<Action>`, and the name must match exactly:
+Integration tools follow the pattern `<App>_<Action>`, and the name must match exactly:
 
 ```yaml
 allowed-tools:
@@ -29,7 +29,7 @@ allowed-tools:
   `SlackApi_…`, Asana's comment tool is `AsanaApi_…`, Google's are all `GoogleDocs_…`. Each app's page has
   the exact list.
 
-Listing an agent tool doesn't connect the app. If the app isn't connected when the agent runs, the tool is
+Listing an integration tool doesn't connect the app. If the app isn't connected when the agent runs, the tool is
 absent and the agent works without it.
 
 ## Prompting
@@ -49,9 +49,9 @@ is the *where* and *what*:
 
 ## Adding a delivery step to a workflow
 
-The natural place for agent tools in a [workflow](/workflows/overview) is a final step that takes what
+The natural place for integration tools in a [workflow](/workflows/overview) is a final step that takes what
 earlier steps produced and puts it where your team will see it. Console's built-in
-[outputs](/workflows/outputs) deliver to the triggering pull request; a step with agent tools can deliver
+[outputs](/workflows/outputs) deliver to the triggering pull request; a step with integration tools can deliver
 anywhere an app is connected.
 
 Such a step [consumes](/agents/writing-an-agent#consumes) findings, and the `mode` you choose decides
@@ -177,11 +177,11 @@ session's tool trail so you can see exactly what it read and wrote.
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Slack" icon="slack" href="/agent-tools/slack">
+  <Card title="Slack" icon="slack" href="/integrations/slack">
     Tools and limits for posting and reading.
   </Card>
 
-  <Card title="Atlassian" icon="ticket" href="/agent-tools/atlassian">
+  <Card title="Atlassian" icon="ticket" href="/integrations/atlassian">
     Jira issues and Confluence pages.
   </Card>
 
