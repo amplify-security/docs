@@ -29,16 +29,28 @@ path), and update your `PATH` if necessary in your shell's rc file.
 After installation, open a new terminal session (or `source` your shell's rc file) so that the updated
 `PATH` takes effect.
 
-## Configure API keys
+## Sign in
 
-Console requires an Amplify API key, which you can obtain by going to [Profile > API
-keys](https://console.amplify.security/console/profile/api-keys) from the web interface.
-
-Add the following to your `~/.bashrc` or `~/.zshrc`, then `source` the file or open a new terminal:
+Console needs an Amplify API key. Create one at [Profile > API
+keys](https://console.amplify.security/console/profile/api-keys) in the web interface, then start
+Console:
 
 ```bash
-export AMPLIFY_API_KEY="<your-amplify-api-key>"
+console
 ```
+
+The first launch walks you through setup: paste the API key, choose a default organization if you
+belong to more than one, and confirm the scanner tools are installed. Console stores the key in
+`~/.amplify/credentials.json` (readable only by you) and your settings in `~/.amplify/config.json`.
+Nothing goes in your shell's rc file.
+
+Run `console setup` at any time to repeat the setup, `console login` to switch to a new key,
+`console logout` to forget it, and `console config` to see the settings in effect.
+
+<Note>
+  The local scan tools use `opengrep` and `ripgrep`, which are not bundled with Console. Setup
+  tells you if either is missing; on macOS `brew install opengrep ripgrep` installs both.
+</Note>
 
 ## Install the GitHub App
 
@@ -50,7 +62,7 @@ Install. This should redirect you back to Console's web interface to complete se
 
 ## Start a session
 
-Once your environment is configured, change to a directory containing one of your projects and start Console:
+Once you are signed in, change to a directory containing one of your projects and start Console:
 
 ```bash
 cd ~/src/hello-world
@@ -63,3 +75,9 @@ This opens an interactive chat session with the AI agent. Try asking it one of t
 - Are there any exposed service endpoints in this project that shouldn't be?
 
 or anything else may be relevant for your project.
+
+## Automation
+
+For CI or scripts, set `AMPLIFY_API_KEY` in the environment instead of running setup; Console uses
+it as-is and never prompts. `console -p "<prompt>"` runs a single prompt and exits, and fails with a
+clear message when no key is available.

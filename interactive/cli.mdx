@@ -29,7 +29,6 @@ The agents' capabilities are the same. What differs is where they run and what t
 | One-shot prompts | Not available | `console --prompt "..."` |
 | Authoring skills | Not available | Files on disk, or ask the CLI to create one and save it to your organization |
 | Starting from a finding | Yes | No |
-| Works offline | No | Yes |
 
 ## Starting a session
 
@@ -43,8 +42,8 @@ Ask it something:
 - *Find and resolve any vectors for XSRF/XSS attacks within this project.*
 - *Are there any exposed service endpoints in this project that shouldn't be?*
 
-The footer shows whether you're connected to Amplify Cloud (and which organization) or running offline, plus
-the active model.
+The footer shows the organization you're connected to and the active model. Signing in happens once, on
+first launch — see [Installation](/install-console).
 
 ## One-shot prompts
 
@@ -103,13 +102,13 @@ steps, and agents that chat dispatches to run against a repository — ask the C
 configured, to create it and save it to your organization; the built-in `skill-creator` skill handles the
 flow, bundling any script you point it at. See [organization skills](/agents/skills#organization-skills).
 
-## Offline mode
+## Signing in and settings
 
-Without an Amplify API key the CLI runs fully local: detections and findings go to a SQLite database under
-`~/.amplify` instead of your organization, and the footer shows a red **offline mode** indicator.
-
-Once authenticated, detections write through to your organization instead, so work done locally shows up for
-your team.
+The CLI always works against your organization: detections, findings and artifacts write through to it, so
+work done locally shows up for your team. Your API key lives in `~/.amplify/credentials.json` and your
+settings in `~/.amplify/config.json`. `console login` switches keys, `console logout` forgets the stored one,
+`console setup` repeats the first-launch setup, and `console config` prints the settings in effect. If a key
+is rejected, the CLI says which environment rejected it and stops rather than continuing without it.
 
 ## Cancelling and exiting
 
