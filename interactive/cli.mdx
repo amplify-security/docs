@@ -99,9 +99,9 @@ The loop is quick: write the file, restart, then give the agent a task that shou
 activates a skill itself when its description matches.
 
 Files on disk are loaded only by your CLI sessions. To make a skill available to cloud runs — workflow
-steps and the sub-agents chat delegates to — ask a signed-in session to create it and save it to your
-organization; the built-in `skill-creator` skill handles the flow, bundling any script you point it at. See
-[organization skills](/agents/skills#organization-skills).
+steps, and agents that chat dispatches to run against a repository — ask the CLI, with an Amplify API key
+configured, to create it and save it to your organization; the built-in `skill-creator` skill handles the
+flow, bundling any script you point it at. See [organization skills](/agents/skills#organization-skills).
 
 ## Offline mode
 
@@ -122,8 +122,9 @@ when nothing is running exits.
   conversation. Findings and detections do persist.
 - **No input history recall.** Arrow keys don't walk previous messages.
 - **No workflows.** Workflows are a cloud feature — the CLI runs agents interactively, one session at a time.
-- **No organization skills.** Skills saved to your organization are loaded by cloud runs, not by CLI
-  sessions; the CLI loads only the skill files on disk.
+- **No organization skills.** The CLI can list the skills saved to your organization with `list_skills`,
+  but it doesn't load or activate them — they run in cloud runs. The CLI activates only the skill files on
+  disk.
 
 ## Next steps
 

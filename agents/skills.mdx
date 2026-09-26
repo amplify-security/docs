@@ -90,8 +90,8 @@ distinguishes the `standard` and `comprehensive` [profiles](/agents/library#scan
 A skill lives in one of two places, and each is loaded by something different:
 
 - **Local files** on your machine are loaded by your own CLI sessions.
-- **Organization skills** are loaded by cloud runs — workflow steps, and the sub-agents a chat delegates
-  to.
+- **Organization skills** are loaded by cloud runs — workflow steps, and agents that chat dispatches to
+  run against a repository.
 
 ### Local files
 
@@ -112,8 +112,9 @@ Local files never leave your machine: cloud runs don't see them.
 
 ### Organization skills
 
-To make a skill available to cloud runs, save it to your organization from a signed-in CLI session. The
-built-in `skill-creator` skill guides the flow — ask for it directly:
+To make a skill available to cloud runs, save it to your organization from the CLI with an
+[Amplify API key configured](/install-console#configure-api-keys). The built-in `skill-creator` skill guides
+the flow — ask for it directly:
 
 > I have `check.py`. Write a skill so the agent can run it, and save it to the organization.
 
@@ -123,19 +124,23 @@ stay plain files, as above.
 
 Bundled files are read from your machine when the skill is created. The CLI refuses files that look like
 credentials or configuration — dot-files and dot-directories, keys, keychains, shell histories, system
-directories — and each file must be UTF-8 text of at most 1 MiB.
+directories — and each file must be UTF-8 text of at most 1 MiB. Files inside your local skill directories
+(`~/.amplify/skills`, `./skills`, or anything in `AMPLIFY_SKILLS_DIR`) are allowed, so a local skill can be
+saved to your organization as-is; a dot-file or key inside one of those directories is still refused.
 
 When a cloud run activates the skill, the runtime tells the agent the skill's directory, so `SKILL.md` should
 refer to bundled files by a path relative to the skill root — `python3 scripts/check.py` — and invoke
 scripts through their interpreter rather than executing them directly.
 
-The skill's name is its frontmatter `name`: kebab-case, 1–64 characters. It must not collide with a built-in
-skill (the server refuses those names) or with a skill your organization already has.
+The skill's name is its frontmatter `name`: kebab-case, 1–64 characters. It must not reuse the name of a
+skill Amplify already provides (the server refuses those) or of a skill your organization already has.
 
-Organization skills are create-only today. To change one, delete it and create it again; listing, renaming,
-and deleting are available through the API. Your interactive CLI sessions don't load organization skills,
-and neither does the chat agent you talk to directly — only the sub-agents it delegates to, and workflow
-steps.
+Organization skills can't be edited after creation today; `list_skills` from the CLI shows what's saved.
+Your interactive CLI sessions don't load organization skills, and neither does the chat agent you talk to
+directly or the sub-agents it spawns beside itself — only workflow steps, and agents that chat dispatches
+to run against a repository.
+
+{/* TODO: no customer-facing way to rename or delete an organization skill yet — document it here once one ships (ENG-2124 follow-up). */}
 
 ## Using skills in the CLI
 
@@ -145,8 +150,8 @@ command — the agent calls `activate_skill` itself when a skill's `description`
 To test a skill you're writing, edit the file, restart, and give the agent a task the description should
 trigger. If you want a specific procedure followed, ask for it by name.
 
-From a signed-in session, the agent can also call `list_skills` to show your organization's saved skills
-beside the session's own.
+Once authenticated, the agent can also call `list_skills` to show your organization's saved skills beside
+the session's own.
 
 ## Next steps
 
