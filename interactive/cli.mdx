@@ -25,9 +25,9 @@ The agents' capabilities are the same. What differs is where they run and what t
 | Uncommitted changes | Not visible | Visible |
 | Chat history | Saved to your organization; resume, rename, archive | Not persisted between sessions |
 | Choosing a model | Model picker | `/model` |
-| Slash commands | Not available | `/help`, `/model`, `/skills`, `/skill`, `/context`, `/clear`, `/quit` |
+| Slash commands | Not available | `/help`, `/model`, `/skills`, `/context`, `/clear`, `/quit` |
 | One-shot prompts | Not available | `console --prompt "..."` |
-| Authoring skills | Not available | Files on disk |
+| Authoring skills | Not available | Files on disk, or ask the CLI to create one and save it to your organization |
 | Starting from a finding | Yes | No |
 | Works offline | No | Yes |
 
@@ -62,8 +62,7 @@ It prints the agent's final answer and exits. Also `--version`.
 | --- | --- | --- |
 | `/help` | `/?` | Lists all commands |
 | `/model` | | Opens the model picker |
-| `/skills` | | Lists available skills and which are active |
-| `/skill <name>` | | Toggles a skill on or off |
+| `/skills` | | Lists available skills |
 | `/context <org>` | | Switches organization |
 | `/clear` | | Clears the conversation |
 | `/quit` | `/q`, `/exit` | Exits |
@@ -83,7 +82,7 @@ transcript notes the switch.
 
 ## Authoring skills and agents
 
-The CLI is where [skills](/agents/skills) are authored, because it loads both skills and agents from the
+The CLI is where [skills](/agents/skills) are authored. It loads both skills and agents from the
 filesystem:
 
 ```
@@ -96,8 +95,13 @@ filesystem:
 Override with `AMPLIFY_SKILLS_DIR` and `AMPLIFY_AGENTS_DIR`. Both load at startup, so restart after adding
 one.
 
-The loop is quick: write the file, restart, `/skill <name>` to activate, then give the agent a task that
-should trigger it.
+The loop is quick: write the file, restart, then give the agent a task that should trigger it — the agent
+activates a skill itself when its description matches.
+
+Files on disk are loaded only by your CLI sessions. To make a skill available to cloud runs — workflow
+steps, and agents that chat dispatches to run against a repository — ask the CLI, with an Amplify API key
+configured, to create it and save it to your organization; the built-in `skill-creator` skill handles the
+flow, bundling any script you point it at. See [organization skills](/agents/skills#organization-skills).
 
 ## Offline mode
 
@@ -118,6 +122,9 @@ when nothing is running exits.
   conversation. Findings and detections do persist.
 - **No input history recall.** Arrow keys don't walk previous messages.
 - **No workflows.** Workflows are a cloud feature — the CLI runs agents interactively, one session at a time.
+- **No organization skills.** The CLI can list the skills saved to your organization with `list_skills`,
+  but it doesn't load or activate them — they run in cloud runs. The CLI activates only the skill files on
+  disk.
 
 ## Next steps
 

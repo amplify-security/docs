@@ -74,6 +74,8 @@ applies.
 | `opengrep-rule-creator` | Authors OpenGrep rules for detecting a vulnerability or code pattern. |
 | `codeql-rule-creator` | Authors CodeQL queries for vulnerabilities, bug patterns, and code-quality issues. |
 | `policy-detection-creator` | Turns a security requirement into a stored natural-language [policy detection](/agents/detections). |
+| `skill-creator` | Turns a procedure — often a script you already have — into a skill and saves it to your organization. See [organization skills](#organization-skills). |
+| `agent-creator` | Authors, edits, and deletes agent definitions through the agent tools. |
 
 The scanner agents also draw on an internal library of class-specific analysis skills, which is what
 distinguishes the `standard` and `comprehensive` [profiles](/agents/library#scanning) from `basic`.
@@ -81,9 +83,17 @@ distinguishes the `standard` and `comprehensive` [profiles](/agents/library#scan
 ## Where to author a skill
 
 <Warning>
-  Skills are authored in the **CLI** (as files) or through the API. Unlike agents and detections, there is no
-  skill editor in the web console today.
+  Skills are authored in the **CLI** — as files on disk, or saved to your organization by asking the CLI to
+  create one. Unlike agents and detections, there is no skill editor in the web console today.
 </Warning>
+
+A skill lives in one of two places, and each is loaded by something different:
+
+- **Local files** on your machine are loaded by your own CLI sessions.
+- **Organization skills** are loaded by cloud runs — workflow steps, and agents that chat dispatches to
+  run against a repository.
+
+### Local files
 
 In the CLI, a skill is a file on disk:
 
@@ -98,18 +108,50 @@ one.
 A skill directory can hold supporting files — reference documents, example rules, helper scripts — next to
 `SKILL.md`, and the instructions can point the agent at them.
 
+Local files never leave your machine: cloud runs don't see them.
+
+### Organization skills
+
+To make a skill available to cloud runs, save it to your organization from the CLI with an
+[Amplify API key configured](/install-console#configure-api-keys). The built-in `skill-creator` skill guides
+the flow — ask for it directly:
+
+> I have `check.py`. Write a skill so the agent can run it, and save it to the organization.
+
+The agent reads the script, confirms the name is free with `list_skills`, drafts `SKILL.md`, bundles the
+script under `scripts/`, and calls `create_skill`. There is no local target for `create_skill`; local skills
+stay plain files, as above.
+
+Bundled files are read from your machine when the skill is created. The CLI refuses files that look like
+credentials or configuration — dot-files and dot-directories, keys, keychains, shell histories, system
+directories — and each file must be UTF-8 text of at most 1 MiB. Files inside your local skill directories
+(`~/.amplify/skills`, `./skills`, or anything in `AMPLIFY_SKILLS_DIR`) are allowed, so a local skill can be
+saved to your organization as-is; a dot-file or key inside one of those directories is still refused.
+
+When a cloud run activates the skill, the runtime tells the agent the skill's directory, so `SKILL.md` should
+refer to bundled files by a path relative to the skill root — `python3 scripts/check.py` — and invoke
+scripts through their interpreter rather than executing them directly.
+
+The skill's name is its frontmatter `name`: kebab-case, 1–64 characters. It must not reuse the name of a
+skill Amplify already provides (the server refuses those) or of a skill your organization already has.
+
+Organization skills can't be edited after creation today; `list_skills` from the CLI shows what's saved.
+Your interactive CLI sessions don't load organization skills, and neither does the chat agent you talk to
+directly or the sub-agents it spawns beside itself — only workflow steps, and agents that chat dispatches
+to run against a repository.
+
+{/* TODO: no customer-facing way to rename or delete an organization skill yet — document it here once one ships (ENG-2124 follow-up). */}
+
 ## Using skills in the CLI
 
-| Command | What it does |
-| --- | --- |
-| `/skills` | Lists available skills and marks which are active. |
-| `/skill <name>` | Toggles a skill on or off for the session. |
+`/skills` lists the catalog: every skill this session can activate, built-in and local. Activation isn't a
+command — the agent calls `activate_skill` itself when a skill's `description` matches the task at hand.
 
-Toggling a skill on makes it available immediately, which is the fastest way to test one you're writing:
-edit the file, restart, activate, and give the agent a task that should trigger it.
+To test a skill you're writing, edit the file, restart, and give the agent a task the description should
+trigger. If you want a specific procedure followed, ask for it by name.
 
-Agents also activate skills on their own via `activate_skill` — manual toggling is for pinning a procedure
-you specifically want followed.
+Once authenticated, the agent can also call `list_skills` to show your organization's saved skills beside
+the session's own.
 
 ## Next steps
 
@@ -119,6 +161,6 @@ you specifically want followed.
   </Card>
 
   <Card title="The CLI" icon="terminal" href="/interactive/cli">
-    Where skills are authored and toggled.
+    Where skills are authored.
   </Card>
 </CardGroup>

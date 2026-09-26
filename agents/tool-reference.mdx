@@ -123,6 +123,7 @@ add a Slack or Jira step to a workflow.
 | --- | --- |
 | `spawn_agent` | Spawns a sub-agent on a focused task and returns its summary. How a broad job fans out without one agent losing the thread. |
 | `spawn_multiple_agents` | Spawns several sub-agents. Used to run one child per item — a policy evaluator per detection, for instance. |
+| `fan_out_agent` | Dispatches one agent to run against one or more of your projects, each in its own isolated cloud sandbox with a fresh checkout, and returns a summary when every run settles. How a chat reaches other projects' code and [organization skills](/agents/skills#organization-skills). |
 | `activate_skill` | Loads a [skill](/agents/skills) into the agent's context on demand. |
 | `add_todo`, `start_todo`, `complete_todo`, `clear_todos` | Maintains the agent's plan as a visible todo list you can watch while it works. |
 
@@ -131,6 +132,16 @@ add a Slack or Jira step to a workflow.
 | Tool | What it does |
 | --- | --- |
 | `create_agent`, `get_agent`, `list_agents`, `update_agent`, `delete_agent` | Lets an agent read and write agent definitions — so an agent can help you author another one. |
+
+## Managing skills
+
+| Tool | What it does |
+| --- | --- |
+| `create_skill` | Saves a new [skill](/agents/skills) to your organization from a full `SKILL.md` plus any bundled files, which the CLI reads from your machine. The frontmatter `name` must be free. |
+| `list_skills` | Lists the skills this CLI session can activate — labelled `builtin` or `local` — beside the skills saved to your organization. |
+
+Both are **CLI-only** and need an Amplify API key configured. They're how the built-in `skill-creator` skill
+does its work; see [organization skills](/agents/skills#organization-skills).
 
 ## Next steps
 
