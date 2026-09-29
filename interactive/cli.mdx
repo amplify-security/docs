@@ -105,10 +105,11 @@ flow, bundling any script you point it at. See [organization skills](/agents/ski
 ## Signing in and settings
 
 The CLI always works against your organization: detections, findings and artifacts write through to it, so
-work done locally shows up for your team. Your API key lives in `~/.amplify/credentials.json` and your
-settings in `~/.amplify/config.json`. `console login` switches keys, `console logout` forgets the stored one,
-`console setup` repeats the first-launch setup, and `console config` prints the settings in effect. If a key
-is rejected, the CLI says which environment rejected it and stops rather than continuing without it.
+work done locally shows up for your team. Your sign-in (the browser sign-in's tokens, or an API key) lives in
+`~/.amplify/credentials.json` and your settings in `~/.amplify/config.json`. `console login` signs in again,
+`console logout` forgets the stored sign-in, `console setup` repeats the first-launch setup, and
+`console config` prints the settings in effect. If a sign-in is rejected, the CLI says which environment
+rejected it and stops rather than continuing without it.
 
 ## Cancelling and exiting
 
@@ -133,6 +134,6 @@ when nothing is running exits.
   </Card>
 
   <Card title="Install the CLI" icon="terminal" href="/install-console">
-    Setup and API keys.
+    Setup and signing in.
   </Card>
 </CardGroup>
