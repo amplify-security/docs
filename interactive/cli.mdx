@@ -25,7 +25,7 @@ The agents' capabilities are the same. What differs is where they run and what t
 | Uncommitted changes | Not visible | Visible |
 | Chat history | Saved to your organization; resume, rename, archive | Not persisted between sessions |
 | Choosing a model | Model picker | `/model` |
-| Slash commands | Not available | `/help`, `/model`, `/skills`, `/context`, `/clear`, `/quit` |
+| Slash commands | Not available | `/help`, `/model`, `/skills`, `/agents`, `/context`, `/clear`, `/logout`, `/quit` |
 | One-shot prompts | Not available | `console --prompt "..."` |
 | Authoring skills | Not available | Files on disk, or ask the CLI to create one and save it to your organization |
 | Starting from a finding | Yes | No |
@@ -62,8 +62,10 @@ It prints the agent's final answer and exits. Also `--version`.
 | `/help` | `/?` | Lists all commands |
 | `/model` | | Opens the model picker |
 | `/skills` | | Lists available skills |
+| `/agents` | | Browse, run, edit, and create agents |
 | `/context <org>` | | Switches organization |
 | `/clear` | | Clears the conversation |
+| `/logout` | | Signs out and exits (the next launch signs in again) |
 | `/quit` | `/q`, `/exit` | Exits |
 
 Type `/` to get an autocomplete dropdown rather than memorizing them.
@@ -98,18 +100,22 @@ The loop is quick: write the file, restart, then give the agent a task that shou
 activates a skill itself when its description matches.
 
 Files on disk are loaded only by your CLI sessions. To make a skill available to cloud runs — workflow
-steps, and agents that chat dispatches to run against a repository — ask the CLI, with an Amplify API key
-configured, to create it and save it to your organization; the built-in `skill-creator` skill handles the
-flow, bundling any script you point it at. See [organization skills](/agents/skills#organization-skills).
+steps, and agents that chat dispatches to run against a repository — ask the CLI, while signed in, to
+create it and save it to your organization; the built-in `skill-creator` skill handles the flow, bundling
+any script you point it at. See [organization skills](/agents/skills#organization-skills).
 
 ## Signing in and settings
 
 The CLI always works against your organization: detections, findings and artifacts write through to it, so
 work done locally shows up for your team. Your sign-in (the browser sign-in's tokens, or an API key) lives in
-`~/.amplify/credentials.json` and your settings in `~/.amplify/config.json`. `console login` signs in again,
-`console logout` forgets the stored sign-in, `console setup` repeats the first-launch setup, and
-`console config` prints the settings in effect. If a sign-in is rejected, the CLI says which environment
-rejected it and stops rather than continuing without it.
+`~/.amplify/credentials.json` and your settings in `~/.amplify/config.json`.
+
+- **`console login`** — signs in again.
+- **`console logout`** — forgets the stored sign-in.
+- **`console setup`** — repeats the first-launch setup.
+- **`console config`** — prints the settings in effect.
+
+If a sign-in is rejected, the CLI exits with the reason; run `console login` to sign in again.
 
 ## Cancelling and exiting
 
