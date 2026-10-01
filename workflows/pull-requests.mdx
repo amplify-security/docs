@@ -1,0 +1,80 @@
+---
+title: Pull requests from agents
+description: 'Agents can change code and open a pull request with the result — from a workflow step or from chat.'
+---
+
+## What this is
+
+An agent can edit code and open a pull request with the change, in a workflow or in chat. You review and
+merge it like any other pull request.
+
+This is different from [accepting a fix](/data/findings#accepting-a-fix) on a finding, which opens a pull
+request from a patch already attached to that finding. Here you ask for a change, and the pull request is
+the result — a hardening fix across several files, a missing lockfile, a dependency bump.
+
+Pull requests open against the repository's default branch, on GitHub-connected projects, and are opened
+when the run completes. The CLI doesn't open pull requests: there, the agent edits your checkout and you
+commit and push yourself.
+
+## From a workflow
+
+Add a step whose agent edits code, and tell it in its instructions to open a pull request when it's done.
+Mark the agent [`mutates-worktree: true`](/agents/writing-an-agent#mutates-worktree) since it changes files.
+
+```markdown
+---
+name: lockfile-enforcer
+description: Adds a lockfile to any package manifest that lacks one and opens a pull request with it.
+allowed-tools:
+  - shell
+  - ripgrep_search
+mutates-worktree: true
+---
+
+You make sure every package manifest in the repository has a committed lockfile.
+
+1. Find every `package.json`, `pyproject.toml`, and `go.mod`.
+2. For each one without a lockfile beside it, generate the lockfile with the matching package manager.
+3. If you generated anything, open a pull request. Title it after the change; in the description, list
+   each lockfile you added and the command that produced it.
+4. If every manifest already had a lockfile, say so and stop.
+```
+
+Each run opens one pull request per repository. Running the workflow again against the same repository
+updates that pull request while it's still open, and opens a new one once it has been merged or closed —
+so a workflow on a trigger converges on one open pull request per repository instead of piling up
+duplicates.
+
+## From chat
+
+Ask for the change — *"add a lockfile to the payments service and open a PR"*. The agent confirms which
+project and what should change if that isn't clear, does the work, and replies with the pull request link.
+Each distinct request in a conversation gets its own pull request.
+
+## Where to find it
+
+The pull request appears on the run alongside its other results, as a card with the title, a link to the
+pull request, the agent's description, and the diff. In chat, the link is in the agent's reply.
+
+If the pull request couldn't be opened — most often because the project isn't connected to GitHub or the
+Console GitHub App no longer has access to the repository — the run ends in **Error** saying so. The
+proposed change, diff included, is still on the run.
+
+## Limits
+
+- GitHub only; GitLab isn't supported yet.
+- Always against the repository's default branch.
+- Opened as a regular pull request — no draft state, labels, reviewers, or assignees.
+- One pull request per run, with no binary files, up to 10 MB of changes.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Write the agent" icon="file-code" href="/agents/writing-an-agent">
+    `mutates-worktree`, `allowed-tools`, and the instructions that drive it.
+  </Card>
+
+  <Card title="Run and monitor" icon="circle-play" href="/workflows/running">
+    Follow the run to its pull request.
+  </Card>
+</CardGroup>

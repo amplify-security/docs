@@ -57,8 +57,8 @@ the path neutralizes the input.
 <Note>
   `web_fetch` performs **reads only** — it takes a URL, headers, and an extraction mode, with no request
   method or body. There is no general-purpose tool for writing to a third-party API. Agents write to other
-  systems only through [integration tools](#integrations) for connected apps and through
-  [workflow outputs](/workflows/outputs).
+  systems only through [integration tools](#integrations) for connected apps, through
+  [workflow outputs](/workflows/outputs), and by [proposing a pull request](#proposing-a-pull-request).
 </Note>
 
 ## Your vendors' data
@@ -107,6 +107,15 @@ add a Slack or Jira step to a workflow.
 | `emit_artifact` | Records a result of a kind your agent declares in [`produces:`](/agents/writing-an-agent#contracts-what-a-step-produces-and-consumes) — Console's own kinds or one you've defined yourself. Rejects `amplify:finding`: findings always go through `report_finding` instead. |
 | `list_artifacts` | Lists recorded artifacts, optionally filtered by kind. |
 | `get_artifact` | Fetches one artifact's full content by id. |
+
+## Proposing a pull request
+
+| Tool | What it does |
+| --- | --- |
+| `propose_pull_request` | Opens a pull request with the changes the agent made in its checkout, given a title and a description. Console opens it on the repository's default branch when the run completes. |
+
+Always available to cloud agents running against a connected project — it doesn't need listing in
+`allowed-tools`. Not available in the CLI. See [pull requests from agents](/workflows/pull-requests).
 
 ## Detections
 

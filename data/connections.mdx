@@ -31,6 +31,7 @@ The App is what powers:
 - [Review comments](/workflows/outputs#comment-on-triggering-pull-request)
 - [Merge gates](/workflows/outputs#gate-merging-on-security-review) as required checks
 - Opening a pull request from a [finding's suggested fix](/data/findings#accepting-a-fix)
+- Opening the [pull requests agents propose](/workflows/pull-requests)
 
 See [Installation](/install-console#install-the-github-app) for the install flow.
 
@@ -100,6 +101,7 @@ See [Integrations](/integrations/overview) for what each app exposes, and
 | Ask an agent about your code | A source-control connection |
 | Run workflows on pull requests | GitHub |
 | Block merges on security review | GitHub |
+| Have an agent open a pull request | GitHub |
 | Triage an existing scanner backlog against real code | An AppSec or VMS connector |
 | Have agents post results to Slack, or file them in Jira or Linear | The matching [integration](/integrations/overview) |
 | Just use the CLI on local code | Nothing — the CLI reads your working directory |
@@ -112,6 +114,9 @@ Adjust the installation's repository access.
 **An output shows Failed on a run.** Confirm the App is still installed for that repository and has
 permission to write checks and pull request comments. See
 [checking delivery](/workflows/outputs#checking-delivery).
+
+**A run ends in Error because a pull request couldn't be opened.** Confirm the App is still installed for
+that repository. See [pull requests from agents](/workflows/pull-requests).
 
 **The connector catalog is empty or won't load.** The catalog is fetched when you open the dialog, so a
 transient upstream failure shows there without affecting the rest of the page. Retry.
