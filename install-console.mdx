@@ -29,16 +29,36 @@ path), and update your `PATH` if necessary in your shell's rc file.
 After installation, open a new terminal session (or `source` your shell's rc file) so that the updated
 `PATH` takes effect.
 
-## Configure API keys
+## Sign in
 
-Console requires an Amplify API key, which you can obtain by going to [Profile > API
-keys](https://console.amplify.security/console/profile/api-keys) from the web interface.
-
-Add the following to your `~/.bashrc` or `~/.zshrc`, then `source` the file or open a new terminal:
+Start Console:
 
 ```bash
-export AMPLIFY_API_KEY="<your-amplify-api-key>"
+console
 ```
+
+The first launch walks you through setup. Choose **Sign in with your browser**: Console shows a
+short code and opens the Amplify sign-in page, where you confirm the code with the account you use
+for the web interface. Then pick a default organization if you belong to more than one, and confirm
+the scanner tools are installed. Your session stays valid indefinitely.
+
+If you would rather use an API key (for example on a machine with no browser), choose **Paste an API
+key** instead and paste one created at [Profile > API
+keys](https://console.amplify.security/console/profile/api-keys) in the web interface.
+
+Console stores the sign-in in `~/.amplify/credentials.json` (readable only by you) and your
+settings in `~/.amplify/config.json`.
+
+Run `console setup` at any time to repeat the setup, `console login` to sign in again or switch
+accounts, `console logout` to forget the stored sign-in, and `console config` to see the settings in
+effect.
+
+<Note>
+  The local scan tools use `opengrep` and `ripgrep` (`rg`), which are not bundled with Console. Setup
+  reports either one as *not found on PATH*. To install them:
+
+  `brew install opengrep ripgrep   # macOS; Linux: your package manager, or opengrep's release installer`
+</Note>
 
 ## Install the GitHub App
 
@@ -50,7 +70,7 @@ Install. This should redirect you back to Console's web interface to complete se
 
 ## Start a session
 
-Once your environment is configured, change to a directory containing one of your projects and start Console:
+Once you are signed in, change to a directory containing one of your projects and start Console:
 
 ```bash
 cd ~/src/hello-world
@@ -63,3 +83,26 @@ This opens an interactive chat session with the AI agent. Try asking it one of t
 - Are there any exposed service endpoints in this project that shouldn't be?
 
 or anything else may be relevant for your project.
+
+## Automation
+
+For CI or scripts, set `AMPLIFY_API_KEY` in the environment instead of running setup; Console uses
+it as-is and never prompts. `console -p "<prompt>"` runs a single prompt and exits, and fails with a
+clear message when no sign-in is available.
+
+## Troubleshooting
+
+**The sign-in code expired before it was confirmed**, or **The sign-in was denied in the browser.** The
+browser step didn't complete. Choose **Sign in with your browser** again and confirm the code.
+
+**This account is not a member of any organization.** Accept the invitation in the web interface, then
+run `console setup`.
+
+**Your sign-in is no longer valid**, or **Your sign-in has expired.** The stored sign-in can't be renewed.
+Run `console login` to sign in again.
+
+**Could not reach ...**, or **Check your network ... then try again.** Console needs a connection to
+Amplify. Check your network or proxy settings, then retry.
+
+**Sign-in rejected by ...** Run `console login` to sign in again. If `AMPLIFY_API_KEY` is set in your
+shell, Console uses that key — check that it is valid, or unset it.

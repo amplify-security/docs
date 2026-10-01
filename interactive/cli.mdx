@@ -25,11 +25,10 @@ The agents' capabilities are the same. What differs is where they run and what t
 | Uncommitted changes | Not visible | Visible |
 | Chat history | Saved to your organization; resume, rename, archive | Not persisted between sessions |
 | Choosing a model | Model picker | `/model` |
-| Slash commands | Not available | `/help`, `/model`, `/skills`, `/context`, `/clear`, `/quit` |
+| Slash commands | Not available | `/help`, `/model`, `/skills`, `/agents`, `/context`, `/clear`, `/logout`, `/quit` |
 | One-shot prompts | Not available | `console --prompt "..."` |
 | Authoring skills | Not available | Files on disk, or ask the CLI to create one and save it to your organization |
 | Starting from a finding | Yes | No |
-| Works offline | No | Yes |
 
 ## Starting a session
 
@@ -43,8 +42,8 @@ Ask it something:
 - *Find and resolve any vectors for XSRF/XSS attacks within this project.*
 - *Are there any exposed service endpoints in this project that shouldn't be?*
 
-The footer shows whether you're connected to Amplify Cloud (and which organization) or running offline, plus
-the active model.
+The footer shows the organization you're connected to and the active model. Signing in happens once, on
+first launch — see [Installation](/install-console).
 
 ## One-shot prompts
 
@@ -63,8 +62,10 @@ It prints the agent's final answer and exits. Also `--version`.
 | `/help` | `/?` | Lists all commands |
 | `/model` | | Opens the model picker |
 | `/skills` | | Lists available skills |
+| `/agents` | | Browse, run, edit, and create agents |
 | `/context <org>` | | Switches organization |
 | `/clear` | | Clears the conversation |
+| `/logout` | | Signs out and exits (the next launch signs in again) |
 | `/quit` | `/q`, `/exit` | Exits |
 
 Type `/` to get an autocomplete dropdown rather than memorizing them.
@@ -99,17 +100,22 @@ The loop is quick: write the file, restart, then give the agent a task that shou
 activates a skill itself when its description matches.
 
 Files on disk are loaded only by your CLI sessions. To make a skill available to cloud runs — workflow
-steps, and agents that chat dispatches to run against a repository — ask the CLI, with an Amplify API key
-configured, to create it and save it to your organization; the built-in `skill-creator` skill handles the
-flow, bundling any script you point it at. See [organization skills](/agents/skills#organization-skills).
+steps, and agents that chat dispatches to run against a repository — ask the CLI, while signed in, to
+create it and save it to your organization; the built-in `skill-creator` skill handles the flow, bundling
+any script you point it at. See [organization skills](/agents/skills#organization-skills).
 
-## Offline mode
+## Signing in and settings
 
-Without an Amplify API key the CLI runs fully local: detections and findings go to a SQLite database under
-`~/.amplify` instead of your organization, and the footer shows a red **offline mode** indicator.
+The CLI always works against your organization: detections, findings and artifacts write through to it, so
+work done locally shows up for your team. Your sign-in (the browser sign-in's tokens, or an API key) lives in
+`~/.amplify/credentials.json` and your settings in `~/.amplify/config.json`.
 
-Once authenticated, detections write through to your organization instead, so work done locally shows up for
-your team.
+- **`console login`** — signs in again.
+- **`console logout`** — forgets the stored sign-in.
+- **`console setup`** — repeats the first-launch setup.
+- **`console config`** — prints the settings in effect.
+
+If a sign-in is rejected, the CLI exits with the reason; run `console login` to sign in again.
 
 ## Cancelling and exiting
 
@@ -134,6 +140,6 @@ when nothing is running exits.
   </Card>
 
   <Card title="Install the CLI" icon="terminal" href="/install-console">
-    Setup and API keys.
+    Setup and signing in.
   </Card>
 </CardGroup>
