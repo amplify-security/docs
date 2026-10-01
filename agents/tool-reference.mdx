@@ -47,6 +47,8 @@ the path neutralizes the input.
 | `opengrep_scan` | Runs OpenGrep static rules over the repository for a fast first pass, returning matches for the agent to triage. Defaults to the broad `auto` ruleset. **Does not** record findings — it produces candidates. |
 | `run_opengrep_detection` | Runs one *stored* OpenGrep [detection](/agents/detections) and emits matches as findings linked to that detection. Refuses non-OpenGrep detections. |
 | `check_opengrep_rule` | Re-runs a stored detection's rule against a single file, read-only. Zero matches means a fix worked. This is the verification half of patch generation. |
+| `secrets_scan` | Runs a deterministic secrets scanner over the checkout and files one **masked** finding per leaked credential (API keys, tokens, private keys). In chat it scans an attached workspace; in a worker, the run's checkout. Takes no options. Driven by the `secrets-scan` [skill](/agents/skills#built-in-skills). |
+| `sca_scan` | Runs a deterministic software-composition-analysis scanner over the checkout's dependency lockfiles and files one finding per known-vulnerable package, anchored at the package's lockfile entry, with the fixed version as the remediation. Defaults to high and critical severities; `minSeverity` and `ignoreUnfixed` narrow or widen it. The vulnerability database is fetched at scan time. Driven by the `sca-scan` [skill](/agents/skills#built-in-skills). |
 
 ## Reading the outside world
 

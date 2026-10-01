@@ -76,6 +76,8 @@ applies.
 | `policy-detection-creator` | Turns a security requirement into a stored natural-language [policy detection](/agents/detections). |
 | `skill-creator` | Turns a procedure — often a script you already have — into a skill and saves it to your organization. See [organization skills](#organization-skills). |
 | `agent-creator` | Authors, edits, and deletes agent definitions through the agent tools. |
+| `secrets-scan` | Finds leaked credentials in a repository with the `secrets_scan` [tool](/agents/tool-reference#scanning) and files one masked finding per secret. Works in chat against an attached workspace and as a workflow step. |
+| `sca-scan` | Finds known-vulnerable dependencies in a repository's lockfiles with the `sca_scan` [tool](/agents/tool-reference#scanning) and files one finding per vulnerable package, with the fixed version. Works in chat against an attached workspace and as a workflow step. |
 
 The scanner agents also draw on an internal library of class-specific analysis skills, which is what
 distinguishes the `standard` and `comprehensive` [profiles](/agents/library#scanning) from `basic`.
