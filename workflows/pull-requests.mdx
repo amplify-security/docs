@@ -13,7 +13,7 @@ request from a patch already attached to that finding. Here you ask for a change
 the result — a hardening fix across several files, a missing lockfile, a dependency bump.
 
 Pull requests open against the repository's default branch, on GitHub-connected projects, and are opened
-when the run completes. The CLI doesn't open pull requests: there, the agent edits your checkout and you
+by the agent during its run. The CLI doesn't open pull requests: there, the agent edits your checkout and you
 commit and push yourself.
 
 ## From a workflow
@@ -40,10 +40,9 @@ You make sure every package manifest in the repository has a committed lockfile.
 4. If every manifest already had a lockfile, say so and stop.
 ```
 
-Each run opens one pull request per repository. Running the workflow again against the same repository
-updates that pull request while it's still open, and opens a new one once it has been merged or closed —
-so a workflow on a trigger converges on one open pull request per repository instead of piling up
-duplicates.
+Each run that makes a change opens its own pull request, on its own branch. Running the workflow again
+opens another one, so merge or close the earlier pull request before re-running a workflow on a trigger,
+or have the agent check for an open pull request first.
 
 ## From chat
 
@@ -57,15 +56,15 @@ The pull request appears on the run alongside its other results, as a card with 
 pull request, the agent's description, and the diff. In chat, the link is in the agent's reply.
 
 If the pull request couldn't be opened — most often because the project isn't connected to GitHub or the
-Console GitHub App no longer has access to the repository — the run ends in **Error** saying so. The
-proposed change, diff included, is still on the run.
+Console GitHub App can't write to the repository — the agent says so in its result and no pull request
+card appears.
 
 ## Limits
 
 - GitHub only; GitLab isn't supported yet.
 - Always against the repository's default branch.
 - Opened as a regular pull request — no draft state, labels, reviewers, or assignees.
-- One pull request per run, with no binary files, up to 10 MB of changes.
+- One pull request per run, up to 10 MB of changed files.
 
 ## Next steps
 
