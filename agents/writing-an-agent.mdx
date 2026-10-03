@@ -186,7 +186,8 @@ mutates-worktree: true
 
 This states a fact, not a scheduling request. Console uses it to make sure two steps that both edit the
 checkout never run at the same time and clobber each other's changes. Leave it unset (the default) for an
-agent that only reads.
+agent that only reads. An agent that [proposes a pull request](/workflows/pull-requests) edits files by
+definition, so set it there.
 
 ### Defining your own kind
 
