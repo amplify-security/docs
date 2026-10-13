@@ -135,6 +135,17 @@ add a Slack or Jira step to a workflow.
 | --- | --- |
 | `create_agent`, `get_agent`, `list_agents`, `update_agent`, `delete_agent` | Lets an agent read and write agent definitions — so an agent can help you author another one. |
 
+## Managing artifact kinds
+
+| Tool | What it does |
+| --- | --- |
+| `list_kinds`, `get_kind` | Lists your organization's [artifact kinds](/agents/artifact-kinds) and Console's own, or reads one kind with every version of its schema. |
+| `create_kind` | Creates a kind from a schema. |
+| `update_kind` | Saves a new version of a kind. A breaking change is held until you confirm it: the agent shows you what breaks and which agents depend on it, and only saves once you say yes. |
+
+These are available in [chat](/interactive/chat) and the [CLI](/interactive/cli), where they let the agent
+create and change kinds for you.
+
 ## Managing skills
 
 | Tool | What it does |
