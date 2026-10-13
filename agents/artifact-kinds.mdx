@@ -76,8 +76,8 @@ Each field takes:
 | `items` | `array` | The shape of every element. Required for an `array`. |
 | `file` | Top-level `string` | Stores the field's content as a file instead of inline. See [file fields](#file-fields). |
 
-The kind-level `description` (beside `fields`, up to 1,000 characters) says what the kind is for. It's shown
-whenever you or an agent lists or reads your kinds.
+The kind-level `description` (beside `fields`, up to 1,000 characters) says what the kind is for. Agents see
+it when they choose which kind to record, and whenever you or an agent lists or reads your kinds.
 
 ### File fields
 
@@ -120,8 +120,9 @@ earlier versions are never edited or removed.
 
 - **Every artifact is stamped with the version it was recorded under**, and stays valid against that version
   for good. Changing a kind never reinterprets what's already been recorded.
-- **New work uses the latest version.** In a workflow, each agent uses the version that's current when it
-  starts and keeps it for its whole run. In chat, a change takes effect from your next message.
+- **New work uses the latest version.** A workflow run uses the versions that are current when it starts, for
+  every step — a change made mid-run applies from the next run. In chat, a change takes effect from your next
+  message.
 - **Saving an identical schema does nothing** — no new version.
 
 To change a kind, ask chat or the CLI. A `schema:` block in an agent definition only ever creates a kind; it
