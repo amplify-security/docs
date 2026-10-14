@@ -110,7 +110,7 @@ produces:
 its job, and nothing checks that a declared kind was actually emitted.
 
 A kind is either one of Console's own (prefixed `amplify:`, like `amplify:finding` or `amplify:patch`) or one
-you define yourself. See [defining your own kind](#defining-your-own-kind) below.
+your organization defines. See [artifact kinds](/agents/artifact-kinds).
 
 ### `consumes`
 
@@ -167,6 +167,10 @@ Names in `group-by` come from the kind you're consuming — never from anything 
   by detection and file when you set no `group-by` of your own, so write `group-by: [id]` explicitly if you
   want one child per finding instead.
 
+To group by a kind's fields, the kind must already exist when you save the agent — Console checks every name
+against it and rejects the save otherwise, telling you to create the kind first. A kind declared inline in the
+same agent counts.
+
 An empty `group-by: []` isn't allowed: grouping by nothing means everything is one group, which is what
 `mode: all` already means. Console rejects it and suggests `[id]` if that's what you meant.
 
@@ -188,10 +192,11 @@ This states a fact, not a scheduling request. Console uses it to make sure two s
 checkout never run at the same time and clobber each other's changes. Leave it unset (the default) for an
 agent that only reads.
 
-### Defining your own kind
+### Defining a kind inline
 
-If `produces` names a kind that doesn't already exist in your organization, attach a `schema:` block and
-Console registers it the moment you save the agent — no separate setup step:
+The usual way to create a kind is to ask chat or the CLI — see [artifact kinds](/agents/artifact-kinds). As a
+shorthand, if `produces` names a kind that doesn't exist yet in your organization, attach a `schema:` block and
+Console registers it when you save the agent:
 
 ```yaml
 produces:
@@ -205,13 +210,18 @@ produces:
           type: integer
 ```
 
-Each field has a `type` (`string`, `number`, `integer`, `boolean`, `object`, or `array`) and can be marked
-`required`. A `string` field can restrict its values with `enum`; an `object` field declares its own nested
-`fields`; an `array` field declares the shape of its `items`.
+The block uses the same [schema language](/agents/artifact-kinds#the-schema) as everywhere else.
 
-Saving the identical schema again is a no-op. Changing an already-registered kind's shape is not allowed —
-Console rejects the save rather than reinterpreting artifacts you've already recorded under the old shape.
-If a kind's shape needs to change, give it a new name.
+An inline block creates a kind; it never changes one. Once the kind exists, saving the agent checks the block
+against the kind's versions:
+
+| The block matches | On save |
+| --- | --- |
+| The latest version | Nothing happens to the kind. |
+| An older version | The agent saves, with a warning that the block is stale — the kind has moved on. Remove the block; runs use the kind's latest version either way. |
+| No version | The save is rejected. To change the kind, ask chat or the CLI — see [changing a kind](/agents/artifact-kinds#changing-a-kind). |
+
+Once a kind exists, you can drop the `schema:` block and just name the kind under `produces`.
 
 <Note>
   Names starting with `amplify:` are reserved for Console's own kinds. You can *consume* `amplify:finding`

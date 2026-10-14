@@ -1,0 +1,194 @@
+---
+title: Artifact kinds
+description: 'Define your own kinds of result, describe their shape, and change them safely once artifacts exist.'
+---
+
+## What a kind is
+
+Every result an agent records is an [artifact](/workflows/artifacts#the-artifact-model) of some **kind**.
+Console ships its own kinds, prefixed `amplify:` — `amplify:finding`, `amplify:patch`, and others. Your
+organization can define its own, with plain names like `scan-report` or `dependency-inventory`.
+
+A kind's **schema** says what an artifact of that kind contains: its fields, their types, which ones are
+required. Console uses it in two places:
+
+- **When an agent records an artifact**, the agent is shown the schema and the artifact is checked against
+  it. A result that doesn't fit is refused at the moment it's recorded, with the offending field named, so a
+  bad result never lands.
+- **When you chain agents**, a step that [consumes](/agents/writing-an-agent#consumes) your kind can group
+  its input by the fields the schema declares.
+
+Kinds belong to your organization. Any agent in the organization can produce or consume one once it exists.
+
+## Creating a kind
+
+### In chat or the CLI
+
+Ask for it. Describe what the kind should hold, and the agent drafts the schema and saves it:
+
+> Create a kind called `dependency-inventory` with a markdown report, a status that's one of clean,
+> outdated or vulnerable, and a list of packages with a name, a version and whether they're direct.
+
+Both [chat](/interactive/chat) and the [CLI](/interactive/cli) have the kind tools — `list_kinds`, `get_kind`,
+`create_kind` and `update_kind` — and use them the same way. When you ask for an agent that produces a new
+kind, the agent creates the kind first and then the agent.
+
+### In an agent definition
+
+You can also declare a kind where it's produced: a `schema:` block on a `produces:` entry registers the kind
+when you save the agent. See [defining a kind inline](/agents/writing-an-agent#defining-a-kind-inline).
+
+## The schema
+
+A schema is a list of fields, plus an optional description of what the kind is for:
+
+```yaml
+description: Third-party dependencies found in a repository, with their status.
+fields:
+  report:
+    type: string
+    required: true
+    description: Human-readable inventory, one section per manifest.
+    file: { path: inventory.md, contentType: text/markdown }
+  status:
+    type: string
+    required: true
+    enum: [clean, outdated, vulnerable]
+  packages:
+    type: array
+    items:
+      type: object
+      fields:
+        name: { type: string, required: true }
+        version: { type: string, required: true }
+        direct: { type: boolean }
+```
+
+Each field takes:
+
+| Key | Applies to | What it does |
+| --- | --- | --- |
+| `type` | Every field | One of `string`, `number` (any number), `integer` (whole numbers only), `boolean`, `object`, `array`. Required. |
+| `required` | Every field | `true` means every artifact of this kind must include the field. Leave it out for an optional field. |
+| `description` | Every field | Guidance for the agent filling the field in, up to 1,000 characters. |
+| `enum` | `string` | A closed list of allowed values. |
+| `fields` | `object` | The object's own fields. Required for an `object`. |
+| `items` | `array` | The shape of every element. Required for an `array`. |
+| `file` | Top-level `string` | Stores the field's content as a file instead of inline. See [file fields](#file-fields). |
+
+The kind-level `description` (beside `fields`, up to 1,000 characters) says what the kind is for. Agents see
+it when they choose which kind to record, and whenever you or an agent lists or reads your kinds.
+
+### File fields
+
+A long document — a report, a diff, a generated config — is better stored as a file than as an inline value.
+Give a top-level `string` field a `file` route:
+
+```yaml
+report:
+  type: string
+  file: { path: inventory.md, contentType: text/markdown }
+```
+
+The artifact then carries `inventory.md` as a file, which you can open and download from the run.
+
+- `path` is a relative path: letters, digits, `.`, `_`, `-` and `/`, at most 128 characters. Two fields in one
+  kind can't use the same path.
+- `contentType` must be a text format: any `text/*` type, or `application/json`, `application/yaml`,
+  `application/xml`, `application/x-ndjson`, or a `+json`, `+xml` or `+yaml` type.
+
+Store the source, not a rendering. `text/html`, PDFs and images aren't accepted: an artifact holds the
+canonical content (`text/markdown`, say), and HTML or PDF versions are produced when you download it.
+
+### Names and limits
+
+- **Kind names** are lowercase letters, digits and single hyphens, up to 64 characters — `scan-report`, not
+  `Scan_Report`. Names containing `:` are reserved for Console's own kinds.
+- **Field names** are `snake_case`, starting with a letter, up to 64 characters.
+- **`kind`, `summary` and `finding_ids`** can't be used as top-level field names: every artifact already
+  carries them. Use something like `report_summary` instead.
+- A schema can nest up to 8 levels deep, with up to 32 fields at any one level and 256 in total, and must be
+  under 32 KB.
+- An organization can register up to 500 kinds.
+
+Kinds can't be deleted, so choose names you're happy to keep.
+
+## Changing a kind
+
+A kind can change after artifacts exist. Each change you save becomes a new **version** of the kind;
+earlier versions are never edited or removed.
+
+- **Every artifact is stamped with the version it was recorded under**, and stays valid against that version
+  for good. Changing a kind never reinterprets what's already been recorded.
+- **New work uses the latest version.** A workflow run uses the versions that are current when it starts, for
+  every step — a change made mid-run applies from the next run. In chat and the CLI, a change you make takes
+  effect from your next message. A CLI session doesn't see changes made elsewhere — by a teammate, or in chat —
+  until you restart `console`.
+- **Saving an identical schema does nothing** — no new version.
+
+To change a kind, ask chat or the CLI. A `schema:` block in an agent definition only ever creates a kind; it
+never changes one.
+
+### Compatible and breaking changes
+
+Console compares every change with the latest version and classifies it, at every level of nesting:
+
+| Change | Result |
+| --- | --- |
+| Add an optional field | Compatible |
+| Add a required field | Breaking — unless it sits inside an optional field you're adding in the same change |
+| Remove or rename a field | Breaking |
+| Change a field's type, including `integer` → `number` | Breaking |
+| Make a field required, or make a required field optional | Breaking |
+| Add values to an `enum`, or remove the `enum` | Compatible |
+| Remove values from an `enum`, or add an `enum` to a field that had none | Breaking |
+| Reorder an `enum`'s values | Compatible |
+| Change a description | Compatible |
+| Add, remove or change a field's `file` route | Breaking |
+
+Two of these surprise people:
+
+- **Making a required field optional is breaking.** More artifacts are valid, but anything relying on the
+  field always being there loses that guarantee.
+- **`integer` → `number` is breaking** for the same reason: every old value still fits, but whole numbers are
+  no longer guaranteed.
+
+**Compatible changes** are saved straight away.
+
+**Breaking changes need your confirmation.** Before saving one, chat or the CLI shows you what breaks and which
+of your agents depend on it — any agent whose `group-by` uses a field you're removing or retyping — and waits
+for you to say yes. Nothing is saved until you do — and if someone else changes the kind while you're deciding,
+you're shown the new comparison and asked again.
+
+<Warning>
+  An agent whose `group-by` names a field the latest version no longer has will stop working in workflows:
+  the next run fails before any step starts, with an error naming the agent, the field and the kind version.
+  Update that agent's `group-by` — or add the field back — to fix it.
+</Warning>
+
+When you widen an `enum`, agents that branch on that field may now see a value they weren't written for.
+Check that they handle it.
+
+### What a schema can't express
+
+These aren't supported, because Console can't reliably tell whether a change to them is safe:
+
+- **Either-or fields** — a field that can be one shape or another.
+- **Patterns** — regular expressions a string must match.
+- **Numeric ranges** — minimum and maximum values.
+- **Recursive shapes** — a field that contains its own type.
+- **Default values** — a value filled in when a field is missing.
+
+Describe a constraint like these in the field's `description` instead: the agent filling it in reads it.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Writing an agent" icon="pen-to-square" href="/agents/writing-an-agent#contracts-what-a-step-produces-and-consumes">
+    Declare what an agent produces and consumes.
+  </Card>
+
+  <Card title="What a run produces" icon="box-archive" href="/workflows/artifacts">
+    Artifacts, findings and patches.
+  </Card>
+</CardGroup>

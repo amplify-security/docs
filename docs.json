@@ -40,6 +40,7 @@
               "agents/overview",
               "agents/how-agents-work",
               "agents/writing-an-agent",
+              "agents/artifact-kinds",
               "agents/library",
               "agents/skills",
               "agents/detections",
