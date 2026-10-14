@@ -157,7 +157,8 @@ Two of these surprise people:
 
 **Breaking changes need your confirmation.** Before saving one, chat or the CLI shows you what breaks and which
 of your agents depend on it — any agent whose `group-by` uses a field you're removing or retyping — and waits
-for you to say yes. Nothing is saved until you do.
+for you to say yes. Nothing is saved until you do — and if someone else changes the kind while you're deciding,
+you're shown the new comparison and asked again.
 
 <Warning>
   An agent whose `group-by` names a field the latest version no longer has will stop working in workflows:
