@@ -181,6 +181,18 @@ These aren't supported, because Console can't reliably tell whether a change to 
 
 Describe a constraint like these in the field's `description` instead: the agent filling it in reads it.
 
+## Hiding intermediate kinds
+
+Some kinds exist only to pass work between workflow steps: one step records hundreds of candidates, the next
+reads them all. Mark a kind like that **internal** to keep it out of the run's artifact list and artifact count:
+
+> Mark `dependency-candidate` as internal.
+
+Internal artifacts are still recorded and still delivered to every step that consumes the kind. You can open
+one by its ID, and list them by asking for that kind by name. Internal is a setting on the kind, not part of
+its schema: changing it doesn't create a version, and new versions keep it. Ask the same way to show the kind
+again. The `amplify-vulnerability-scanner` workflow's own intermediate kinds are internal from the start.
+
 ## Next steps
 
 <CardGroup cols={2}>
