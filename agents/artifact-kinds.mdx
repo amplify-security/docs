@@ -191,7 +191,8 @@ reads them all. Mark a kind like that **internal** to keep it out of the run's a
 Internal artifacts are still recorded and still delivered to every step that consumes the kind. You can open
 one by its ID, and list them by asking for that kind by name. Internal is a setting on the kind, not part of
 its schema: changing it doesn't create a version, and new versions keep it. Ask the same way to show the kind
-again. The `amplify-vulnerability-scanner` workflow's own intermediate kinds are internal from the start.
+again. Every kind the `amplify-vulnerability-scanner` workflow records is internal from the start, verdicts
+included: its results are the findings.
 
 ## Next steps
 
