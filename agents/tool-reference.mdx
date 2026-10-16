@@ -107,7 +107,7 @@ add a Slack or Jira step to a workflow.
 | `list_findings` | Lists findings already recorded. |
 | `report_patch` | Attaches a verified remediation patch (a unified diff) to the finding(s) it fixes. Call it only after editing the file **and** confirming the fix. It stores the patch; it does not verify. |
 | `emit_artifact` | Records a result of a kind your agent declares in [`produces:`](/agents/writing-an-agent#contracts-what-a-step-produces-and-consumes) — Console's own kinds or one you've defined yourself. Rejects `amplify:finding`: findings always go through `report_finding` instead. |
-| `list_artifacts` | Lists recorded artifacts, optionally filtered by kind. |
+| `list_artifacts` | Lists recorded artifacts, newest first, optionally filtered by kind, project, or one workflow run (`workflow_run_id`; a step is told its own run's id). Returns one page of up to 100 with `total` and `has_more`; while `has_more` is true, call again with `offset` set to the previous `offset + count` to read the rest. A run-scoped list leaves out a finding's `amplify:reasoning` and `amplify:patch` companions unless you ask for that kind by name. |
 | `get_artifact` | Fetches one artifact's full content by id. |
 
 ## Detections
