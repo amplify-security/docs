@@ -80,6 +80,12 @@
               "workflows/running",
               "workflows/artifacts"
             ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/console-pages"
+            ]
           }
         ]
       },

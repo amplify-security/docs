@@ -1,0 +1,35 @@
+---
+title: Console pages
+description: 'Where each part of Amplify Console lives and what you do there — every sidebar item, plus the controls that are not pages.'
+---
+
+## The sidebar
+
+Every page in the web console is reached from the sidebar on the left. The main section lists the pages
+below, top to bottom; a second section at the bottom holds **Install CLI**, **Theme**, **Profile**, and
+**Sign Out**.
+
+| Sidebar item | What the page is for | Main actions | Docs |
+| --- | --- | --- | --- |
+| **Console** | Chat with an agent about your code. Your sessions are listed on the left; the conversation is in the middle. | **New chat**; type a task and send it; pick a model in the header; **Rename**, **Archive**, **Unarchive**, or **Delete** a session from its menu; <kbd>Escape</kbd> cancels a running turn | [Chat](/interactive/chat) |
+| **Projects** | The repositories Console can clone and read — one row per repository granted through a source-control connection. | **Show filters** (by **Name** or **Repo URL**) | [Projects](/data/projects) |
+| **Detections** | The stored rules — OpenGrep rules and policies — that agents run against code. | Open a detection to read it; **Edit** and **Save** its name, description, type, and body. **Create new detection** is not yet available here (the button says *Coming soon*) — ask an agent to write one instead | [Detections](/agents/detections) |
+| **Findings** | Every vulnerability an agent has confirmed in your organization, with its reasoning and any generated patch. | **Show filters** (by **Source**, **Project**, **Severity**, **Location**, **Description**); **Save view** and **Views** on the filter bar; open a finding to accept its fix as a pull request or **Start a chat** | [Findings](/data/findings) |
+| **Agents** | The agent definitions your organization has written, alongside the built-in library. | **New agent**; edit an agent in the Markdown editor with its model picker; **Duplicate** or delete an agent; create, rename, and delete folders and move agents between them; **Share** copies the agent's link | [Writing an agent](/agents/writing-an-agent) |
+| **Workflows** | The automations that chain agents, fire on triggers, and deliver results. | **New workflow**; open a workflow to **Edit**, **Delete**, **Run workflow**, or **View runs**; the **Runs in the last:** selector sets how far back each row's run summary looks | [Create a workflow](/workflows/create-a-workflow) |
+| **Runs** | Every workflow run in your organization, newest first. | **Show filters** (by **Status** or **Workflow**); open a run to see its step chain, findings, and output deliveries, and to **Cancel** it | [Running a workflow](/workflows/running) |
+| **Connections** | Your source-control provider, vendor connectors, and the apps agents can act in. | **Add connection** — install the GitHub App, connect GitLab, pick a vendor connector, or connect an app from **Agent Tools** (organization admins only) | [Connections](/data/connections) |
+| **Organization** | Organization settings: members, API keys, billing, and usage. | Invite and remove members on **Members**; manage credits, payment method, and auto-recharge on **Billing and Credits**; read the **Usage & Invoices** dashboards | [Organization](/console/organization) |
+| **Profile** | Your own account — reached from the bottom section of the sidebar, not from a user menu. | Update your account details; create and revoke personal **API keys** for the CLI | [Profile](/console/profile) |
+
+## Controls that are not pages
+
+| Control | Where it is | What it does | Docs |
+| --- | --- | --- | --- |
+| **Model picker** | The **Console** page header, once a chat session is open | Sets the model for the session; switching mid-conversation carries the context forward as a summary | [Choosing a model](/interactive/chat#choosing-a-model) |
+| **Save view** and **Views** | The filter bar on **Findings** (open it with **Show filters**) | **Save view** names the current filters; **Views** lists, applies, renames, and deletes your saved views. Findings is the only page with saved views today | [Saved views](/data/findings#saved-views) |
+| **Show filters** | The header of **Projects**, **Findings**, and **Runs** | Opens the filter bar for that list | — |
+| **Workspaces** and **Artifacts** | The right-hand panel on the **Console** page, shown once a session has either | The repositories the agent has attached to the session, and the artifacts it has produced — click one to open it | [Artifacts](/workflows/artifacts) |
+| **Theme** | The bottom section of the sidebar | A menu of **Light**, **Dark**, **System**, **Light Fog**, **Sandstone**, **Midnight**, and **Terminal**; remembered by your browser | [Appearance](/console/profile#appearance) |
+| **Install CLI** | The bottom section of the sidebar, and the **Console** page header | Opens the CLI installation guide in a new tab | [Installation](/install-console) |
+| **Sign Out** | The bottom section of the sidebar | Signs you out and returns to the sign-in page | — |
