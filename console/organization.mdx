@@ -1,0 +1,70 @@
+---
+title: Organization
+description: 'How to invite and remove teammates, which actions need an organization admin, and how organizations are chosen — the Organization page.'
+---
+
+## The Organization page
+
+Click **Organization** in the sidebar. The page has five tabs:
+
+| Tab | What it holds |
+| --- | --- |
+| **General** | The organization's name and settings |
+| **Members** | Who belongs to the organization, and invitations |
+| **API keys** | API keys owned by the organization rather than by a person |
+| **Billing and Credits** | Credit balance, payment method, and automatic credit purchasing — see [Billing](/console/billing) |
+| **Usage & Invoices** | The usage, invoice, and credit dashboards — see [Billing](/console/billing#usage-and-invoices) |
+
+## Members
+
+**Members** lists everyone in the organization with their role.
+
+- **Invite a teammate.** Open **Organization**, choose **Members**, and invite them by email address,
+  choosing the role they'll have. The invitation is pending until they accept it from the email they
+  receive; once they sign in, they're a member and can use everything the role allows.
+- **Change a role or remove a member.** Each member row has a menu to change their role or remove them from
+  the organization.
+
+<Note>
+  A teammate who signs in before being invited sees *This account is not a member of any organization*.
+  Invite them from **Members** and have them sign in again.
+</Note>
+
+## What needs an organization admin
+
+Most of Console is open to every member: chat, projects, agents, detections, workflows, runs, findings,
+source-control connections, and vendor connectors. A few actions require the organization **Admin** role:
+
+| Action | Where |
+| --- | --- |
+| Connecting an app under **Agent Tools** — Slack, Atlassian, Linear, Notion, Asana, Google — and disconnecting one | **Connections** → **Add connection**; non-admins see the apps marked *Admin only* |
+| Choosing which files an app may read, for apps that grant access per file | The app's card on **Connections** |
+| Adding credit, changing the payment method, and turning automatic credit purchasing on or off | **Organization** → **Billing and Credits** |
+| Reading the credit balance, payment method, and the usage and invoice dashboards | **Organization** → **Billing and Credits** and **Usage & Invoices** — non-admins see *Unavailable* |
+
+See [connecting an app](/integrations/connecting) and [Billing](/console/billing).
+
+## Organization API keys
+
+The **API keys** tab holds keys that belong to the organization rather than to one person. The keys the CLI
+signs in with are personal — create those under [Profile → API keys](/console/profile#api-keys).
+
+## Working in more than one organization
+
+The web console works in one organization at a time — every page shows that organization's projects,
+findings, and settings. There is no organization switcher in the web console today.
+
+The CLI can switch: `/context <org>` changes the organization a session works against. See
+[the CLI](/interactive/cli#slash-commands).
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Billing" icon="credit-card" href="/console/billing">
+    Credits, payment method, auto-recharge, and usage.
+  </Card>
+
+  <Card title="Connect an app" icon="plug" href="/integrations/connecting">
+    The admin-only flow for Slack, Jira, Linear, Notion, Asana, and Google Docs.
+  </Card>
+</CardGroup>

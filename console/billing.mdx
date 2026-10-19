@@ -1,0 +1,85 @@
+---
+title: Billing
+description: 'How to add credit, set a payment method, turn on auto-recharge, and see what your organization has used — the Billing and Credits and Usage & Invoices tabs.'
+---
+
+## Where billing lives
+
+Click **Organization** in the sidebar. Two tabs cover billing:
+
+- **Billing and Credits** — your credit balance, payment method, and automatic credit purchasing.
+- **Usage & Invoices** — dashboards for invoices, usage, and credits.
+
+<Warning>
+  Both tabs are for organization **Admin**s only. Other members see *Unavailable* in place of the balance
+  and payment method, and cannot open the dashboards. See [what needs an admin](/console/organization#what-needs-an-organization-admin).
+</Warning>
+
+## Billing and Credits
+
+The tab is three rows.
+
+### Payment Method
+
+The card or Link account on file for the organization, or *No payment method on file*. Click the edit icon
+next to it to open the billing portal, where you add or replace the payment method and billing address.
+Console never shows or stores card details itself — the portal does.
+
+### Credit Balance
+
+Your current balance in USD. A purchase that is still settling shows underneath as *pending payment* until
+it lands.
+
+To add credit, click **Add credit**, pick **$100**, **$500**, or **$1,000**, or enter a custom amount, and
+click **Purchase**. The dialog shows what you'll be charged for the credit before you confirm. The charge
+goes to the organization's default payment method.
+
+**Add credit** is disabled when a purchase can't be collected, with the reason underneath:
+
+- *A payment method is required to purchase credits* — click **Add payment method** to open the portal.
+- *A billing address is required to purchase credits* — click **Add address**; tax can't be calculated
+  without one.
+
+### Automatic Credit Purchasing
+
+Auto-recharge keeps the balance from running dry: when it drops below a threshold you set, Console charges
+the default payment method and adds a fixed amount of credit. The row shows the rule in force — *When below
+$X, purchase $Y* — or *Off*.
+
+To turn it on, click the edit icon on the row and fill in:
+
+- **Recharge when balance drops below (USD)** — the threshold, at least **$500**.
+- **Amount of credit to add (USD)** — the recharge, which must be greater than the threshold so the balance
+  lands back above it.
+
+Click **Save**. To change the rule later, edit it the same way; **Turn off** inside the dialog removes it.
+
+<Note>
+  Auto-recharge needs a payment method on file with a billing address. Until there is one, the row reads
+  *Off* and the edit icon explains what's missing.
+</Note>
+
+## Usage and invoices
+
+**Usage & Invoices** holds three dashboards, switched with the buttons at the top:
+
+| Dashboard | Shows |
+| --- | --- |
+| **Invoices** | Your invoices |
+| **Usage** | How much credit your organization has consumed over time — the place to see what you've used this month |
+| **Commits & Credits** | Credit purchases and commitments |
+
+The dashboards are embedded from Console's billing provider and load on demand; if one fails to load, click
+**Try again**.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Organization" icon="building" href="/console/organization">
+    Members, roles, and what needs an admin.
+  </Card>
+
+  <Card title="Profile" icon="user" href="/console/profile">
+    Your account and API keys.
+  </Card>
+</CardGroup>

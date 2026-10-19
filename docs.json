@@ -84,7 +84,10 @@
           {
             "group": "Reference",
             "pages": [
-              "reference/console-pages"
+              "reference/console-pages",
+              "console/organization",
+              "console/billing",
+              "console/profile"
             ]
           }
         ]
