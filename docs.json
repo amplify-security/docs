@@ -91,53 +91,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Amplify Dashboard (Legacy)",
-        "icon": "clock-rotate-left",
-        "global": {
-          "anchors": [
-            {
-              "anchor": "GitHub App",
-              "href": "https://github.com/apps/amplify-security",
-              "icon": "code-simple"
-            },
-            {
-              "anchor": "GitHub Action",
-              "href": "https://github.com/marketplace/actions/amplify-runner-action",
-              "icon": "circle-play"
-            },
-            {
-              "anchor": "GitLab Component",
-              "href": "https://gitlab.com/amplify-security/components",
-              "icon": "circle-play"
-            }
-          ]
-        },
-        "groups": [
-          {
-            "group": "Get Started",
-            "pages": [
-              "legacy/introduction",
-              "legacy/quickstart",
-              "legacy/sample-project"
-            ]
-          },
-          {
-            "group": "How-to Guides",
-            "pages": [
-              "legacy/guides/ignoring-vulns",
-              "legacy/guides/enable-comments"
-            ]
-          },
-          {
-            "group": "Integrations",
-            "pages": [
-              "legacy/integrations/github",
-              "legacy/integrations/gitlab"
-            ]
-          }
-        ]
       }
     ],
     "global": {
@@ -228,24 +181,8 @@
       "destination": "/workflows/agent-chain"
     },
     {
-      "source": "/sample-project",
-      "destination": "/legacy/sample-project"
-    },
-    {
-      "source": "/guides/ignoring-vulns",
-      "destination": "/legacy/guides/ignoring-vulns"
-    },
-    {
-      "source": "/guides/enable-comments",
-      "destination": "/legacy/guides/enable-comments"
-    },
-    {
-      "source": "/integrations/github",
-      "destination": "/legacy/integrations/github"
-    },
-    {
-      "source": "/integrations/gitlab",
-      "destination": "/legacy/integrations/gitlab"
+      "source": "/legacy/:path*",
+      "destination": "/introduction"
     }
   ]
 }

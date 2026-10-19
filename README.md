@@ -5,8 +5,7 @@ Documentation site for [Amplify Security](https://github.com/amplify-security), 
 
 ## Structure
 
-The site has two tabs. **Amplify Console** is the current product, organized into three ideas that build
-on each other:
+The site has one tab, **Amplify Console**, organized into three ideas that build on each other:
 
 | Group | Covers |
 | --- | --- |
@@ -18,7 +17,8 @@ on each other:
 | `Workflows` (`workflows/`) | Creating, triggering, running, and delivering workflow results |
 | `Reference` (`reference/`, `console/`) | The Console pages map, and the pages of the web console that aren't about agents or workflows — Organization, Billing, Profile |
 
-**Amplify Dashboard (Legacy)** (`legacy/`) documents the previous product and is not actively developed.
+The previous product, Amplify Dashboard, shuts down on 2026-10-30; its pages were removed and `/legacy/*`
+redirects to the introduction.
 
 ## Development
 
