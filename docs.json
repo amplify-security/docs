@@ -16,15 +16,6 @@
       {
         "tab": "Amplify Console",
         "icon": "terminal",
-        "global": {
-          "anchors": [
-            {
-              "anchor": "GitHub App",
-              "href": "https://github.com/apps/amplify-console",
-              "icon": "code-simple"
-            }
-          ]
-        },
         "groups": [
           {
             "group": "Get Started",

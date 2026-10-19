@@ -21,8 +21,16 @@ team works. This page covers the first two; integrations have [their own section
 
 ### GitHub
 
-Install the Console GitHub App for your organization. You can grant access to every repository or pick a
-subset; the repositories you grant become [projects](/data/projects).
+Open **Connections**, click **Add connection**, and choose **GitHub** under **Source Code
+Management**. Console sends you to GitHub to install the Console GitHub App for your organization,
+where you'll need to grant access to every repository or pick a subset, and brings you back to
+Connections once it's installed. The repositories you grant become [projects](/data/projects).
+
+If you aren't an order or App admin of the GitHub organization, you'll see **Request** instead of
+**Install**. If you click **Request**, the connection will then show **Awaiting GitHub owner
+approval** until an owner approves, then complete installation on its own.
+
+To change which repositories Console can reach later, click **Manage** on the GitHub connection's card.
 
 The App is what powers:
 
@@ -31,8 +39,6 @@ The App is what powers:
 - [Review comments](/workflows/outputs#comment-on-triggering-pull-request)
 - [Merge gates](/workflows/outputs#gate-merging-on-security-review) as required checks
 - Opening a pull request from a [finding's suggested fix](/data/findings#accepting-a-fix)
-
-See [Installation](/install-console#install-the-github-app) for the install flow.
 
 ### GitLab
 
