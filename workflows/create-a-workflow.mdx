@@ -75,6 +75,10 @@ Click **Add trigger** and pick a type:
 A trigger must name at least one repository, or the workflow won't save — the one exception is a scheduled
 trigger on an organization-scoped workflow, which has none to name.
 
+**On pull requests** needs a repository-scoped workflow; an organization-scoped workflow can only use
+**Scheduled**. The editor marks the pull-request option *Repositories only* for an organization-scoped
+workflow — an organization run clones no repository, so there is no pull request to fire on.
+
 See [Triggers](/workflows/triggers) for the full details.
 
 ## Agents
@@ -135,7 +139,7 @@ when it fired.
 | Name | Required, unique, non-blank. Locked while a merge gate output exists. |
 | Description | Required, non-blank. |
 | Agents | At least 1, at most 20. |
-| Triggers | Optional. **On pull requests** or **Scheduled**. Any trigger you add must name at least one repository (except a scheduled trigger on an organization-scoped workflow). |
+| Triggers | Optional. **On pull requests** or **Scheduled**. Any trigger you add must name at least one repository (except a scheduled trigger on an organization-scoped workflow). An organization-scoped workflow can only use **Scheduled**. |
 | Outputs | Optional. One per destination type. |
 
 ## Next steps

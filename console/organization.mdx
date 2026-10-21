@@ -19,24 +19,29 @@ Click **Organization** in the sidebar. The page has five tabs:
 
 **Members** lists everyone in the organization with their role.
 
-- **Invite a teammate.** Open **Organization**, choose **Members**, and invite them by email address,
-  choosing the role they'll have. The invitation is pending until they accept it from the email they
-  receive; once they sign in, they're a member and can use everything the role allows.
-- **Change a role or remove a member.** Each member row has a menu to change their role or remove them from
-  the organization.
+- **Invite a teammate.** An admin opens **Organization**, chooses **Members**, and invites them by email
+  address, choosing the role they'll have. The invitation is pending until they accept it from the email
+  they receive; once they sign in, they're a member and can use everything the role allows.
+- **Change a role or remove a member.** For an admin, each member row has a menu to change their role or
+  remove them from the organization. A member who is not an admin sees the list read-only.
 
 <Note>
-  A teammate who signs in before being invited sees *This account is not a member of any organization*.
-  Invite them from **Members** and have them sign in again.
+  A teammate who is not yet invited can't get in. On the web, Clerk sends them to the choose-organization
+  step until an invitation arrives. In the CLI, `console setup` stops with *This account is not a member
+  of any organization* — once they accept the invitation, they run `console setup` again.
 </Note>
 
 ## What needs an organization admin
 
 Most of Console is open to every member: chat, projects, agents, detections, workflows, runs, findings,
-source-control connections, and vendor connectors. A few actions require the organization **Admin** role:
+source-control connections, and vendor connectors. Managing the organization itself and a few other
+actions require the organization **Admin** role:
 
 | Action | Where |
 | --- | --- |
+| Inviting a teammate | **Organization** → **Members** → **Invite** |
+| Changing a member's role, or removing a member | The member's row on **Organization** → **Members** |
+| Editing the organization — its name and settings | **Organization** → **General** |
 | Connecting an app under **Agent Tools** — Slack, Atlassian, Linear, Notion, Asana, Google — and disconnecting one | **Connections** → **Add connection**; non-admins see the apps marked *Admin only* |
 | Choosing which files an app may read, for apps that grant access per file | The app's card on **Connections** |
 | Adding credit, changing the payment method, and turning automatic credit purchasing on or off | **Organization** → **Billing and Credits** |

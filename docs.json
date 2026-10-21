@@ -181,6 +181,22 @@
       "destination": "/workflows/agent-chain"
     },
     {
+      "source": "/integrations/github",
+      "destination": "/data/connections"
+    },
+    {
+      "source": "/integrations/gitlab",
+      "destination": "/data/connections"
+    },
+    {
+      "source": "/guides/:path*",
+      "destination": "/introduction"
+    },
+    {
+      "source": "/sample-project",
+      "destination": "/introduction"
+    },
+    {
       "source": "/legacy/:path*",
       "destination": "/introduction"
     }
