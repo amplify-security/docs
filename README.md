@@ -70,6 +70,14 @@ with it, not just house style.
 
 The Mintlify GitHub App deploys automatically on push to the default branch.
 
+The Console chat's `console-guide` skill is generated from these pages. The `console-guide` workflow
+(`.github/workflows/console-guide.yml`) dispatches platform-agent-skills' generator on every pull request
+in check mode — a page it cannot handle (a component outside the allowed set, a link that is not
+root-relative) fails the PR before it merges — and on every push to `main` that touches `docs.json` or
+an `.mdx` file in publish mode, which commits the regenerated skill to platform-agent-skills and syncs
+every environment's Mesa org. It needs the `CONSOLE_GUIDE_TOKEN` repo secret (a fine-grained PAT that
+can only dispatch workflows in platform-agent-skills); fork pull requests skip it.
+
 ## Troubleshooting
 
 - **404 on every page** — you're not in the directory containing `docs.json`.
