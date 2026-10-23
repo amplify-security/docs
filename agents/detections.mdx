@@ -82,8 +82,7 @@ types the UI doesn't recognize still render with a generic label rather than bre
 - `detection-author` reads a scan's findings and authors a detection for each — the automated version of
   the same loop.
 
-Ask in [chat](/interactive/chat): *"Write an OpenGrep rule that catches this pattern and store it as a test
-detection."*
+Ask in [chat](/interactive/chat): *"Write an OpenGrep rule that catches this pattern and save it."*
 
 ## Running detections
 
@@ -98,11 +97,10 @@ wasted pass.
 ## The compounding loop
 
 1. An agent confirms a vulnerability in [chat](/interactive/chat) or a workflow run.
-2. `detection-author` — or you — turns it into a detection, at `TEST`.
-3. You review what it catches and promote it to `PRODUCTION`.
-4. A `detections-runner` workflow applies it on every pull request from then on.
+2. `detection-author` — or you — turns it into a detection.
+3. A `detections-runner` workflow applies it on every pull request from then on.
 
-Step 4 is cheap and repeatable. That's the payoff for the reasoning spent in step 1.
+Step 3 is cheap and repeatable. That's the payoff for the reasoning spent in step 1.
 
 ## Next steps
 
