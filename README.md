@@ -5,8 +5,7 @@ Documentation site for [Amplify Security](https://github.com/amplify-security), 
 
 ## Structure
 
-The site has two tabs. **Amplify Console** is the current product, organized into three ideas that build
-on each other:
+The site has one tab, **Amplify Console**, organized into three ideas that build on each other:
 
 | Group | Covers |
 | --- | --- |
@@ -16,8 +15,10 @@ on each other:
 | `Integrations` (`integrations/`) | Third-party apps agents can act in — Slack, Atlassian, Linear, Notion, Asana, Google Docs — and how to use their tools in an agent |
 | `Working interactively` (`interactive/`) | Chat and the CLI |
 | `Workflows` (`workflows/`) | Creating, triggering, running, and delivering workflow results |
+| `Reference` (`reference/`, `console/`) | The Console pages map, and the pages of the web console that aren't about agents or workflows — Organization, Billing, Profile |
 
-**Amplify Dashboard (Legacy)** (`legacy/`) documents the previous product and is not actively developed.
+The previous product, Amplify Dashboard, shuts down on 2026-10-30; its pages were removed and `/legacy/*`
+redirects to the introduction.
 
 ## Development
 
@@ -48,15 +49,34 @@ mint dev --port 3333
 
 ## Conventions
 
-- Frontmatter requires `title` and `description`.
-- Mintlify components in use: `<Note>`, `<Tip>`, `<Warning>`, `<CardGroup>`, `<Card>`.
+These pages are also the source the `console-guide` platform skill is generated from (in
+`platform-agent-skills`), which is how chat in Amplify Console answers "how do I", "where is", and "can
+Console do" questions. The generator reads the pages as written, so the conventions below are a contract
+with it, not just house style.
+
+- Frontmatter requires `title` and `description`. The description says what question the page answers —
+  *"Where each part of Amplify Console lives and what you do there"* — because it is what the chat sees in
+  its index when deciding which page to read.
+- Mintlify components allowed: `<Note>`, `<Tip>`, `<Warning>`, `<CardGroup>`, `<Card>` — and only those.
+  Any other component needs a change to the `console-guide` generator in `platform-agent-skills` first.
+- Name UI elements by their exact label, in bold — **Add connection**, **Save view** — and name the page
+  first in any how-to step: *On **Findings**, click **Show filters**.*
+- Document what ships today. State an unsupported capability explicitly — "not supported", "not yet" —
+  never by omission; a reader (or the chat) can't tell silence from a gap. Where a capability is partial,
+  say so in a `<Warning>` or `<Note>` rather than describing the intended end state.
 - Internal links are root-relative and omit the extension — `/agents/writing-an-agent`.
-- Document what ships today. Where a capability is partial, say so explicitly in a `<Warning>` or `<Note>`
-  rather than describing the intended end state.
 
 ## Publishing
 
 The Mintlify GitHub App deploys automatically on push to the default branch.
+
+The Console chat's `console-guide` skill is generated from these pages. The `console-guide` workflow
+(`.github/workflows/console-guide.yml`) dispatches platform-agent-skills' generator on every pull request
+in check mode — a page it cannot handle (a component outside the allowed set, a link that is not
+root-relative) fails the PR before it merges — and on every push to `main` that touches `docs.json` or
+an `.mdx` file in publish mode, which commits the regenerated skill to platform-agent-skills and syncs
+every environment's Mesa org. It needs the `CONSOLE_GUIDE_TOKEN` repo secret (a fine-grained PAT that
+can only dispatch workflows in platform-agent-skills); fork pull requests skip it.
 
 ## Troubleshooting
 

@@ -1,0 +1,63 @@
+---
+name: console-guide
+
+# Console chat's `console-guide` skill is generated from this repo by platform-agent-skills'
+# `console-guide` workflow. This workflow dispatches it and waits for it:
+#   pull_request -> check mode: generate from the PR's head commit and publish nothing, so a
+#                   page the generator cannot handle (an unsupported component, a link that is
+#                   not root-relative) fails here, before the PR merges;
+#   push to main (docs.json or any .mdx) -> publish mode: regenerate from main, commit the
+#                   change to platform-agent-skills' main and sync the Mesa orgs of every
+#                   environment, so a failed publish shows on the docs commit.
+# `pull_request`, not `pull_request_target`: this repo is public and forkable, and a fork PR
+# must never run with this repo's secrets. Fork PRs are skipped instead (the secret is empty
+# for them anyway). No paths filter on pull_request: a required check that a filter skips sits
+# on "pending". On a push, a cancelled run counts as a pass: platform-agent-skills' concurrency
+# group cancels a queued publish when a newer one arrives, so it was superseded, not broken. A
+# check is never superseded (its group is keyed on the docs commit), so a cancelled check is one
+# that did not finish, and it fails the PR.
+# CONSOLE_GUIDE_TOKEN is a fine-grained PAT (platform-agent-skills only, Actions: read and
+# write — it can dispatch, never push code), a plain repo secret because PR workflows use it.
+# This workflow stays here rather than in gh-workflows: a public repo cannot call a reusable
+# workflow from a private one, and it uses no third-party actions (only the runner's `gh`).
+# This repo's logs are public, so the job reports the private run's link and result, not its logs.
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths: ["docs.json", "**.mdx"]
+
+permissions: {}
+
+concurrency:
+  group: console-guide-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  console-guide:
+    # Fork PRs get no secrets.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.CONSOLE_GUIDE_TOKEN }}
+      PAS: amplify-security/platform-agent-skills
+      DOCS_REF: ${{ github.event.pull_request.head.sha }} # empty on push: publish docs main
+      NONCE: docs-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: dispatch platform-agent-skills' console-guide and wait for it
+        run: |
+          gh workflow run console-guide.yml -R "$PAS" --ref main -f docs_ref="$DOCS_REF" -f docs_nonce="$NONCE"
+          # `gh workflow run` returns no run id: the run carries the nonce in its name, so find it there.
+          id=""
+          for _ in $(seq 1 30); do
+            id=$(gh run list -R "$PAS" --workflow console-guide.yml --event workflow_dispatch --limit 30 \
+                   --json databaseId,displayTitle --jq ".[] | select(.displayTitle | endswith(\" $NONCE\")) | .databaseId" | head -n 1)
+            [ -n "$id" ] && break
+            sleep 5
+          done
+          [ -n "$id" ] || { echo "the dispatched run did not appear within 150 s"; exit 1; }
+          echo "https://github.com/$PAS/actions/runs/$id"
+          # This repo's logs are public: report the result, not the private run's logs.
+          gh run watch "$id" -R "$PAS" --exit-status > /dev/null ||
+            { [ "$GITHUB_EVENT_NAME" = push ] && [ "$(gh run view "$id" -R "$PAS" --json conclusion -q .conclusion)" = cancelled ]; }

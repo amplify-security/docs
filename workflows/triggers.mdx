@@ -64,6 +64,9 @@ Pull request triggers depend on Console receiving events from your source contro
 means the repository must be connected and the Console GitHub App installed for it. See
 [Connections](/data/connections#github).
 
+The workflow must be scoped to repositories: an organization-scoped workflow clones no repository, so
+the editor marks **On pull requests** *Repositories only* for it, and it can only use **Scheduled**.
+
 ## One run per repository
 
 A trigger that names three repositories produces **three runs** when it fires — one per repository, each

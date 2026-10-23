@@ -1,0 +1,65 @@
+---
+title: Profile
+description: 'Where your account settings, API keys, and theme live — the Profile page and the bottom of the sidebar.'
+---
+
+## The Profile page
+
+Click **Profile** at the bottom of the sidebar. It opens your own account — not the organization's — with
+sections for your account details, security, and **API keys**.
+
+- **Account** — your name, profile picture, and email addresses. Sign-in is by a code emailed to you, so
+  the email address on file is how you get in.
+- **Security** — the devices you're signed in on, with the option to sign out of another one.
+
+## API keys
+
+An API key signs in to Console as you, without a browser. The CLI uses one when you choose **Paste an API
+key** at setup, and reads one from `AMPLIFY_API_KEY` in CI.
+
+Open **Profile** and choose **API keys** — or go straight to
+[console.amplify.security/console/profile/api-keys](https://console.amplify.security/console/profile/api-keys).
+Create a key, give it a name you'll recognize later, and copy it: the key is shown once. Revoke a key from
+the same list when a machine no longer needs it, and anything still using it stops working immediately.
+
+<Tip>
+  On a machine with a browser, the CLI's **Sign in with your browser** needs no key at all. Keep API keys
+  for CI and headless machines.
+</Tip>
+
+A key is personal: it carries your identity and your organizations. Keys owned by an organization rather
+than a person live on the [Organization page](/console/organization#organization-api-keys).
+
+See [Installation](/install-console#sign-in) for the CLI setup and [the CLI](/interactive/cli) for what
+it can do once signed in.
+
+## Appearance
+
+The theme switcher is not on the Profile page — it's the **Theme** entry at the bottom of the sidebar, just
+above **Profile**. Click it and pick one:
+
+| Theme | |
+| --- | --- |
+| **Light** | The default |
+| **Dark** | |
+| **System** | Follows your operating system's light or dark setting |
+| **Light Fog**, **Sandstone**, **Midnight**, **Terminal** | Additional palettes |
+
+The choice is remembered by your browser, so it applies to this browser only and doesn't follow you to
+another device.
+
+## Signing out
+
+**Sign Out** is the last entry in the sidebar. It ends your session and returns you to the sign-in page.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Install the CLI" icon="terminal" href="/install-console">
+    Sign in with your browser or paste an API key.
+  </Card>
+
+  <Card title="Organization" icon="building" href="/console/organization">
+    Members, roles, and billing.
+  </Card>
+</CardGroup>

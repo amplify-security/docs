@@ -80,52 +80,14 @@
               "workflows/running",
               "workflows/artifacts"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Amplify Dashboard (Legacy)",
-        "icon": "clock-rotate-left",
-        "global": {
-          "anchors": [
-            {
-              "anchor": "GitHub App",
-              "href": "https://github.com/apps/amplify-security",
-              "icon": "code-simple"
-            },
-            {
-              "anchor": "GitHub Action",
-              "href": "https://github.com/marketplace/actions/amplify-runner-action",
-              "icon": "circle-play"
-            },
-            {
-              "anchor": "GitLab Component",
-              "href": "https://gitlab.com/amplify-security/components",
-              "icon": "circle-play"
-            }
-          ]
-        },
-        "groups": [
-          {
-            "group": "Get Started",
-            "pages": [
-              "legacy/introduction",
-              "legacy/quickstart",
-              "legacy/sample-project"
-            ]
           },
           {
-            "group": "How-to Guides",
+            "group": "Reference",
             "pages": [
-              "legacy/guides/ignoring-vulns",
-              "legacy/guides/enable-comments"
-            ]
-          },
-          {
-            "group": "Integrations",
-            "pages": [
-              "legacy/integrations/github",
-              "legacy/integrations/gitlab"
+              "reference/console-pages",
+              "console/organization",
+              "console/billing",
+              "console/profile"
             ]
           }
         ]
@@ -219,24 +181,24 @@
       "destination": "/workflows/agent-chain"
     },
     {
-      "source": "/sample-project",
-      "destination": "/legacy/sample-project"
-    },
-    {
-      "source": "/guides/ignoring-vulns",
-      "destination": "/legacy/guides/ignoring-vulns"
-    },
-    {
-      "source": "/guides/enable-comments",
-      "destination": "/legacy/guides/enable-comments"
-    },
-    {
       "source": "/integrations/github",
-      "destination": "/legacy/integrations/github"
+      "destination": "/data/connections"
     },
     {
       "source": "/integrations/gitlab",
-      "destination": "/legacy/integrations/gitlab"
+      "destination": "/data/connections"
+    },
+    {
+      "source": "/guides/:path*",
+      "destination": "/introduction"
+    },
+    {
+      "source": "/sample-project",
+      "destination": "/introduction"
+    },
+    {
+      "source": "/legacy/:path*",
+      "destination": "/introduction"
     }
   ]
 }
