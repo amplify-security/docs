@@ -53,19 +53,10 @@ where no pattern captures the requirement and a human reviewer would need to rea
 
 | Field | Values | What it does |
 | --- | --- | --- |
-| **Status** | `TEST`, `PRODUCTION` | Whether the detection is still being evaluated or is trusted. Promote once its results hold up. |
 | **Severity** | `critical`, `high`, `medium`, `low` | How serious a match is. |
 | **Disposition** | `flag`, `escalate` | What should happen on a match — record it, or escalate it. |
 | **Tags** | free-form | Grouping and filtering. |
 | **Project** | optional | Scopes the detection to one repository. Unset means it applies organization-wide. |
-
-### The test-to-production lifecycle
-
-New detections start at `TEST`. Run them, review what they catch, tune the rule, and promote to
-`PRODUCTION` when the signal is trustworthy.
-
-This exists because a noisy detection is worse than no detection — it trains your team to ignore results.
-Keeping unproven rules visibly in `TEST` lets you build the library without eroding trust in it.
 
 ## Where detections come from
 
