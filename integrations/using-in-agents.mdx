@@ -47,7 +47,7 @@ is the *where* and *what*:
 - **Name the destination.** The Jira project key, the Slack channel, the Confluence space, the Notion parent
   page. Agents can discover some of these — `Jira_ListProjects`, for instance — but an agent told
   "the SEC project" doesn't have to guess. Slack has no channel lookup tool, so give a Slack step the
-  channel's ID.
+  workspace ID and the channel ID.
 - **Say what one item looks like.** A title format, which fields to fill, what to link back to. Console's
   findings have ids and URLs; ask for them in the issue body so the two stay connected.
 - **Say what to do with nothing.** Post "no issues found", or post nothing? An agent will pick one if you
@@ -67,7 +67,7 @@ its shape.
 
 <Tip>
   For a standard run summary in Slack, you don't need a step: add the
-  [Slack message output](/workflows/outputs#slack-message) to the workflow. Write a step like the one below
+  [**Post to Slack** output](/workflows/outputs#post-to-slack) to the workflow. Write a step like the one below
   when you want to control what the message says.
 </Tip>
 
@@ -89,8 +89,8 @@ consumes:
 You report the outcome of a security workflow run to the team.
 
 1. Review the findings this run produced. Group them by severity.
-2. Post exactly one message to the `#security-reports` channel (ID
-   `C0123456789`). Lead with the count by severity, then one line per finding:
+2. Post exactly one message to the `#security-reports` channel (workspace
+   `T0123ABCD`, channel `C0123456789`). Lead with the count by severity, then one line per finding:
    severity, title, and a link.
 3. If there are no findings, post a single line saying the run found nothing.
 4. Never post anywhere else, and never send direct messages.
