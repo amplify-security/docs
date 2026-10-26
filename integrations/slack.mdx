@@ -121,7 +121,8 @@ steps. Everything they post appears as **Amplify Console**.
 | `slack_add_reaction` | Adds an emoji reaction to a message. |
 
 Each tool takes the Slack workspace ID and the channel ID, not the channel's name. In a workflow step, put both
-IDs in the agent's instructions. To post in a channel, invite **@Amplify Console** to it first.
+IDs in the agent's instructions. Agents can post to any public channel without inviting the bot. To post in a
+private channel, invite **@Amplify Console** to it first.
 
 When you're talking to the agent in Slack, it posts somewhere other than your conversation only when you
 explicitly ask it to.
@@ -148,8 +149,8 @@ explicitly ask it to.
 ## Disconnecting
 
 On **Connections**, click **Disconnect** on the Slack workspace's card and confirm. Disconnecting requires an
-organization admin. Amplify revokes its Slack token, which deactivates the Amplify Console bot, and the agent
-stops responding in that workspace. The transcripts already saved in Console are kept.
+organization admin. Amplify revokes its Slack token, which deactivates the Amplify Console bot, the agent
+stops responding in that workspace, and open conversations are closed. The transcripts already saved in Console are kept.
 
 <Warning>
   Disconnecting doesn't remove the app from Slack. Amplify Console stays in the workspace's app list, inactive,
