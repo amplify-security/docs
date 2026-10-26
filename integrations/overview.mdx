@@ -6,7 +6,7 @@ description: 'Give agents tools in the third-party apps your team already uses �
 ## What integrations are
 
 An integration gives Console's agents a set of tools in one third-party app your team uses. Once an
-organization admin connects Slack, every agent in your organization can post to Slack. Connect Jira, and
+organization admin installs Slack, every agent in your organization can post to Slack. Connect Jira, and
 agents can file and update issues. Connect Confluence, and they can write up what they found.
 
 These are separate from the built-in tools every agent already has for reading code, scanning, and
@@ -17,7 +17,7 @@ These are the apps you can connect today:
 
 | App | What agents can do | Tools |
 | --- | --- | --- |
-| [Slack](/integrations/slack) | Post messages, reply in threads, react, and read channel history | 11 |
+| [Slack](/integrations/slack) | Chat with the agent from Slack; post messages and replies, and react, as the Amplify Console bot | 4 |
 | [Atlassian](/integrations/atlassian) | Create, search, comment on, and transition Jira issues; read and write Confluence pages | 36 |
 | [Linear](/integrations/linear) | Create, update, comment on, and transition issues | 20 |
 | [Notion](/integrations/notion) | Search, read, create, and append to pages | 10 |
@@ -44,8 +44,13 @@ workflow — once an app is connected, its tools are offered to every agent that
 is attributed to it, and its permissions in the app bound what agents can reach. See
 [the bot account](/integrations/connecting#the-bot-account) for how to set one up.
 
-**Tools are named after the app.** Every integration tool is named `<App>_<Action>` — `Jira_CreateIssue`,
-`Slack_GetThreadMessages`, `Notion_SearchByTitle`. That's the name you use in an agent's
+**Slack works differently.** You install the Amplify Console app into your Slack workspace instead of
+authorizing an account. Agents act in Slack as the app's own bot user, and your team can also chat with the
+agent from Slack. See [Slack](/integrations/slack).
+
+**Tools are named after the app.** Integration tools are named `<App>_<Action>` — `Jira_CreateIssue`,
+`Linear_CreateIssue`, `Notion_SearchByTitle`. Slack's tools are the exception, named `slack_<action>`, such as
+`slack_post_message`. That's the name you use in an agent's
 [`allowed-tools`](/agents/writing-an-agent#allowed-tools-restricts-it-doesnt-grant). See
 [using integration tools in an agent](/integrations/using-in-agents).
 

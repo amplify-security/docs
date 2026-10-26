@@ -1,6 +1,6 @@
 ---
 title: Outputs
-description: 'Post workflow results back to a pull request, and block merging until security review passes.'
+description: 'Post workflow results back to a pull request or to a Slack channel, and block merging until security review passes.'
 ---
 
 ## What an output does
@@ -12,8 +12,9 @@ it just doesn't push them anywhere.
 Add them from the **Output** section of the workflow editor. You can add one of each destination type,
 but not two of the same kind.
 
-Both destinations act on *the pull request that triggered the run*, so they only do something for runs a
-pull request started. On a manual run they're recorded as skipped.
+The pull request comment and the merge gate act on *the pull request that triggered the run*, so they only
+do something for runs a pull request started. On a manual run they're recorded as skipped. The Slack message
+output posts to a channel you choose, so it doesn't need a pull request.
 
 ## Comment on triggering pull request
 
@@ -99,10 +100,19 @@ actually blocked.
 Merge blocking isn't supported for GitLab merge requests yet. A merge gate on a GitLab run is recorded
 as skipped. Use **Comment on triggering pull request** for GitLab in the meantime.
 
+## Slack message
+
+Posts one message summarizing the run to a Slack channel: the outcome, counts by severity, the top findings,
+and an **Open run** link. It needs the [Slack app](/integrations/slack) installed for your organization.
+
+When you add it, pick the Slack workspace and the channel. Console checks the workspace against your
+organization's Slack installations when you save. The message is posted as **Amplify Console**. The bot can
+post to any public channel. For a private channel, invite **@Amplify Console** to it first.
+
 ## Delivering anywhere else
 
-Outputs go to the triggering pull request. To put results in Slack, Jira, Linear, Confluence, Notion, Asana,
-or Google Docs, add a final **step** to the chain instead: an agent that consumes the run's findings and
+The other outputs go to the triggering pull request or to Slack. To put results in Jira, Linear, Confluence,
+Notion, Asana, or Google Docs, or to write your own Slack message, add a final **step** to the chain instead: an agent that consumes the run's findings and
 posts them through that app's [integration tools](/integrations/overview). Unlike outputs, such a step runs on
 manual runs too.
 

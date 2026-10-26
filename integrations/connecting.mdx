@@ -8,6 +8,11 @@ description: 'Set up a bot account, authorize it from the Connections page, and 
 Connecting an app requires an **organization admin**. Other members see the apps on the Connections page
 but can't connect or disconnect them.
 
+<Note>
+  Slack doesn't use a bot account or this flow. You install the Amplify Console app into your workspace
+  instead. See [Slack](/integrations/slack#installing).
+</Note>
+
 You also need a bot account in the app. Read the next section before you click anything — signing in with
 the wrong account is the most common mistake in this flow, and it's the one that's hardest to notice.
 
@@ -18,8 +23,8 @@ account. Amplify never sees its credentials; you hold them.
 
 1. **Create the account in your own domain**, for example `amplify-agent@yourcompany.com`, and sign it up
    for the app.
-2. **Give it exactly the access agents should have.** Invite it to the Slack channels agents may read or
-   post in, the Jira projects they may file into, the Notion pages they may read. Its permissions in the app
+2. **Give it exactly the access agents should have.** Add it to the Jira projects agents may
+   file into, the Notion pages they may read, the Asana projects they may work in. Its permissions in the app
    are the ceiling on what agents can do. A guest or project-limited member is usually right, and in many
    apps doesn't consume a paid seat.
 3. **Name it clearly.** A display name like "Amplify Agent" and a recognizable avatar, because every issue,
@@ -80,9 +85,8 @@ turn.
 ## Troubleshooting
 
 **Agents can't see something the bot can.** Most often the connection was authorized from the wrong
-account — check the *Connected as* line on the card. Otherwise it's the app-specific scoping: Slack agents
-see only channels the bot is in, Notion agents see only pages shared with the connection, Atlassian agents
-see only the one site chosen at consent. Each app's page has the details.
+account — check the *Connected as* line on the card. Otherwise it's the app-specific scoping: Notion agents see only pages shared
+with the connection, Atlassian agents see only the one site chosen at consent. Each app's page has the details.
 
 **The card reads Authorization lost.** The app revoked the grant — usually because someone removed Amplify
 Console from the bot account's authorized apps, or the account was deactivated. Reconnect from
@@ -92,9 +96,10 @@ Console from the bot account's authorized apps, or the account was deactivated. 
 Close the tab, sign that browser out of the app (or use a private window signed in as the bot), then start
 the connection again.
 
-**The app says Amplify Console needs admin approval.** Slack workspaces with app approval turned on, and
-Google Workspace organizations that restrict third-party apps, require an admin to approve the app once
-before any account can authorize it. Have an admin of that app approve Amplify Console, then reconnect.
+**The app says Amplify Console needs admin approval.** Google Workspace organizations that restrict
+third-party apps require an admin to approve the app once before any account can authorize it. Have an admin
+of that app approve Amplify Console, then reconnect. For Slack's approval step, see
+[Slack](/integrations/slack#before-you-install).
 
 ## Next steps
 
