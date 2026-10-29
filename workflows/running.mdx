@@ -43,6 +43,8 @@ Open a run to see:
 - **Findings** — what the run confirmed, linked through to the full finding.
 - **Outputs** — each configured destination and whether it was delivered. See
   [checking delivery](/workflows/outputs#checking-delivery).
+- **A pull request** — when an agent in the run [proposed one](/workflows/pull-requests), a card with its
+  title, a link to the pull request, the description, and the diff.
 - **Go to workflow** — jump back to the definition that produced this run.
 
 A run page refreshes itself while the run is active, so you can leave it open.
@@ -88,6 +90,9 @@ Common causes:
   [scanning agents](/agents/library#scanning)) usually resolves it.
 - **A step named an agent that no longer exists.** If you deleted an agent your workflow references,
   edit the workflow and repair the chain.
+- **The pull request couldn't be opened.** An agent tried to [open a pull request](/workflows/pull-requests)
+  and couldn't — usually the project isn't connected to GitHub, or the Console GitHub App can't write to
+  the repository. The agent says so in its result.
 
 Because Console snapshots the workflow definition when a run fires, fixing the workflow doesn't repair
 an existing failed run — edit the workflow, then fire it again.

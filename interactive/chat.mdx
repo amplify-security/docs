@@ -19,6 +19,7 @@ In a session an agent can:
 - **Delegate to sub-agents**, so a broad question can fan out without losing the thread
 - **Track its plan** as a running todo list you can watch
 - **Record [findings](/data/findings)** and write patches for what it confirms
+- **Open a [pull request](/workflows/pull-requests)** on a connected project with a change you asked for
 
 Ask open-ended questions — *"are there any exposed endpoints in this service that shouldn't be?"* — or point
 it at something specific and ask it to dig in.
@@ -69,6 +70,13 @@ you can redirect without starting over. Anything already recorded — findings, 
 The fastest way into a productive session is from a [finding](/data/findings). **Start a chat** on any
 finding opens a session with the affected code, the agent's reasoning, and any generated patch already loaded,
 and you type your question in the same step.
+
+## Asking for a pull request
+
+Ask for a change the way you'd ask a colleague — *"add a lockfile to the payments service and open a PR"*.
+The agent confirms which project and what should change if that isn't clear, dispatches an agent to run
+against that project, and replies with the pull request link when the run completes. Each distinct request
+in a conversation gets its own pull request. See [pull requests from agents](/workflows/pull-requests).
 
 ## Promote it to a workflow
 

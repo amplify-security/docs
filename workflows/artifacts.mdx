@@ -11,6 +11,7 @@ A workflow run produces results in two places, and it's worth keeping them strai
 | --- | --- | --- |
 | **Findings and patches** | Your organization, attached to the project and the run | Yes — they outlive the run |
 | **Output deliveries** | The pull request, as comments or a check | Yes, but they're a *copy* delivered elsewhere |
+| **Proposed pull requests** | The repository, as a branch and a pull request | Yes — and the proposal stays on the run |
 
 The run itself is a record — status, per-step timings, which agents ran. The *results* are what the agents
 recorded while running.
@@ -33,6 +34,12 @@ Patches are verified before they're recorded, not proposed speculatively: the ag
 the detection to confirm the match is gone — for policy detections, an independent read-only verifier judges
 the result — and only then captures the diff. That's why a finding's suggested fix can
 [open a pull request](/data/findings#accepting-a-fix) directly.
+
+## Proposed pull requests
+
+An agent that edits code can open a pull request with the change itself. The pull request is opened on the
+repository when the run completes, and the change stays on the run too. See
+[pull requests from agents](/workflows/pull-requests).
 
 ## The artifact model
 
@@ -74,9 +81,14 @@ output: an agent at the end of the chain that consumes the run's findings and po
 app's [integration tools](/integrations/overview) — a Slack summary, one Jira issue per finding, a Confluence
 write-up. See [adding a delivery step](/integrations/using-in-agents#adding-a-delivery-step-to-a-workflow).
 
+A step can also change the code rather than report on it: an agent that edits files and
+[proposes a pull request](/workflows/pull-requests) gets one opened on the repository when the run completes,
+on manual runs too.
+
 <Note>
   There's no delivery to arbitrary webhooks and no general outbound-write tool — `web_fetch` performs reads
-  only. Delivery goes through the outputs above or through an app your organization has connected.
+  only. Delivery goes through the outputs above, through a pull request an agent proposes, or through an app
+  your organization has connected.
 </Note>
 
 ## Inspecting a run's results
