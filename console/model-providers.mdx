@@ -1,0 +1,144 @@
+---
+title: Model providers
+description: 'How to run models on your own Anthropic, OpenAI, or Amazon Bedrock account by registering a provider API key, what Amplify stores, how requests are billed, and what an Amazon Bedrock key needs — the Model providers tab.'
+---
+
+## Bring your own provider key
+
+By default, every model call an agent makes — in chat, in the CLI, and in workflow runs — runs on
+Amplify-managed capacity and is billed to your organization's credits. If your organization already has an
+account with a model provider, you can register that provider's API key instead. Requests for models the
+provider serves then run on your key: the provider bills you for them directly, and credits cover only a
+small BYOK fee.
+
+Supported providers: **Anthropic**, **OpenAI**, and **Amazon Bedrock**.
+
+Click **Organization** in the sidebar and choose **Model providers**. The tab is for organization **Admin**s
+only — see [what needs an admin](/console/organization#what-needs-an-organization-admin).
+
+## What Amplify stores
+
+When you register a key, Console validates it against the provider once, then hands it to Amplify's model
+router, which stores it encrypted. Amplify never keeps a copy of the secret. The **Model providers** tab shows
+only a masked label for each registered key — and, for Amazon Bedrock, its region — and the key itself is
+never shown again.
+
+## Billing
+
+| Request served on | Who bills you | What credits are charged |
+| --- | --- | --- |
+| Your provider key | The provider, on your account, at its own prices | A **BYOK fee of 10% of the request's list price** |
+| Amplify-managed capacity | Amplify | The full inference cost, at the normal rate |
+
+The BYOK fee replaces the inference cost; it is not charged on top of it. See [Billing](/console/billing) for
+credits and the usage dashboards.
+
+## When your key can't serve a request
+
+Some requests can't be served on your key: the provider is down, the model isn't enabled on your account, or
+the key has been revoked. The **Never use Amplify-managed capacity** checkbox on **Model providers** decides
+what happens then:
+
+- **Unchecked** (the default) — the request falls back to Amplify-managed capacity and is billed to credits
+  at the normal rate.
+- **Checked** — the request fails instead. Nothing runs on Amplify-managed capacity.
+
+<Note>
+  Leave the box unchecked unless your organization must never send a request outside its own provider
+  account. With it checked, a provider outage or a model you haven't enabled stops the agent rather than
+  costing credits.
+</Note>
+
+## Anthropic and OpenAI
+
+Each needs one API key, created in the provider's console. On **Model providers**, choose the provider, paste
+the key, and save. Console validates the key with the provider before storing it; a key the provider rejects
+is refused with the reason.
+
+## Amazon Bedrock
+
+Amazon Bedrock takes a **long-term Amazon Bedrock API key** and the **region** it was generated in. IAM
+access key pairs — an access key ID and secret access key — are not supported.
+
+To create the key: in the Amazon Bedrock console, in the region where you use the models, open **API keys**
+→ **Long-term API keys** → **Generate**, and choose an expiration. Then, on **Model providers**, choose
+Amazon Bedrock, paste the key and the region, and save. Short-term API keys expire within 12 hours and
+Console rejects them.
+
+The key is bound to its region (`us-east-1`, for example): models must be available in that region — a
+model Bedrock doesn't serve there can't be reached through the key.
+
+### Required permissions
+
+A long-term Amazon Bedrock API key is backed by an IAM user, and that user's policies govern what the key
+can do. A key generated in the Bedrock console gets the **AmazonBedrockLimitedAccess** managed policy by
+default; otherwise the user needs that policy, or a policy that grants:
+
+- `bedrock:InvokeModel`
+- `bedrock:InvokeModelWithResponseStream`
+- `bedrock:GetUseCaseForModelAccess`
+- `aws-marketplace:Subscribe`, plus `aws-marketplace:ViewSubscriptions` and `aws-marketplace:Unsubscribe`
+
+As a custom policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream",
+        "bedrock:GetUseCaseForModelAccess",
+        "aws-marketplace:Subscribe",
+        "aws-marketplace:ViewSubscriptions",
+        "aws-marketplace:Unsubscribe"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+<Warning>
+  `aws-marketplace:Subscribe` is not optional. Bedrock enables a model — subscribes your AWS account to it —
+  automatically on its first invocation, and that first call fails with *AccessDenied* if the calling identity
+  can't subscribe. A key without it works for models you have already used and fails for every other one.
+</Warning>
+
+### Anthropic models on Bedrock
+
+Anthropic's models on Bedrock additionally require your AWS account to have submitted Anthropic's one-time
+use-case form: in the Bedrock console, open any Anthropic model and submit the use case details. Console
+checks this when you add the key, with one call to Bedrock's `GetUseCaseForModelAccess`, and refuses the key
+with a message saying so if the form has not been submitted. A key whose IAM user lacks
+`bedrock:GetUseCaseForModelAccess` can't answer that check and is refused as rejected by the provider.
+
+### Routing
+
+Once an Amazon Bedrock key is registered, requests for models Bedrock serves are routed to your key first.
+What happens when your key can't serve one is governed by
+[the fallback setting](#when-your-key-cant-serve-a-request).
+
+## Replacing or removing a key
+
+Each registered key on **Model providers** can be replaced or removed.
+
+- **Replace** a key to rotate it: enter the new key, which is validated the same way, and it takes the old
+  one's place.
+- **Remove** a key when you no longer want requests on your account. The key material is wiped at the
+  router, and requests for that provider's models return to Amplify-managed capacity, billed to credits at
+  the normal rate.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Billing" icon="credit-card" href="/console/billing">
+    Credits, payment method, auto-recharge, and usage.
+  </Card>
+
+  <Card title="Organization" icon="building" href="/console/organization">
+    Members, roles, and what needs an admin.
+  </Card>
+</CardGroup>

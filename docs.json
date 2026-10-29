@@ -86,6 +86,7 @@
             "pages": [
               "reference/console-pages",
               "console/organization",
+              "console/model-providers",
               "console/billing",
               "console/profile"
             ]
