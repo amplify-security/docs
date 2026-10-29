@@ -1,92 +1,188 @@
 ---
 title: Slack
-description: 'Agents post messages, reply in threads, react, and read channel history — as a bot account you own.'
+description: 'Install the Amplify Console app in Slack so your team can chat with the agent in DMs and channels, post workflow results to a channel, and let agents post as the Amplify Console bot.'
 ---
 
 ## What it's for
 
-Telling people what an agent found, where they already are. A workflow's last step posts a run summary to a
-channel; a chat agent replies in the thread where someone asked about a finding; a triage agent reads the
-last day of `#security` to see what's already been discussed.
+Bringing Amplify Console to where your team already talks. With the app installed:
 
-## How agents appear in Slack
+- **People chat with the agent from Slack.** A direct message to Amplify Console gets the same agent you use
+  in [chat](/interactive/chat) in the web console, with the same tools and the same access to your
+  organization's projects and findings.
+- **The agent answers @-mentions** in channels an admin chooses, replying in a thread the channel can see.
+- **Workflows post their results to a channel** through the **Post to Slack** [output](/workflows/outputs#post-to-slack).
+- **Agents can post, reply, and react in Slack** as the Amplify Console bot, in chat and in workflow steps.
 
-Slack grants Amplify a **user token** for the bot account, not a bot-app token. That has two consequences:
+Everything the app does in Slack appears as **Amplify Console**, the app's own bot user. There is no Slack
+account for you to create or manage.
 
-- Messages and reactions appear as the bot account — its name and avatar — not as an app.
-- Agents can only read channels and conversations the bot account is a **member** of. Invite it to a channel
-  and agents can read and post there; leave it out and that channel doesn't exist as far as agents are
-  concerned.
+## Before you install
 
-## Before you connect
+- **A Console organization admin installs it.** Installing starts from the Connections page, which only
+  admins can change.
+- **The installer must be allowed to add apps to the Slack workspace.** If your workspace requires admin
+  approval for apps, the install pauses on a Slack approval request. A Slack admin can approve it from
+  **Admin → Apps → Requests to install**, or pre-approve it ahead of time with an app-approval rule for app ID
+  `A0C28V9SYJK` (Amplify Console).
+- **Slack's agent experience needs a paid Slack plan.** Slack offers the agent experience, where people open
+  a conversation with Amplify Console, on its Pro, Business+, and Enterprise plans. A Slack admin can also turn
+  it off for an app.
 
-1. Create the bot Slack account in your workspace and set its display name and avatar. See
-   [the bot account](/integrations/connecting#the-bot-account).
-2. Invite it to every channel agents should read or post in. It sees nothing else.
-3. If your workspace requires admin approval for apps, the connect flow pauses on a Slack approval request.
-   A Slack admin can approve it from **Admin → Apps → Requests to install**, or pre-approve ahead of time
-   with an app-approval rule for app ID `A0C28V9SYJK` (Amplify Console). Amplify Console isn't listed in
-   the Slack Marketplace, so there is no Marketplace page to send them.
-4. Sign your browser into the bot account, then follow [the connect flow](/integrations/connecting#connecting).
+<Note>
+  Amplify Console is not yet listed in the Slack Marketplace. Install it from the Connections page in Console,
+  as described below.
+</Note>
 
-The authorization screen asks for these user scopes: read public and private channels, direct messages, and
-group messages the account belongs to; send messages; add reactions; and read user profiles.
+## Installing
 
-## What agents can do
+1. On **Connections**, click **Add connection**.
+2. Expand **Agent Tools** and choose **Slack**.
+3. Click **Add to Slack**. Slack's authorization page opens for the workspace your browser is signed into.
+4. Review the permissions and approve. Slack returns you to **Connections**, where the workspace now has a card.
+
+The person who installed the app gets a welcome message from Amplify Console in Slack.
+
+One Console organization can install the app into more than one Slack workspace. Each workspace gets its own
+card. An Enterprise Grid installation shows one card listing each workspace it covers and its status.
+
+## Who can talk to the agent
+
+A person in Slack can use the agent only if their Slack account's email address matches the email of an
+Amplify Console account that is a member of the organization that installed the app. The email must be
+confirmed in Slack.
+
+Anyone else who messages or mentions the agent gets one reply asking them to sign in to Amplify Console with
+that Slack email address, and nothing else happens. Slack guests can't use agents at all.
+
+The agent acts as the matched Console member. It sees what that member could see in Console, and the
+conversation is saved under the account of the person who started it.
+
+## Direct messages
+
+Open **Amplify Console** from the Agents surface in Slack and send a message. The agent shows that it's
+working, streams its answer into the conversation, and ends with an **Open in Console** link to the same
+conversation in the web console.
+
+- **Each thread is one conversation.** Replies in the same thread continue it; a new thread starts a new one.
+- **One message at a time.** If you send another message in the thread while the agent is still answering, it
+  asks you to send it again once it has answered.
+- **Long answers continue in a second message** in the same thread.
+- **You can stop a reply.** Use Slack's stop control while the agent is working. The reply ends with
+  *Stopped.*
+- **Titles stay in sync.** The agent names the conversation after your first message. Renaming it in Slack
+  renames it in Console.
+- **Suggested prompts** appear when you open the agent. They are a fixed set built into the app.
+- **Send questions as text.** The agent can't read files or attachments yet. A message with only a file gets a
+  reply asking for the question as text.
+
+## Channel @-mentions
+
+The agent answers @-mentions only in channels an organization admin has chosen. Until an admin chooses some,
+it ignores mentions everywhere.
+
+To choose channels, on **Connections**, click **Channels** on the Slack workspace's card. In the
+**Slack channels** dialog, select the channels and click **Save**. Only public channels are listed. The
+Amplify Console bot joins each channel you add. Choosing channels requires an organization admin.
+
+When someone in a chosen channel mentions **@Amplify Console**:
+
+- The agent replies in a thread under the mention, addressed to the person who asked.
+- **The reply is visible to everyone in the channel.** The agent says less about sensitive findings there and
+  offers to continue in a direct message for the detail.
+- The agent answers from the text of the mention. It doesn't read the rest of the channel or the thread, so
+  put what it needs in the message.
+- **Every follow-up needs a fresh @-mention.** A reply in the thread that doesn't mention the agent doesn't
+  reach it. A follow-up that does continues the same conversation.
+- **Anyone in your organization can join in.** Another person who mentions the agent in the same thread
+  continues the same conversation. The agent knows which person sent each message and addresses people by
+  name when it matters.
+- **Each message shows who sent it.** In Console, every message is labeled with its sender's Console name, or
+  their email address if they haven't set a name, and everyone in the conversation sees it. Messages sent from
+  Console appear in the channel with the sender's name.
+- The same identity rule applies: only people who match a Console member of your organization get an answer.
+
+### Continuing a channel conversation in Console
+
+A channel conversation is shared with your organization, because everyone in the channel can already read it.
+Anyone in your organization whose Slack account matches their Console account can open it from the thread's
+**Open in Console** link and carry on from there:
+
+- **Messages sent from Console appear in the thread.** The agent posts them as
+  *Name* (from Console), followed by its answer, so the people in the channel see the whole conversation.
+- **The person who started the conversation owns it.** Others can read it, send messages, and stop a reply.
+  Only the owner can rename, archive, or delete it, or change its model. If the owner deletes it, the next mention in the thread starts a
+  new conversation.
+- **Shared conversations are marked in your chat list** as **Shared · Slack**, with the owner's name. You can
+  leave a shared conversation from its page; mentioning the agent in the thread again brings it back.
+- **Only the thread's Open in Console link adds you.** That link, or a copy of it someone sends you, adds you
+  to the conversation when your Slack account in that workspace matches your Console account. A plain Console
+  link to the conversation opens nothing.
+
+Direct messages stay private: a conversation in a direct message with Amplify Console belongs only to the
+person who started it, and no one else can open or continue it.
+
+## Posting workflow results to a channel
+
+Add a **Post to Slack** output to a workflow to post a summary of every completed run to a channel: the
+workflow's name and the run's summary, counts by severity, up to five top findings, and an **Open run**
+button. If the run failed, the message says so. In the workflow editor's **Output** section, add a
+**Post to Slack** output, pick the **Workspace** and **Channel**, and click **Add output**. Only public
+channels are listed.
+
+See [outputs](/workflows/outputs#post-to-slack) for how outputs are dispatched and how to check delivery.
+
+## What agents can do in Slack
+
+Once a workspace is installed, every agent in your organization gets these tools, in chat and in workflow
+steps. Everything they post appears as **Amplify Console**.
 
 | Tool | What it does |
 | --- | --- |
-| `Slack_WhoAmI` | Returns the bot account's own profile and workspace details. |
-| `Slack_ListUsers` | Lists the users in the workspace. |
-| `Slack_GetUsersInfo` | Looks up users by id, username, or email. |
-| `Slack_ListConversations` | Lists the channels, direct messages, and group messages the bot account is a member of. |
-| `Slack_GetConversationMetadata` | Returns a channel's or conversation's details. |
-| `Slack_GetUsersInConversation` | Lists the members of a channel or conversation. |
-| `Slack_GetMessages` | Reads messages from a channel or conversation, optionally within a time window. |
-| `Slack_GetThreadMessages` | Reads the replies in a thread. |
-| `SlackApi_SendSlackMessage` | Posts a message to a channel or conversation, optionally as a thread reply. Supports Markdown and Block Kit formatting. |
-| `SlackApi_AddSlackReaction` | Adds an emoji reaction to a message. |
-| `SlackApi_GetSlackMessagePermalink` | Returns a permanent link to a message. |
+| `slack_post_message` | Posts a message to a channel or conversation, optionally as a reply in a thread. |
+| `slack_read_thread` | Reads a thread in a direct-message conversation with Amplify Console. |
+| `slack_get_permalink` | Returns a permanent link to a message. |
+| `slack_add_reaction` | Adds an emoji reaction to a message. |
 
-Agents are instructed to post only where they were asked, to reply in a finding's existing thread rather
-than starting a new top-level message, to end each post with a note that it was generated by an Amplify
-Console agent, and never to direct-message anyone who didn't ask. History reads are for conversations you
-ask about, not for sweeping channels.
+Each tool takes the Slack workspace ID and the channel ID, not the channel's name. In a workflow step, put both
+IDs in the agent's instructions. Agents can post to any public channel without inviting the bot. To post in a
+private channel, invite **@Amplify Console** to it first.
+
+When you're talking to the agent in Slack, it posts somewhere other than your conversation only when you
+explicitly ask it to.
 
 ## What agents can't do
 
-- Delete or edit messages, or remove reactions
+- Read channel history or channel threads. `slack_read_thread` reads direct-message threads only.
+- Edit or delete messages, or remove reactions
 - Create channels, invite or remove members, or change any workspace or channel setting
-- Read a channel the bot account isn't in
-- Post as an app, with a custom name or avatar per message
-- Receive events or respond to mentions on their own — agents act only inside a run or chat turn
+- Read files or attachments, or fetch links shared in a message
+- Answer @-mentions in channels an admin hasn't chosen, or in private channels
+- Answer a channel thread reply that doesn't @-mention it
 
-## Example
+## What Amplify stores
 
-A summary step at the end of a workflow:
+- **Conversations are kept as Console chat transcripts.** Each Slack conversation with the agent is saved as a
+  chat session owned by the person who started it, with every message and the agent's replies. They can
+  reopen it in Console. A channel conversation can also be opened by anyone in your organization who joins it
+  (see [Continuing a channel conversation in Console](#continuing-a-channel-conversation-in-console)); a
+  direct-message conversation only by its owner.
+- **Other Slack content is processed, not kept.** Message text is used to answer, and Amplify stores only the
+  identifiers that link a Slack thread to its Console conversation (workspace, channel, and thread), plus the
+  Slack and Console identities of the people in a shared conversation and which of them sent each message.
+- **Answers are generated by AI and can be wrong.** Every reply ends with a note that it was generated by an
+  Amplify Console agent.
 
-```markdown
----
-name: slack-run-summary
-description: Posts one message to #security-reports summarizing a workflow run's confirmed findings, or reporting that there were none.
-allowed-tools:
-  - list_findings
-  - Slack_ListConversations
-  - SlackApi_SendSlackMessage
-consumes:
-  - kind: amplify:finding
-    mode: all
----
+## Disconnecting
 
-Post exactly one message to #security-reports. Lead with the count of findings
-by severity, then one line per finding with its title and a link. If there are
-none, say so in one line. Do not post anywhere else.
-```
+On **Connections**, click **Disconnect** on the Slack workspace's card and confirm. Disconnecting requires an
+organization admin. Amplify revokes its Slack token, which deactivates the Amplify Console bot, the agent
+stops responding in that workspace, and open conversations are closed. The transcripts already saved in Console are kept.
 
-See [using integration tools in an agent](/integrations/using-in-agents#adding-a-delivery-step-to-a-workflow) for
-where this fits in a chain.
+<Warning>
+  Disconnecting doesn't remove the app from Slack. Amplify Console stays in the workspace's app list, inactive,
+  until a Slack admin removes it under **Manage apps → Amplify Console → Remove**.
+</Warning>
 
-## Revoking fully
-
-Disconnecting in Console deletes Amplify's stored authorization. To remove Slack's side of the grant too,
-open the bot account's Slack settings and go to **Manage apps → Amplify Console → Remove**.
+A Slack admin can also start there. Removing the app in Slack stops the agent too, and the workspace's card
+disappears from **Connections**.

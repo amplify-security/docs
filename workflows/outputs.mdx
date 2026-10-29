@@ -1,6 +1,6 @@
 ---
 title: Outputs
-description: 'Post workflow results back to a pull request, and block merging until security review passes.'
+description: 'Post workflow results back to a pull request or to a Slack channel, and block merging until security review passes.'
 ---
 
 ## What an output does
@@ -12,8 +12,9 @@ it just doesn't push them anywhere.
 Add them from the **Output** section of the workflow editor. You can add one of each destination type,
 but not two of the same kind.
 
-Both destinations act on *the pull request that triggered the run*, so they only do something for runs a
-pull request started. On a manual run they're recorded as skipped.
+The pull request comment and the merge gate act on *the pull request that triggered the run*, so they only
+do something for runs a pull request started. On a manual run they're recorded as skipped. **Post to Slack**
+posts to a channel you choose, so it runs for every completed run, including manual and scheduled ones.
 
 ## Comment on triggering pull request
 
@@ -99,11 +100,24 @@ actually blocked.
 Merge blocking isn't supported for GitLab merge requests yet. A merge gate on a GitLab run is recorded
 as skipped. Use **Comment on triggering pull request** for GitLab in the meantime.
 
+## Post to Slack
+
+Posts one message summarizing the run to a Slack channel: the workflow's name and the run's summary, counts by
+severity, up to five top findings with links, and an **Open run** button. If the run failed, the message says
+so. It needs the [Slack app](/integrations/slack) installed for your organization.
+
+When you add it, pick the **Workspace** and the **Channel**, then click **Add output**. Only public channels
+are listed. Console checks that the workspace is still connected to your organization when you save. The
+message is posted as **Amplify Console**.
+
+The bot posts to any public channel without being invited. If delivery fails, for example because the
+channel was archived, the output shows **Failed** on the run's detail page.
+
 ## Delivering anywhere else
 
-Outputs go to the triggering pull request. To put results in Slack, Jira, Linear, Confluence, Notion, Asana,
-or Google Docs, add a final **step** to the chain instead: an agent that consumes the run's findings and
-posts them through that app's [integration tools](/integrations/overview). Unlike outputs, such a step runs on
+The other outputs go to the triggering pull request or to Slack. To put results in Jira, Linear, Confluence,
+Notion, Asana, or Google Docs, or to write your own Slack message, add a final **step** to the chain instead: an agent that consumes the run's findings and
+posts them through that app's [integration tools](/integrations/overview). Unlike the pull request outputs, such a step runs on
 manual runs too.
 
 Two ready-made shapes — one summary message per run, and one issue per finding — are in
