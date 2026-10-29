@@ -59,7 +59,8 @@
               "integrations/linear",
               "integrations/notion",
               "integrations/asana",
-              "integrations/google"
+              "integrations/google",
+              "integrations/aws"
             ]
           },
           {
