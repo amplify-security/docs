@@ -45,7 +45,7 @@ the path neutralizes the input.
 | Tool | What it does |
 | --- | --- |
 | `opengrep_scan` | Runs OpenGrep static rules over the repository for a fast first pass, returning matches for the agent to triage. Defaults to the broad `auto` ruleset. **Does not** record findings — it produces candidates. |
-| `run_opengrep_detection` | Runs one *stored* OpenGrep [detection](/agents/detections) and emits matches as findings linked to that detection. Refuses non-OpenGrep detections. |
+| `run_opengrep_detection` | Runs one or more *stored* OpenGrep [detections](/agents/detections) in a single OpenGrep pass and emits matches as findings, each linked to the detection whose rule matched. Refuses non-OpenGrep detections. |
 | `check_opengrep_rule` | Re-runs a stored detection's rule against a single file, read-only. Zero matches means a fix worked. This is the verification half of patch generation. |
 | `secrets_scan` | Runs a deterministic secrets scanner over the checkout and files one **masked** finding per leaked credential (API keys, tokens, private keys). In chat it scans an attached workspace; in a worker, the run's checkout. Takes no options. Driven by the `secrets-scan` [skill](/agents/skills#built-in-skills). |
 | `sca_scan` | Runs a deterministic software-composition-analysis scanner over the checkout's dependency lockfiles and files one finding per known-vulnerable package, anchored at the package's lockfile entry, with the fixed version as the remediation. Defaults to high and critical severities; `minSeverity` and `ignoreUnfixed` narrow or widen it. The vulnerability database is fetched at scan time. Driven by the `sca-scan` [skill](/agents/skills#built-in-skills). |
@@ -114,17 +114,18 @@ add a Slack or Jira step to a workflow.
 
 | Tool | What it does |
 | --- | --- |
-| `create_detection` | Stores a new detection. |
-| `list_detections` | Lists stored detections with id, name, description, and type. |
+| `create_detection` | Stores a new detection, optionally scoped to a project and narrowed by [applicable languages, frameworks, and globs](/agents/detections#scope-and-applicability). |
+| `list_detections` | Lists stored detections with id, name, description, type, and applicability fields. With `applicable_to_run`, returns only the detections in scope for the current run whose languages, frameworks, and globs match the repository — the filter `detections-runner` starts from. |
 | `get_detection` | Fetches one detection, including its rule body. |
 | `delete_detection` | Removes a detection. |
+| `run_policy_evaluators` | Launches a `policy-evaluator` for each of the given policy detection ids, all at once, and waits for them. Each evaluator is briefed with its policy text, globs, and the run's changed files. Returns each detection's status, finding count, and duration; an id that isn't a policy detection in scope fails on its own without stopping the rest. |
 
 ## Coordination
 
 | Tool | What it does |
 | --- | --- |
 | `spawn_agent` | Spawns a sub-agent on a focused task and returns its summary. How a broad job fans out without one agent losing the thread. |
-| `spawn_multiple_agents` | Spawns several sub-agents. Used to run one child per item — a policy evaluator per detection, for instance. |
+| `spawn_multiple_agents` | Spawns several sub-agents. Used to run one child per item. (Policy evaluators are launched by `run_policy_evaluators` instead.) |
 | `fan_out_agent` | Dispatches one agent to run against one or more of your projects, each in its own isolated cloud sandbox with a fresh checkout, and returns a summary when every run settles. How a chat reaches other projects' code and [organization skills](/agents/skills#organization-skills). |
 | `activate_skill` | Loads a [skill](/agents/skills) into the agent's context on demand. |
 | `add_todo`, `start_todo`, `complete_todo`, `clear_todos` | Maintains the agent's plan as a visible todo list you can watch while it works. |
