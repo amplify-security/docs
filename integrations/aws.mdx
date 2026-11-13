@@ -104,7 +104,8 @@ The template gives the role:
 
 The first five only read AWS documentation and public information about AWS. `aws___run_script` and
 `aws___get_tasks` act in your account, so they aren't offered to every agent: chat in Console has them, and
-in workflow runs only agents that list them by name in `allowed-tools` do. See
+any other agent, in a workflow run or started from chat, has them only if it lists them by name in
+`allowed-tools`. See
 [Using AWS tools in an agent](#using-aws-tools-in-an-agent).
 
 `aws___run_script` is how agents inspect your account. Scripts run on AWS's side, not in Amplify. A script
@@ -440,9 +441,9 @@ Once AWS is connected, the tools reach agents in two ways:
 
 - **The five documentation tools** are offered like other integration tools: to every agent without an
   `allowed-tools` restriction, and to an agent that sets `allowed-tools` only if it lists them by exact name.
-- **`aws___run_script` and `aws___get_tasks`** act in your account, so in workflow runs they're offered only
-  to an agent whose `allowed-tools` lists them by exact name. An agent without `allowed-tools` doesn't get
-  them. Chat in Console has them whenever AWS is connected.
+- **`aws___run_script` and `aws___get_tasks`** act in your account, so they're offered only to an agent whose
+  `allowed-tools` lists them by exact name, in a workflow run or started from chat. An agent without
+  `allowed-tools` doesn't get them. Chat in Console itself has them whenever AWS is connected.
 
 ```yaml
 allowed-tools:
