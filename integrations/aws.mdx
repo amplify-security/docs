@@ -1,0 +1,466 @@
+---
+title: AWS
+description: 'Connect an AWS account so agents can read AWS documentation and work in the account with exactly the permissions you give a role you create and control.'
+---
+
+{/* TODO (ENG-2386): this feature is in review and not deployed. Don't merge this page until it ships: the README's rule is "document what ships today", and the console-guide skill is generated from every merged page. */}
+
+## What it's for
+
+Reviewing your AWS setup alongside your code. A chat agent checks whether the S3 bucket a service writes to
+blocks public access, or which security groups allow inbound traffic from anywhere. A workflow step compares
+the IAM policies in your account with what the repository's infrastructure code says they should be.
+
+Agents reach your account through the [AWS MCP Server](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/getting-started-aws-mcp-server.html),
+AWS's managed server for AI agents, using an IAM role you create. The role's permissions are exactly what
+agents can do in your account, and you can change them at any time.
+
+{/* TODO (ENG-2386): the AWS documentation tools can also be offered without a connection, but only where an environment sets AWS_MCP_REGION, and no environment does yet. Say so here if that changes. */}
+
+## How AWS differs from the other integrations
+
+AWS doesn't use a [bot account](/integrations/connecting#the-bot-account) or an authorization screen. You
+create an IAM role in your account from a CloudFormation template Amplify publishes. The stack names the role
+`AmplifyConsoleAccess-<suffix>`, where the suffix comes from the stack's ID, so every stack creates its own
+role. Amplify's connection service assumes that role whenever an agent calls an AWS tool.
+
+- **Amplify stores no AWS secret.** No access keys, no passwords. Console keeps the role's ARN, the account
+  id, the region, the connection's external ID, and who connected it and when. Each time the role is
+  assumed, the credentials last at most one hour and stay in Amplify's connection service. Agents never
+  receive them.
+- **Only Amplify can assume the role, and only for your organization.** The role trusts one Amplify role,
+  Amplify's connector role, and only with an external ID that Console generates for your connection. It has
+  nothing to do with the AWS Amplify service.
+- **One AWS account per organization.** To switch accounts, disconnect and connect again. The other way round
+  is fine: one AWS account can be connected to several Amplify organizations, each through its own stack and
+  role.
+- **Tool names follow AWS's pattern, `aws___<action>`** (three underscores), not `<App>_<Action>`.
+
+## What Amplify can and can't do in your account
+
+**The role isn't read-only. Whatever the policies you attach allow is what agents can do through the AWS MCP
+Server, writes included.** If you attach a policy that allows creating, changing or deleting resources,
+agents can do that too. The template doesn't refuse writes.
+
+The template gives the role:
+
+- **The managed policies you choose.** The template's `ManagedPolicyArns` parameter lists them. By default
+  it's two AWS managed read-only policies, so agents get read access and no writes:
+  - `SecurityAudit`, which reads resource configuration and metadata across services.
+  - `CloudWatchLogsReadOnlyAccess`, which reads CloudWatch Logs events, so agents can investigate what your
+    services logged. It doesn't include `logs:Unmask`, so data masked by CloudWatch Logs data protection
+    stays masked.
+- **A Deny statement for requests made through the AWS MCP Server.** It refuses a fixed list of actions that
+  return credentials, secrets or data, whatever policies you attach:
+  - credentials and passwords: STS session and federation tokens, ECR, ECR Public and CodeArtifact
+    authorization tokens, Redshift and Redshift Serverless credentials, RDS IAM database authentication, EC2
+    Windows passwords, and Lightsail instance access details and database master passwords
+  - secrets: Secrets Manager secret values, Systems Manager parameters, and Glue connections
+  - data: KMS decryption, ECR image manifests and layers, S3 objects and object versions, and DynamoDB items
+    (`GetItem` and `BatchGetItem`)
+
+  The list is best effort. It doesn't cover every action that returns data, such as `dynamodb:Query` or
+  `dynamodb:Scan`, and it grants nothing.
+- **A Deny statement for presigned S3 downloads.** The role refuses S3 object reads authenticated by a query
+  string, wherever the request comes from, so a presigned download URL signed with this role doesn't work. A
+  presigned URL is used directly against S3, outside the AWS MCP Server, where the statement above doesn't
+  apply.
+
+<Warning>
+  **The default policies are read-only, but they can read secrets.** `SecurityAudit` reads configuration that
+  often holds plaintext secrets:
+
+  - Lambda, ECS, Batch, CodeBuild, App Runner and Elastic Beanstalk environment variables
+  - EC2 instance user data and launch templates
+  - Glue job arguments
+  - CloudFormation templates, including any literal values in them
+
+  `CloudWatchLogsReadOnlyAccess` reads log events, which can hold secrets too.
+
+  The Deny statements don't cover these reads. If secrets might sit in any of them in your account, restrict
+  the role as described in [Keeping agents away from secrets](#keeping-agents-away-from-secrets).
+</Warning>
+
+<Warning>
+  The Deny statements match action names, not what an action actually does. A credential-returning action
+  missing from the list isn't refused. The first statement also doesn't apply to calls made with the role
+  outside the AWS MCP Server. Treat the Deny statements as a backstop, not as a guarantee. The policies you
+  attach to the role are what count.
+</Warning>
+
+{/* TODO (ENG-2386): the Deny statements haven't been validated against a live account yet. Recheck this section after that validation, in case they were trimmed or dropped. */}
+
+## What agents can do
+
+| Tool | What it does |
+| --- | --- |
+| `aws___search_documentation` | Searches AWS documentation and returns matching page text. |
+| `aws___read_documentation` | Reads AWS documentation pages in full. |
+| `aws___retrieve_skill` | Returns an AWS skill, AWS's guidance for a task, found through a documentation search. |
+| `aws___list_regions` | Lists AWS regions. |
+| `aws___get_regional_availability` | Shows which services, APIs, and CloudFormation resources are available in a region. |
+| `aws___run_script` | Runs a Python script in the AWS MCP Server's sandbox that calls AWS APIs as the role you created. |
+| `aws___get_tasks` | Checks on a `aws___run_script` script that's still running. |
+
+The first five only read AWS documentation and public information about AWS. `aws___run_script` and
+`aws___get_tasks` act in your account, so they aren't offered to every agent: chat in Console has them, and
+any other agent, in a workflow run or started from chat, has them only if it lists them by name in
+`allowed-tools`. See
+[Using AWS tools in an agent](#using-aws-tools-in-an-agent).
+
+`aws___run_script` is how agents inspect your account. Scripts run on AWS's side, not in Amplify. A script
+can name any region in its API calls. Each call gets 60 seconds. When AWS hands back a task for a longer
+script, the agent polls it with `aws___get_tasks`; tasks expire five minutes after they start. A result longer than 20,000
+characters is truncated, with a note saying so. Every result is checked for instructions aimed at the agent
+before the agent sees it, as other integration results are.
+
+The AWS MCP Server also has a tool that creates presigned S3 URLs. Amplify doesn't offer it to agents.
+
+## What agents can't do
+
+- Do anything the role's policies don't allow. With the default policies, that means agents can't create,
+  change, or delete resources. A refused call reaches the agent as a permissions error, and the agent is told
+  to report which permission is missing.
+- Read what the template's Deny statements refuse through the AWS MCP Server, such as Secrets Manager values,
+  Systems Manager parameters, or S3 object contents, even if a policy you attach allows it (see the Warnings
+  above for what they don't cover)
+- Download S3 objects with presigned URLs
+- Reach another AWS account, or use AWS from [the CLI](/interactive/cli), which has no organization
+  connections
+
+## Connecting
+
+You need to be an **organization admin** in Console. In AWS, you need to be signed in to the account you're
+connecting, with permission to create CloudFormation stacks and IAM roles.
+
+{/* TODO (ENG-2386): console-web's AWS dialog is being ported to the new console-web (https://github.com/amplify-security/console-web/pull/11). When it ships, replace the steps below with its exact labels in bold, and name the card's states, following the README's convention. */}
+
+1. Open **Connections**, add a connection, and choose AWS.
+2. Pick a region from the [supported regions](#supported-regions). This is where your account reaches the
+   AWS MCP Server, and where the CloudFormation link opens.
+3. Open the CloudFormation link Console shows. It opens the AWS console's quick-create page with a stack
+   named `AmplifyConsoleAccess-` followed by the first eight characters of your connection's external ID, and
+   the parameters `AmplifyConnectorRoleArn` and `ExternalId` already filled in. Don't change those two.
+   `ManagedPolicyArns` shows its default, `SecurityAudit` and `CloudWatchLogsReadOnlyAccess`; change it now if
+   you want different access (see [Keeping agents away from secrets](#keeping-agents-away-from-secrets)), or
+   later.
+4. At the bottom of the page, select the checkbox acknowledging that CloudFormation might create IAM resources
+   with custom names, then create the stack. The template names the role itself, so CloudFormation won't
+   create it without this acknowledgement.
+5. When the stack reaches `CREATE_COMPLETE`, open its **Outputs** tab and copy `RoleArn`.
+6. Back in Console, paste the role ARN and verify.
+
+Verifying checks four things:
+
+- Amplify can assume the role.
+- The role requires your connection's external ID. Amplify tries to assume it once more with a random external
+  ID, and AWS must refuse. That refusal shows in CloudTrail as a denied `AssumeRole` event (see
+  [Auditing in CloudTrail](#auditing-in-cloudtrail)).
+- The AWS MCP Server answers, and lists its tools, with the role.
+- The account AWS reports for the role is the one in the role ARN.
+
+When it passes, the connection is connected. Chat has the AWS tools from its next turn, and workflow runs from
+their next run.
+
+<Tip>
+  Leave Console open on the connect step while the stack is created. Starting the connection again issues a
+  new external ID, and a stack created from the earlier link won't verify against it.
+</Tip>
+
+## Creating the role yourself (CloudFormation or Terraform)
+
+If your team deploys IAM through its own pipeline, use the template or the Terraform module rather than the
+quick-create link. Both are published in the
+[`amplify-security/aws-connection-template`](https://github.com/amplify-security/aws-connection-template)
+repository, with a release for each version. The template the quick-create link deploys is also hosted for
+each release, for example
+[`AmplifyConsoleAccess-v1.0.0.yaml`](https://amplify-prod-aws-connection-template.s3.us-west-2.amazonaws.com/AmplifyConsoleAccess-v1.0.0.yaml).
+A stack's `TemplateVersion` output says which release created it.
+
+{/* TODO (ENG-2386): the public aws-connection-template repository and the hosted v1.0.0 file are created at release. Check both links resolve before merging, and update the version if the first release isn't v1.0.0. */}
+
+- **With CloudFormation**, deploy the template as a stack, acknowledging `CAPABILITY_NAMED_IAM`, and pass the
+  two parameters from the quick-create link Console shows: `AmplifyConnectorRoleArn` and `ExternalId`.
+  Optionally pass `ManagedPolicyArns` too.
+- **With Terraform or OpenTofu**, use the module, which creates the same role. Its `role_arn` output is the
+  ARN to paste in Console.
+
+```hcl
+module "amplify_console_access" {
+  source = "git::https://github.com/amplify-security/aws-connection-template.git?ref=v1.0.0"
+
+  external_id = "<ExternalId from the quick-create link>"
+  # Only if the link's AmplifyConnectorRoleArn differs from the module's default:
+  # amplify_connector_role_arn = "<AmplifyConnectorRoleArn from the link>"
+  # Optional, defaults to SecurityAudit and CloudWatchLogsReadOnlyAccess:
+  # managed_policy_arns = ["arn:aws:iam::aws:policy/SecurityAudit"]
+}
+```
+
+- **With another tool**, reproduce the template's role exactly. Its trust policy is:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::791657206107:root" },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": { "sts:ExternalId": "<ExternalId>" },
+        "ArnEquals": { "aws:PrincipalArn": "<AmplifyConnectorRoleArn>" },
+        "StringLike": { "sts:RoleSessionName": "amplify-*" }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::791657206107:root" },
+      "Action": "sts:SetSourceIdentity",
+      "Condition": {
+        "ArnEquals": { "aws:PrincipalArn": "<AmplifyConnectorRoleArn>" }
+      }
+    }
+  ]
+}
+```
+
+  `791657206107` is Amplify's AWS account. `<AmplifyConnectorRoleArn>` is Amplify's connector role, the value
+  of that parameter in the quick-create link. `sts:SetSourceIdentity` grants no access; it lets Amplify record
+  on a session who it acts for (see [Auditing in CloudTrail](#auditing-in-cloudtrail)), and it's in its own
+  statement because AWS won't match it against a statement that requires an external ID. Attach
+  `arn:aws:iam::aws:policy/SecurityAudit` and `arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess` (or your
+  own policies), and copy the `AmplifyConsoleMcp` inline policy, with both Deny statements, from the template.
+
+Either way:
+
+- **Name the role `AmplifyConsoleAccess-` followed by anything, with no path.** Amplify's connector role is
+  only allowed to assume roles whose names start with `AmplifyConsoleAccess-`. The template adds a suffix from
+  the stack ID; the Terraform module lets Terraform generate one.
+- **Keep the maximum session duration at least one hour.** Amplify asks for one-hour sessions.
+- Then paste the role's ARN in Console and verify, as in step 6 above.
+
+## Restricting or expanding access
+
+Access is whatever the role's policies allow, so you change it in AWS, not in Console. There's nothing to
+reconnect. If you created the role from the template, the clean way is to update the stack's
+`ManagedPolicyArns` parameter, a comma-separated list of managed policy ARNs that replaces the defaults,
+`SecurityAudit` and `CloudWatchLogsReadOnlyAccess`. Policies attached to the role directly in IAM also work,
+but CloudFormation doesn't know about them.
+
+- **To expand it**, add a policy to `ManagedPolicyArns`, for example read access to a service that
+  `SecurityAudit` doesn't cover. A policy that allows writes lets agents make those writes: the template
+  doesn't refuse them. The template's Deny statements still apply, so an action they refuse stays refused,
+  whatever you attach, unless you edit them too.
+- **To restrict it**, replace the defaults in `ManagedPolicyArns` with narrower policies, or add a policy with
+  Deny statements next to them.
+
+AWS adds two condition keys to requests made through the AWS MCP Server, so a policy can treat agent calls
+differently from other uses of the role. `aws:ViaAWSMCPService` is `true` on any request made through an AWS
+managed MCP server. `aws:CalledViaAWSMCP` names the MCP server the request came through. For example, this
+statement keeps agents out of one bucket's configuration:
+
+```json
+{
+  "Sid": "NoAgentAccessToAuditBucket",
+  "Effect": "Deny",
+  "Action": "s3:*",
+  "Resource": ["arn:aws:s3:::example-audit-logs", "arn:aws:s3:::example-audit-logs/*"],
+  "Condition": { "Bool": { "aws:ViaAWSMCPService": "true" } }
+}
+```
+
+AWS explains both keys in
+[Understanding IAM for managed AWS MCP servers](https://aws.amazon.com/blogs/security/understanding-iam-for-managed-aws-mcp-servers/).
+
+### Keeping agents away from secrets
+
+If your account keeps secrets in environment variables, user data, templates or logs, keep the role from
+reading them. Either:
+
+- **Replace the defaults** with your own read policy that leaves those reads out, and pass its ARN in
+  `ManagedPolicyArns`; or
+- **Keep the defaults and add a Deny policy.** Create a customer managed policy like the one below, and set
+  `ManagedPolicyArns` to all three, for example
+  `arn:aws:iam::aws:policy/SecurityAudit,arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess,arn:aws:iam::<your account>:policy/AmplifyNoSecretReads`.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "NoReadsThatReturnSecrets",
+    "Effect": "Deny",
+    "Action": [
+      "lambda:GetFunction",
+      "lambda:GetFunctionConfiguration",
+      "ecs:DescribeTaskDefinition",
+      "ec2:DescribeInstanceAttribute",
+      "ec2:DescribeLaunchTemplateVersions",
+      "codebuild:BatchGetProjects",
+      "cloudformation:GetTemplate",
+      "batch:DescribeJobDefinitions",
+      "apprunner:DescribeService",
+      "elasticbeanstalk:DescribeConfigurationSettings",
+      "glue:GetJob",
+      "glue:GetJobs"
+    ],
+    "Resource": "*"
+  }]
+}
+```
+
+Agents then can't see that configuration at all, which also means they can't review it. Adjust the list to
+what your account uses.
+
+The Deny policy doesn't cover log events. If your logs may hold secrets, leave
+`CloudWatchLogsReadOnlyAccess` out of `ManagedPolicyArns`; agents then can't read your logs.
+
+{/* TODO (ENG-2386, for review): the Deny list above maps the template README's list of SecurityAudit reads to the specific actions that return the values (user data through DescribeInstanceAttribute and DescribeLaunchTemplateVersions, task-definition environment through DescribeTaskDefinition, plus lambda:GetFunction, which also returns the configuration). Check it against SecurityAudit's current action list before release. */}
+
+## Auditing in CloudTrail
+
+Everything agents do in your account is recorded in CloudTrail in your account:
+
+- An `AssumeRole` event each time Amplify assumes the role, with a role session name of `amplify-<orgId>`,
+  where `<orgId>` is your Amplify organization's id. The caller is Amplify's connector role, the
+  `AmplifyConnectorRoleArn` your trust policy names, in Amplify's account, `791657206107`.
+- The API calls the agents' scripts make, attributed to `assumed-role/AmplifyConsoleAccess-<suffix>/amplify-<orgId>`.
+
+<Note>
+  Each check of the connection also records one **denied** `AssumeRole` event from Amplify's connector role.
+  That's Amplify confirming the role refuses an external ID other than your connection's, and it's expected.
+  A check runs each time you verify or re-check the connection in Console, and about every 15 minutes while
+  the connection is in the error state described under [Troubleshooting](#troubleshooting).
+</Note>
+
+The identity is the role, not the Console user who asked. To see which person or workflow was behind a call,
+match its time against the chat or workflow run in Console. The trust policy allows Amplify to set a source
+identity on the session, which CloudTrail would show next to each call, but Amplify doesn't set one yet.
+
+{/* TODO (ENG-2386): say where a customer finds their organization id in Console (org ids are Clerk ids, `org_…`), or drop "<orgId>" from customer-facing copy. Also confirm, in the lab run, how a cross-account AssumeRole event shows the connector role (a full ARN, or Amplify's account id with a principal id). */}
+
+## Disconnecting
+
+Disconnect from the AWS card on **Connections** (organization admins only). From then on:
+
+- Chat loses access to your account on its next AWS call, even in a reply that's already running, and later
+  turns don't have `aws___run_script` or `aws___get_tasks`.
+- Workflow runs that start afterwards don't get those tools.
+- Workflow runs and other agent runs already in progress lose their access through Amplify's connection
+  service for the rest of the run. That includes their access to your other integrations, not only AWS.
+
+A call that's already under way finishes. In rare cases, such as a run whose access Amplify couldn't revoke,
+calls can keep working for a few hours after you disconnect.
+
+<Warning>
+  Disconnecting in Console doesn't touch your AWS account: the role stays, and it still trusts Amplify's
+  connector role. **Deleting the stack is what ends Amplify's access to your account.** Delete the stack you
+  created in CloudFormation, or destroy the Terraform module, or delete the role if you created it some other
+  way. If the account has several `AmplifyConsoleAccess-` stacks, delete the one whose `ExternalId` parameter
+  matches this connection. If you change the role's trust instead of deleting it, role sessions already issued
+  stay valid until they expire, within one hour. To end them sooner, use **Revoke active sessions** on the role
+  in the IAM console.
+</Warning>
+
+{/* TODO (ENG-2386, for review): "a few hours" is the 4 h lifetime of a run's gateway token whose revoke failed (CAS's accepted trade-off on DELETE). Confirm product is happy stating it this way. */}
+
+## Troubleshooting
+
+**Creating the stack fails.** Read the stack's **Events** tab. A `ManagedPolicyArns` entry that isn't a
+managed policy ARN, or names a policy that doesn't exist, fails the role. Fix the parameter, delete the failed
+stack, and create it again from the same link.
+
+**Verifying fails when Amplify assumes the role.** Amplify couldn't assume the role. Check, in order:
+
+- The stack has finished (`CREATE_COMPLETE`).
+- You pasted the stack's `RoleArn` output, from the stack this connection's link created.
+- The stack was created from the link of *this* connection attempt. If you started connecting again, the
+  external ID changed: update the stack's `ExternalId` parameter to the new one, or delete the stack and use
+  the new link.
+- The stack's `AmplifyConnectorRoleArn` is the one in the link. It differs between Amplify environments.
+- A role you created yourself has a name starting with `AmplifyConsoleAccess-`, no path, and the trust policy
+  above.
+
+Console shows AWS's error message.
+
+**Verifying says the role doesn't require the external ID.** AWS let Amplify assume the role with a random
+external ID, so the trust policy doesn't require yours. Without that condition, anyone who can act as
+Amplify's connector role could assume the role for another organization. Restore the
+`"StringEquals": { "sts:ExternalId": "<ExternalId>" }` condition on the `sts:AssumeRole` statement, or
+recreate the role from the template, and verify again.
+
+**Verifying says the connection service returned an error.** The problem is on Amplify's side or AWS's, not
+in your role, and nothing about the connection has changed. Try again shortly.
+
+**Verifying fails when listing tools.** Amplify assumed the role, but the AWS MCP Server refused the request.
+The role's policies don't cause this: the AWS MCP Server needs no permission of its own. Console shows AWS's
+error message. Try again shortly, and contact Amplify support if it keeps failing.
+
+**Verifying reports an account mismatch.** The role ARN names a different account from the one AWS answered
+for. Copy the ARN again from the stack's outputs.
+
+**The connection shows an error.** Amplify lost access: the role was deleted, its trust policy was changed, or
+AWS rejected Amplify's signed requests. Agents get an error telling them the AWS connection needs attention,
+and continue without the AWS tools. Fix the role in AWS. Amplify re-checks the connection about every 15
+minutes and reconnects it once the role works again, or you can re-check it yourself from its card.
+Re-checking uses the same role and external ID, so there's no stack to redeploy. If you deleted the stack,
+disconnect and connect again: a new stack creates a role with a different name. A temporary problem on
+Amplify's side doesn't put the connection in this state.
+
+**An agent says AWS denied a request.** The role's policies don't allow that action. Add a policy that
+does (see [Restricting or expanding access](#restricting-or-expanding-access)), unless one of the template's
+Deny statements, or a Deny policy of your own, refuses it on purpose.
+
+**An agent doesn't have `aws___run_script`.** In a workflow run, an agent gets it only if its
+`allowed-tools` lists it by name (see [Using AWS tools in an agent](#using-aws-tools-in-an-agent)).
+
+**An agent says the AWS MCP Server throttled it.** AWS limits how fast one account can call the AWS MCP Server.
+Agents wait and retry once. Fewer, larger scripts help.
+
+## Supported regions
+
+The AWS MCP Server is available in these regions, and a connection uses one of them:
+
+| Region | Location |
+| --- | --- |
+| `us-east-1` | US East (N. Virginia) |
+| `us-west-2` | US West (Oregon) |
+| `ap-southeast-1` | Asia Pacific (Singapore) |
+| `ap-southeast-2` | Asia Pacific (Sydney) |
+| `ap-northeast-1` | Asia Pacific (Tokyo) |
+| `eu-central-1` | Europe (Frankfurt) |
+| `eu-west-1` | Europe (Ireland) |
+| `eu-west-2` | Europe (London) |
+
+IAM is global, so the region only chooses the AWS MCP Server endpoint. Scripts can still read resources in
+other regions. To move a connection to a different region, disconnect and connect again.
+
+## Using AWS tools in an agent
+
+Once AWS is connected, the tools reach agents in two ways:
+
+- **The five documentation tools** are offered like other integration tools: to every agent without an
+  `allowed-tools` restriction, and to an agent that sets `allowed-tools` only if it lists them by exact name.
+- **`aws___run_script` and `aws___get_tasks`** act in your account, so they're offered only to an agent whose
+  `allowed-tools` lists them by exact name, in a workflow run or started from chat. An agent without
+  `allowed-tools` doesn't get them. Chat in Console itself has them whenever AWS is connected.
+
+```yaml
+allowed-tools:
+  - aws___run_script
+  - aws___get_tasks
+  - aws___search_documentation
+```
+
+See [using integration tools in an agent](/integrations/using-in-agents).
+
+{/* TODO (ENG-2386): which platform agents list aws___run_script / aws___get_tasks in allowed-tools is an open decision in the design (Phase 4, platform-agent-skills). Document it here once decided. Also update /integrations/using-in-agents, which says every connected app's tools reach every agent without allowed-tools: AWS's account tools don't. */}
+
+## Example
+
+Ask in chat, with AWS connected:
+
+```
+List the S3 buckets in our AWS account that don't block public access, and for
+each one, say whether anything in this repository writes to it.
+```
