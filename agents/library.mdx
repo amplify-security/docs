@@ -31,8 +31,8 @@ defined budget so the results stay reviewable.
 
 | Agent | What it does |
 | --- | --- |
-| `detections-runner` | Runs every [detection](/agents/detections) stored in your organization against the repository, dispatching by type — OpenGrep rules directly, policy detections via one child evaluator each. Findings are linked to the detection that produced them. |
-| `detection-author` | Reads findings from an earlier step and authors a reusable detection for each, choosing between an OpenGrep rule and a natural-language policy. |
+| `detections-runner` | Runs the [detections](/agents/detections) stored in your organization that apply to the repository. Detections out of scope or whose [languages, frameworks, or globs](/agents/detections#scope-and-applicability) don't match are filtered out before the agent triages the rest; then every selected OpenGrep rule runs in one pass and every selected policy gets its own child evaluator, all launched together. Findings are linked to the detection that produced them. |
+| `detection-author` | Reads findings from an earlier step and authors a reusable detection for each, choosing between an OpenGrep rule and a natural-language policy, and filling in the languages, frameworks, and path globs it applies to. |
 
 These two are the ends of a loop worth understanding: `detection-author` turns a one-time discovery into a
 permanent rule, and `detections-runner` is what applies every rule you've accumulated from then on.
@@ -59,7 +59,7 @@ steps:
 
 | Agent | Spawned by | Role |
 | --- | --- | --- |
-| `policy-evaluator` | `detections-runner` | Evaluates one policy detection against the repository, bound to that detection so every finding links back to it. |
+| `policy-evaluator` | `detections-runner` | Evaluates one policy detection against the repository, bound to that detection so every finding links back to it. Its briefing carries the policy text, the detection's path globs, and on a pull request run the changed files and line ranges. |
 | `policy-fix-verifier` | `patch-generator` | Independently judges whether a patched file still violates a policy. Deliberately read-only — it returns a verdict and cannot report findings or edit code. |
 
 You *can* name one as a workflow step, but they expect a briefing their usual parent provides, so they work

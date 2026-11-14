@@ -43,8 +43,10 @@ field at run time — so an irrelevant rule exits cheaply rather than wasting a 
 
 ### Policy detections
 
-A policy is a security requirement written in plain language. At run time, `detections-runner` spawns a
-`policy-evaluator` per policy, bound to that detection so every finding links back to it.
+A policy is a security requirement written in plain language. At run time, `detections-runner` launches a
+`policy-evaluator` per selected policy, all at once, each bound to its detection so every finding links back
+to it. The evaluator is handed the policy text, the detection's path globs when it has them, and — on a pull
+request run — the changed files and line ranges.
 
 Policies are the right tool when the rule is about intent — business logic, authorization, data handling —
 where no pattern captures the requirement and a human reviewer would need to reason about the code.
@@ -57,6 +59,84 @@ where no pattern captures the requirement and a human reviewer would need to rea
 | **Disposition** | `flag`, `escalate` | What should happen on a match — record it, or escalate it. |
 | **Tags** | free-form | Grouping and filtering. |
 | **Project** | optional | Scopes the detection to one repository. Unset means it applies organization-wide. |
+| **Applicable languages** | free text, optional | Languages the detection is about. See [Scope and applicability](#scope-and-applicability). |
+| **Applicable frameworks** | free text, optional | Frameworks or libraries the detection is about. |
+| **Applicable globs** | path globs, optional | Paths the detection is about, such as `services/billing/**`. |
+
+## Scope and applicability
+
+Two things decide whether a detection runs against a repository: where it lives, and what it's about.
+
+### Where it lives: organization or project
+
+A detection with no project applies to every repository in your organization. A detection with a project
+applies only to that one repository — a [project](/data/projects) is one connected repository.
+
+To scope a detection to part of a repository — a directory in a monorepo, say — set its project **and**
+its applicable globs. A rule for `services/billing/**` in `acme/platform` is project `acme/platform` plus the
+glob `services/billing/**`. There is no separate directory or feature-level scope.
+
+### What it's about: languages, frameworks, and globs
+
+Each of the three applicability fields is a list. An empty or unset list means *no constraint*: the
+detection applies everywhere. Set only the fields that genuinely narrow the rule.
+
+| Field | Meaning | How a run checks it |
+| --- | --- | --- |
+| `applicableLanguages` | The detection only makes sense in these languages — `typescript`, `python`, `go`. | The run counts file extensions across the whole repository. The detection is skipped if none of its languages appear. A TypeScript repository also counts as JavaScript, so a `javascript` detection runs on it; the reverse is not true. |
+| `applicableFrameworks` | The detection is about these frameworks or libraries, named as the dependency you'd install — `express`, `sqlalchemy`, `gin`, `spring-boot`. | The run reads dependency manifests at any depth, so a framework used by one package in a monorepo still counts: `package.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Gemfile`, `pom.xml`, `build.gradle`, `composer.json`, `Cargo.toml`. It matches against package names (npm, PyPI, Cargo, RubyGems, Composer), Maven group and artifact ids, and Go module paths or their last segment — `gin` matches `github.com/gin-gonic/gin`. The detection is skipped if none of its frameworks are declared. |
+| `applicableGlobs` | The detection is about these paths, relative to the repository root — `services/billing/**`, `src/api/**/*.ts`. | On a pull request run, the detection is skipped unless the pull request changes at least one matching file. On a full-repository run, globs don't skip the detection; they tell a policy's evaluator where to look, and OpenGrep rules still scan the whole repository. |
+
+Values are free text. Matching ignores case, and common aliases are folded together, so you don't need to
+remember the canonical spelling:
+
+| You write | Treated as |
+| --- | --- |
+| `ts`, `tsx`, `mts`, `cts` | `typescript` |
+| `js`, `jsx`, `mjs`, `cjs`, `node`, `nodejs` | `javascript` |
+| `py`, `python3` | `python` |
+| `golang` | `go` |
+| `kt`, `kts` | `kotlin` |
+| `cs`, `c#` | `csharp` |
+| `next`, `next.js` | `nextjs` |
+| `spring-boot`, `spring boot` | `spring` |
+| `ruby-on-rails`, `railties` | `rails` |
+
+A glob with no wildcard also matches as a directory, so `services/billing` means the same as
+`services/billing/**`. A leading `./` or `/` is ignored.
+
+Whitespace is trimmed, blank entries are dropped, and duplicates are removed when you save. Saving an empty
+list clears the field, so the detection applies everywhere again.
+
+<Note>
+  Applicability is a pre-filter, not the whole decision. Whatever passes it, `detections-runner` still
+  reviews and may skip a detection that clearly doesn't apply — see [Running detections](#running-detections).
+</Note>
+
+### Setting scope and applicability
+
+**With an agent.** Ask `detection-author` — or chat — to scope the detection as you describe it: *"Write a
+policy that billing handlers must check the caller's account, for `acme/platform`, only under
+`services/billing/**`."* `detection-author` also fills in the languages and frameworks it can infer from the
+rule it writes.
+
+**Through the API.** Create with `POST /api/detections` and change with `PATCH /api/detections/:id`. The
+fields are `projectId`, `applicableLanguages`, `applicableFrameworks`, and `applicableGlobs`; each list is an
+array of strings, and `null` or `[]` clears it. Detection reads return the same fields.
+
+```json
+{
+  "projectId": "<project id>",
+  "applicableLanguages": ["ts"],
+  "applicableFrameworks": ["express"],
+  "applicableGlobs": ["services/billing/**"]
+}
+```
+
+<Note>
+  The **Detections** page in the web console does not show or edit project scope or the applicability fields
+  yet. Use an agent or the API.
+</Note>
 
 ## Where detections come from
 
@@ -86,13 +166,19 @@ Ask in [chat](/interactive/chat): *"Write an OpenGrep rule that catches this pat
 
 ## Running detections
 
-Add [`detections-runner`](/agents/library#detections) as a workflow step. It lists every stored
-detection, triages which apply, and dispatches by type — OpenGrep rules directly, policies via one child
-evaluator each. Findings link back to the detection that produced them, so you can see which rules are
-earning their place.
+Add [`detections-runner`](/agents/library#detections) as a workflow step. A run works in three stages:
 
-Its bias is deliberate: it dispatches when in doubt, because a detection that never ran is worse than a
-wasted pass.
+1. **Filter, in code.** Out of every stored detection, it keeps those in scope for this repository whose
+   [applicability](#scope-and-applicability) matches — languages present, frameworks declared, and on a
+   pull request run, globs touched by the change.
+2. **Triage.** The agent reviews what survived and drops anything that clearly doesn't apply.
+3. **Run, all at once.** Every selected OpenGrep rule runs in a single OpenGrep pass, and every selected
+   policy gets its own `policy-evaluator`, launched together rather than one after another.
+
+Findings link back to the detection that produced them, so you can see which rules are earning their place.
+
+Its triage bias is deliberate: it dispatches when in doubt, because a detection that never ran is worse than
+a wasted pass. Precise applicability fields are how you make it skip with confidence.
 
 ## The compounding loop
 
