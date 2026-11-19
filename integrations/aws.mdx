@@ -67,7 +67,7 @@ The template gives the role:
   - CodePipeline custom action job details, which include temporary credentials and the action's secret values
 
   `CloudWatchLogsReadOnlyAccess` reads log events, and `SecurityAudit` RDS database log files; both can hold
-  secrets too.
+  sensitive information.
 
   The Deny statements don't cover these reads. If secrets might sit in any of them in your account, restrict
   the role as described in [Keeping agents away from secrets](#keeping-agents-away-from-secrets).
@@ -133,12 +133,6 @@ AWS MCP Server answers with it. The external ID check leaves a denied `AssumeRol
 [Auditing in CloudTrail](#auditing-in-cloudtrail)). When it passes, chat has the AWS tools from its next turn,
 and workflow runs from their next run.
 
-<Tip>
-  You can close Console while the stack is created. The card shows **Setup not finished**, and **Continue
-  setup** picks up with the same external ID. **Start over** issues a new one, and a stack created from the
-  earlier link won't verify against it.
-</Tip>
-
 ## Creating the role yourself (CloudFormation or Terraform)
 
 If your team deploys IAM through its own pipeline, use the template or the Terraform module rather than
@@ -177,8 +171,7 @@ Then select **I've created the stack** in Console, paste the role's ARN, and ver
 Access is whatever the role's policies allow, so you change it in AWS, not in Console. There's nothing to
 reconnect. The clean way is to update the stack's `ManagedPolicyArns` parameter (`managed_policy_arns` in the
 Terraform module), a comma-separated list of managed policy ARNs that replaces the defaults, `SecurityAudit`
-and `CloudWatchLogsReadOnlyAccess`. Policies attached to the role directly in IAM also work with the stack,
-but CloudFormation doesn't know about them. The Terraform module removes them on its next apply.
+and `CloudWatchLogsReadOnlyAccess`. Avoid attaching policies to the role directly in IAM.
 
 - **To expand it**, add a policy to `ManagedPolicyArns`, for example read access to a service that
   `SecurityAudit` doesn't cover. The template's Deny statements still apply, so an action they refuse stays
@@ -206,8 +199,8 @@ AWS explains both keys in
 
 ### Keeping agents away from secrets
 
-If your account keeps secrets in environment variables, user data, templates or logs, keep the role from
-reading them. Either:
+If your account keeps secrets in environment variables, user data or templates, keep the role from reading
+them. Either:
 
 - **Replace the defaults** with your own read policy that leaves those reads out, and pass its ARN in
   `ManagedPolicyArns`; or
@@ -252,7 +245,7 @@ reading them. Either:
 Agents then can't read those values, which also means they can't review that configuration, and denying
 `lambda:ListFunctions` stops them listing your functions at all. Adjust the list to what your account uses.
 
-The Deny policy doesn't cover CloudWatch Logs. If your log events may hold secrets, leave
+The Deny policy doesn't cover CloudWatch Logs. If your logs may hold sensitive information, leave
 `CloudWatchLogsReadOnlyAccess` out of `ManagedPolicyArns`; agents then can't read them.
 
 ## Auditing in CloudTrail
@@ -260,7 +253,7 @@ The Deny policy doesn't cover CloudWatch Logs. If your log events may hold secre
 Everything agents do in your account is recorded in CloudTrail in your account:
 
 - An `AssumeRole` event each time Amplify assumes the role, with a role session name of `amplify-<orgId>`,
-  where `<orgId>` is your Amplify organization's id. The caller is Amplify's connector role, in Amplify's
+  where `<orgId>` is your Amplify organization's id (`org_…`). The caller is Amplify's connector role, in Amplify's
   account `791657206107`.
 - The API calls the agents' scripts make, attributed to `assumed-role/AmplifyConsoleAccess-<suffix>/amplify-<orgId>`.
 
@@ -296,8 +289,7 @@ stack, and create it again from the same link.
 
 - The stack has finished (`CREATE_COMPLETE`).
 - You pasted the stack's `RoleArn` output, from the stack this connection's link created.
-- The stack was created from this connection's link. If you used **Start over**, the external ID changed:
-  update the stack's `ExternalId` parameter to the new one, or delete the stack and use the new link.
+- The stack was created from this connection's link, so its external ID matches.
 - A role you built yourself has the template's trust policy, and a name that starts with
   `AmplifyConsoleAccess-` with no path.
 
