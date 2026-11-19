@@ -3,8 +3,6 @@ title: AWS
 description: 'Connect an AWS account so agents can read AWS documentation and work in the account with exactly the permissions you give a role you create and control.'
 ---
 
-{/* TODO (ENG-2386): this feature is in review and not deployed. Don't merge this page until it ships: the README's rule is "document what ships today", and the console-guide skill is generated from every merged page. */}
-
 ## What it's for
 
 Reviewing your AWS setup alongside your code. A chat agent checks whether the S3 bucket a service writes to
@@ -14,8 +12,6 @@ the IAM policies in your account with what the repository's infrastructure code 
 Agents reach your account through the [AWS MCP Server](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/getting-started-aws-mcp-server.html),
 AWS's managed server for AI agents, using an IAM role you create. The role's permissions are exactly what
 agents can do in your account, and you can change them at any time.
-
-{/* TODO (ENG-2386): the AWS documentation tools can also be offered without a connection, but only where an environment sets AWS_MCP_REGION, and no environment does yet. Say so here if that changes. */}
 
 ## How AWS differs from the other integrations
 
@@ -88,8 +84,6 @@ The template gives the role:
   attach to the role are what count.
 </Warning>
 
-{/* TODO (ENG-2386): the Deny statements haven't been validated against a live account yet. Recheck this section after that validation, in case they were trimmed or dropped. */}
-
 ## What agents can do
 
 | Tool | What it does |
@@ -133,8 +127,6 @@ The AWS MCP Server also has a tool that creates presigned S3 URLs. Amplify doesn
 You need to be an **organization admin** in Console. In AWS, you need to be signed in to the account you're
 connecting, with permission to create CloudFormation stacks and IAM roles.
 
-{/* TODO (ENG-2386): console-web's AWS dialog is being ported to the new console-web (https://github.com/amplify-security/console-web/pull/11). When it ships, replace the steps below with its exact labels in bold, and name the card's states, following the README's convention. */}
-
 1. Open **Connections**, add a connection, and choose AWS.
 2. Pick a region from the [supported regions](#supported-regions). This is where your account reaches the
    AWS MCP Server, and where the CloudFormation link opens.
@@ -176,8 +168,6 @@ repository, with a release for each version. The template the quick-create link 
 each release, for example
 [`AmplifyConsoleAccess-v1.0.0.yaml`](https://amplify-prod-aws-connection-template.s3.us-west-2.amazonaws.com/AmplifyConsoleAccess-v1.0.0.yaml).
 A stack's `TemplateVersion` output says which release created it.
-
-{/* TODO (ENG-2386): the public aws-connection-template repository and the hosted v1.0.0 file are created at release. Check both links resolve before merging, and update the version if the first release isn't v1.0.0. */}
 
 - **With CloudFormation**, deploy the template as a stack, acknowledging `CAPABILITY_NAMED_IAM`, and pass the
   two parameters from the quick-create link Console shows: `AmplifyConnectorRoleArn` and `ExternalId`.
@@ -315,8 +305,6 @@ what your account uses.
 The Deny policy doesn't cover log events. If your logs may hold secrets, leave
 `CloudWatchLogsReadOnlyAccess` out of `ManagedPolicyArns`; agents then can't read your logs.
 
-{/* TODO (ENG-2386, for review): the Deny list above maps the template README's list of SecurityAudit reads to the specific actions that return the values (user data through DescribeInstanceAttribute and DescribeLaunchTemplateVersions, task-definition environment through DescribeTaskDefinition, plus lambda:GetFunction, which also returns the configuration). Check it against SecurityAudit's current action list before release. */}
-
 ## Auditing in CloudTrail
 
 Everything agents do in your account is recorded in CloudTrail in your account:
@@ -336,8 +324,6 @@ Everything agents do in your account is recorded in CloudTrail in your account:
 The identity is the role, not the Console user who asked. To see which person or workflow was behind a call,
 match its time against the chat or workflow run in Console. The trust policy allows Amplify to set a source
 identity on the session, which CloudTrail would show next to each call, but Amplify doesn't set one yet.
-
-{/* TODO (ENG-2386): say where a customer finds their organization id in Console (org ids are Clerk ids, `org_…`), or drop "<orgId>" from customer-facing copy. Also confirm, in the lab run, how a cross-account AssumeRole event shows the connector role (a full ARN, or Amplify's account id with a principal id). */}
 
 ## Disconnecting
 
@@ -361,8 +347,6 @@ calls can keep working for a few hours after you disconnect.
   stay valid until they expire, within one hour. To end them sooner, use **Revoke active sessions** on the role
   in the IAM console.
 </Warning>
-
-{/* TODO (ENG-2386, for review): "a few hours" is the 4 h lifetime of a run's gateway token whose revoke failed (CAS's accepted trade-off on DELETE). Confirm product is happy stating it this way. */}
 
 ## Troubleshooting
 
@@ -453,8 +437,6 @@ allowed-tools:
 ```
 
 See [using integration tools in an agent](/integrations/using-in-agents).
-
-{/* TODO (ENG-2386): which platform agents list aws___run_script / aws___get_tasks in allowed-tools is an open decision in the design (Phase 4, platform-agent-skills). Document it here once decided. Also update /integrations/using-in-agents, which says every connected app's tools reach every agent without allowed-tools: AWS's account tools don't. */}
 
 ## Example
 
