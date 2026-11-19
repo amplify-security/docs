@@ -50,7 +50,7 @@ mint dev --port 3333
 ## Conventions
 
 These pages are also the source the `console-guide` platform skill is generated from (in
-`platform-agent-skills`), which is how chat in Amplify Console answers "how do I", "where is", and "can
+`agent-core`), which is how chat in Amplify Console answers "how do I", "where is", and "can
 Console do" questions. The generator reads the pages as written, so the conventions below are a contract
 with it, not just house style.
 
@@ -58,7 +58,7 @@ with it, not just house style.
   *"Where each part of Amplify Console lives and what you do there"* — because it is what the chat sees in
   its index when deciding which page to read.
 - Mintlify components allowed: `<Note>`, `<Tip>`, `<Warning>`, `<CardGroup>`, `<Card>` — and only those.
-  Any other component needs a change to the `console-guide` generator in `platform-agent-skills` first.
+  Any other component needs a change to the `console-guide` generator in `agent-core` first.
 - Name UI elements by their exact label, in bold — **Add connection**, **Save view** — and name the page
   first in any how-to step: *On **Findings**, click **Show filters**.*
 - Document what ships today. State an unsupported capability explicitly — "not supported", "not yet" —
@@ -71,12 +71,13 @@ with it, not just house style.
 The Mintlify GitHub App deploys automatically on push to the default branch.
 
 The Console chat's `console-guide` skill is generated from these pages. The `console-guide` workflow
-(`.github/workflows/console-guide.yml`) dispatches platform-agent-skills' generator on every pull request
+(`.github/workflows/console-guide.yml`) dispatches agent-core's generator on every pull request
 in check mode — a page it cannot handle (a component outside the allowed set, a link that is not
 root-relative) fails the PR before it merges — and on every push to `main` that touches `docs.json` or
-an `.mdx` file in publish mode, which commits the regenerated skill to platform-agent-skills and syncs
-every environment's Mesa org. It needs the `CONSOLE_GUIDE_TOKEN` repo secret (a fine-grained PAT that
-can only dispatch workflows in platform-agent-skills); fork pull requests skip it.
+an `.mdx` file in publish mode, which opens (or updates) a pull request on agent-core with the regenerated
+skill in `skills/console-guide/`. The guide reaches Console with the next agent-core release after that PR
+merges. It needs the `CONSOLE_GUIDE_TOKEN` repo secret (a fine-grained PAT that
+can only dispatch workflows in agent-core); fork pull requests skip it.
 
 ## Troubleshooting
 

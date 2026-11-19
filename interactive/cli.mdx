@@ -99,10 +99,7 @@ one.
 The loop is quick: write the file, restart, then give the agent a task that should trigger it — the agent
 activates a skill itself when its description matches.
 
-Files on disk are loaded only by your CLI sessions. To make a skill available to cloud runs — workflow
-steps, and agents that chat dispatches to run against a repository — ask the CLI, while signed in, to
-create it and save it to your organization; the built-in `skill-creator` skill handles the flow, bundling
-any script you point it at. See [organization skills](/agents/skills#organization-skills).
+Files on disk are loaded only by your CLI sessions.
 
 ## Signing in and settings
 
@@ -128,9 +125,6 @@ when nothing is running exits.
   conversation. Findings and detections do persist.
 - **No input history recall.** Arrow keys don't walk previous messages.
 - **No workflows.** Workflows are a cloud feature — the CLI runs agents interactively, one session at a time.
-- **No organization skills.** The CLI can list the skills saved to your organization with `list_skills`,
-  but it doesn't load or activate them — they run in cloud runs. The CLI activates only the skill files on
-  disk.
 
 ## Next steps
 
