@@ -253,15 +253,15 @@ The Deny policy doesn't cover CloudWatch Logs. If your logs may hold sensitive i
 Everything agents do in your account is recorded in CloudTrail in your account:
 
 - An `AssumeRole` event each time Amplify assumes the role, with a role session name of `amplify-<orgId>`,
-  where `<orgId>` is your Amplify organization's id (`org_…`). The caller is Amplify's connector role, in Amplify's
-  account `791657206107`.
+  where `<orgId>` is your Amplify organization's id (`org_…`). The caller is Amplify's AWS account,
+  `791657206107`.
 - The API calls the agents' scripts make, attributed to `assumed-role/AmplifyConsoleAccess-<suffix>/amplify-<orgId>`.
 
 <Note>
-  Each successful check of the connection also records a **denied** `AssumeRole` event from Amplify's connector
-  role. That's Amplify confirming the role refuses an external ID other than your connection's, and it's
-  expected. A check runs each time the connection is verified or re-checked in Console, and about every 15
-  minutes while it's in the error state described under [Troubleshooting](#troubleshooting).
+  Each successful check of the connection also records a **denied** `AssumeRole` event from Amplify's account.
+  That's Amplify confirming the role refuses an external ID other than your connection's, and it's expected. A
+  check runs each time the connection is verified or re-checked in Console, and about every 15 minutes while
+  it's in the error state described under [Troubleshooting](#troubleshooting).
 </Note>
 
 The identity is the role, not the Console user who asked. To see which person or workflow was behind a call,
