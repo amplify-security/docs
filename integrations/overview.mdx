@@ -1,6 +1,6 @@
 ---
 title: Integrations
-description: 'Give agents tools in the third-party apps your team already uses — Slack, Jira, Confluence, Linear, Notion, Asana, and Google Docs.'
+description: 'Give agents tools in the third-party apps your team already uses — Slack, Jira, Confluence, Linear, Notion, Asana, Google Docs, and AWS.'
 ---
 
 ## What integrations are
@@ -23,6 +23,7 @@ These are the apps you can connect today:
 | [Notion](/integrations/notion) | Search, read, create, and append to pages | 10 |
 | [Asana](/integrations/asana) | Create, read, and comment on tasks | 8 |
 | [Google Docs](/integrations/google) | Search, read, create, edit, and comment on documents | 11 |
+| [AWS](/integrations/aws) | Read AWS documentation, and inspect your account through an IAM role you control | 7 |
 
 Each app's page lists every tool by name, what it needs before you connect, and what it can't do.
 
@@ -48,15 +49,23 @@ is attributed to it, and its permissions in the app bound what agents can reach.
 authorizing an account. Agents act in Slack as the app's own bot user, and your team can also chat with the
 agent from Slack. See [Slack](/integrations/slack).
 
+**AWS works differently too.** You create an IAM role in your AWS account from a template Amplify publishes,
+and the role's policies bound what agents can do. Its two tools that act in your account, `aws___run_script`
+and `aws___get_tasks`, are offered to chat, but to other agents only if their `allowed-tools` lists them. See
+[AWS](/integrations/aws).
+
 **Tools are named after the app.** Integration tools are named `<App>_<Action>` — `Jira_CreateIssue`,
-`Linear_CreateIssue`, `Notion_SearchByTitle`. Slack's tools are the exception, named `slack_<action>`, such as
-`slack_post_message`. That's the name you use in an agent's
+`Linear_CreateIssue`, `Notion_SearchByTitle`. Slack's and AWS's tools are the exceptions, named
+`slack_<action>` and `aws___<action>`, such as `slack_post_message` and `aws___run_script`. That's the name
+you use in an agent's
 [`allowed-tools`](/agents/writing-an-agent#allowed-tools-restricts-it-doesnt-grant). See
 [using integration tools in an agent](/integrations/using-in-agents).
 
 **Nothing destructive is exposed.** No integration tool deletes, removes, archives, or trashes anything, in any
 app. The toolset for each app is a fixed, curated allowlist — agents cannot reach an app's other API surface,
-and Console's own tools can't be used to call the app's API directly either.
+and Console's own tools can't be used to call the app's API directly either. AWS is the exception:
+`aws___run_script` calls whatever AWS APIs your IAM role allows. The role is read-only by default, so agents
+can change something in AWS only if you grant it.
 
 ## What agents see
 
@@ -71,9 +80,10 @@ If a connection stops working mid-run, the agent is told and moves on rather tha
 | App not connected | The app's tools are absent | Nothing on the Connections page for that app |
 | Authorization revoked in the app | Every call to that app's tools returns an error telling the agent to continue without them | The app's card reads **Authorization lost — reconnect from Add Connection** |
 | App or broker temporarily unreachable | Each call returns a "temporarily unavailable" error; the run completes | Nothing — the connection stays Connected |
+| AWS role can no longer be assumed | The failing call returns an error saying the AWS connection needs attention; later runs don't get the AWS account tools | The AWS card reads **Access lost** |
 
-Each tool call is given 60 seconds, and a result longer than 16,000 characters is truncated with a note
-saying so.
+Each tool call is given 60 seconds, and a result longer than 16,000 characters (20,000 for AWS) is truncated
+with a note saying so.
 
 ## Where integrations are available
 
